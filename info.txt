@@ -1,0 +1,10 @@
+"AddonInfo"
+{
+	"name"				"Environments"
+	"version"			"0.1"
+	"up_date"			"23th December 2010"
+	"author_name"			"CmdrMatthew"
+	"author_email"			""
+	"author_url"			""
+	"info"				"An improved alternative to spacebuild."
+}
