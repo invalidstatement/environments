@@ -3,6 +3,12 @@
 //   CmdrMatthew   //
 ------------------------------------------
 
+local SB_AIR_EMPTY = -1
+local SB_AIR_O2 = 0
+local SB_AIR_CO2 = 1
+local SB_AIR_N = 2
+local SB_AIR_H = 3
+
 local mt = {} -- The metatable
 local methods = {} -- Methods for our objects
 mt.__index = methods -- Redirect all key "requests" to the methods table
@@ -87,6 +93,11 @@ function CreateEnvironment(planet)
 			self.air.o2 = math.Round((o2 - tmp) * 5 * (GetVolume(radius)/1000) * self.atmosphere)
 			self.air.o2per = o2 - tmp
 		end
+		self.air.empty = 0
+		self.air.emptyper = 0
+	else
+		self.air.empty = 0
+		self.air.emptyper = 0
 	end
 	if name then
 		self.name = name
@@ -109,19 +120,101 @@ end
 
 function methods:Convert(air1, air2, value)
 	if not air1 or not air2 or not value then return 0 end
-	if type(air1) != "string" or type(air2) != "string" or type(value) != "number" then return 0 end
-	
-	if server_settings.Bool( "SB_StaticEnvironment" ) then
-		return value
+	if type(air1) != "number" or type(air2) != "number" or type(value) != "number" then return 0 end 
+	air1 = math.Round(air1)
+	air2 = math.Round(air2)
+	value = math.Round(value)
+	if air1 < -1 or air1 > 3 then return 0 end
+	if air2 < -1 or air2 > 3 then return 0 end
+	if air1 == air2 then return 0 end
+	if value < 1 then return 0 end
+	/*if server_settings.Bool( "SB_StaticEnvironment" ) then
+		return value;
 		//Don't do anything else anymore
-	end
-	
-	if air1 == "" then
-		self.atmosphere[air2] = self.atmosphere[air2] + value
+	end*/
+	if air1 == -1 then
+		if self.air.empty < value then
+			value = self.air.empty
+		end
+		self.air.empty = self.air.empty - value
+		if air2 == SB_AIR_CO2 then
+			self.air.co2 = self.air.co2 + value
+		elseif air2 == SB_AIR_N then
+			self.air.n = self.air.n + value
+		elseif air2 == SB_AIR_H then
+			self.air.h = self.air.h + value
+		elseif air2 == SB_AIR_O2 then
+			self.air.o2 = self.air.o2 + value
+		end
+	elseif air1 == SB_AIR_O2 then
+		if self.air.o2 < value then
+			value = self.air.o2
+		end
+		self.air.o2 = self.air.o2 - value
+		if air2 == SB_AIR_CO2 then
+			self.air.co2 = self.air.co2 + value
+		elseif air2 == SB_AIR_N then
+			self.air.n = self.air.n + value
+		elseif air2 == SB_AIR_H then
+			self.air.h = self.air.h + value
+		elseif air2 == -1 then
+			self.air.empty = self.air.empty + value
+		end
+	elseif air1 == SB_AIR_CO2 then
+		if self.air.co2 < value then
+			value = self.air.co2
+		end
+		self.air.co2 = self.air.co2 - value
+		if air2 == SB_AIR_O2 then
+			self.air.o2 = self.air.o2 + value
+		elseif air2 == SB_AIR_N then
+			self.air.n = self.air.n + value
+		elseif air2 == SB_AIR_H then
+			self.air.h = self.air.h + value
+		elseif air2 == -1 then
+			self.air.empty = self.air.empty + value
+		end
+	elseif air1 == SB_AIR_N then
+		if self.air.n < value then
+			value = self.air.n
+		end
+		self.air.n = self.air.n - value
+		if air2 == SB_AIR_O2 then
+			self.air.o2 = self.air.o2 + value
+		elseif air2 == SB_AIR_CO2 then
+			self.air.co2 = self.air.co2 + value
+		elseif air2 == SB_AIR_H then
+			self.air.h = self.air.h + value
+		elseif air2 == -1 then
+			self.air.empty = self.air.empty + value
+		end
 	else
-		self.atmosphere[air1] = self.atmosphere[air1] - value
-		self.atmosphere[air2] = self.atmosphere[air2] + value
+		if self.air.h < value then
+			value = self.air.h
+		end
+		self.air.h = self.air.h - value
+		if air2 == SB_AIR_O2 then
+			self.air.o2 = self.air.o2 + value
+		elseif air2 == SB_AIR_CO2 then
+			self.air.co2 = self.air.co2 + value
+		elseif air2 == SB_AIR_N then
+			self.air.n = self.air.n + value
+		elseif air2 == -1 then
+			self.air.empty = self.air.empty + value
+		end
 	end
-	
-	PrintTable(self.atmosphere)
+	for k,v in pairs(self.air) do
+		self.air[k.."per"] = self:GetResourcePercentage(k)
+	end
+	return value
+end
+
+function methods:GetResourcePercentage(res)
+	if not res or type(res) == "number" then return 0 end
+	if self.air.max == 0 then
+		return 0
+	end
+	local ignore = {"o2per", "co2per", "nper", "hper", "emptyper", "max"}
+	if table.HasValue(ignore, res) then return 0 end
+	return ((self.air[res] / self.air.max) * 100)
 end

@@ -44,13 +44,13 @@ function DEBUGBAR:Paint()
 		length = length + x + spacer
 	
 	surface.SetTextPos( length + spacer, 5 )
-		surface.DrawText( "Planet: " .. tostring(planet) )
-		local x, y = surface.GetTextSize( "Planet: " .. tostring(planet) )
-		length = length + x + spacer
-	
-	surface.SetTextPos( length + spacer, 5 )
 		surface.DrawText( "Energy: " .. tostring(energy) )
 		local x, y = surface.GetTextSize( "Energy: " .. tostring(energy) )
+		length = length + x + spacer
+		
+	surface.SetTextPos( length + spacer, 5 )
+		surface.DrawText( "Planet: " .. tostring(planet) )
+		local x, y = surface.GetTextSize( "Planet: " .. tostring(planet) )
 		length = length + x + spacer
 
 	surface.SetTextPos( length + spacer, 5 )
