@@ -2,7 +2,7 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
-local Version = 0.1
+local Version = 0.15
 
 UseLS = true --Should the ALPHA lifesupport be loaded? Not recomended, its still in development.
 local UseRD = false --Should the EXTREME WIP RD be loaded?
