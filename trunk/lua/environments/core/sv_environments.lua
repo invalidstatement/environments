@@ -20,11 +20,11 @@ default = {}
 default.atmosphere = {}
 default.atmosphere.oxygen = 30
 default.atmosphere.carbondioxide = 5
-default.atmosphere.methane = 1
+--default.atmosphere.methane = 1
 default.atmosphere.nitrogen = 40
 default.atmosphere.hydrogen = 22
-default.atmosphere.helium = 1
-default.atmosphere.ammonia = 1
+--default.atmosphere.helium = 1
+--default.atmosphere.ammonia = 1
 
 function Space()
 	local hash = {}
@@ -133,12 +133,6 @@ function RegisterEnvironments()
 						print("//	  New Spacebuild Cube Planet Added")
 					elseif value == "planet" then
 						planet.typeof = "sphere"
-						for k2,v2 in pairs(values) do
-							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
-							elseif (k2 == "Case03") then planet.gravity = tonumber(v2) end--Get Gravity
-						end
-						
-						planet.position = ent:GetPos()
 						
 						--Add Defaults
 						planet.atmosphere = {}
@@ -146,10 +140,21 @@ function RegisterEnvironments()
 						planet.unstable = "false"
 						planet.temperature = 288
 						planet.pressure = 1
-
+						planet.sb2 = true
+						
+						for k2,v2 in pairs(values) do
+							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
+							elseif (k2 == "Case03") then planet.gravity = tonumber(v2) --Get Gravity
+							elseif (k2 == "Case05") then planet.temperature = tonumber(v2)
+							elseif (k2 == "Case06") then planet.temperature2 = tonumber(v2) end
+						end
+						
+						planet.position = ent:GetPos()
+						
 						i=i+1
 						planet.name = i
-		
+						
+						CreateSB2Environment(planet)
 						table.insert(hash, planet)
 						print("//	  New Spacebuild 2 Planet Added")
 					elseif value == "planet2" then
@@ -168,6 +173,7 @@ function RegisterEnvironments()
 							elseif (k2 == "Case04") then planet.tmosphere = tonumber(v2) --What does this mean?
 							elseif (k2 == "Case05") then planet.pressure = tonumber(v2)
 							elseif (k2 == "Case06") then planet.temperature = tonumber(v2)
+							elseif (k2 == "Case07") then planet.temperature2 = tonumber(v2)
 							elseif (k2 == "Case09") then planet.atmosphere.oxygen = tonumber(v2)
 							elseif (k2 == "Case10") then planet.atmosphere.carbondioxide = tonumber(v2)
 							elseif (k2 == "Case11") then planet.atmosphere.nitrogen = tonumber(v2)
@@ -180,8 +186,6 @@ function RegisterEnvironments()
 						i=i+1
 						table.insert(hash, planet)
 						print("//	  New Spacebuild 3 Planet Added")
-					elseif value == "insert cool name here" then
-						table.insert(hash, planet)
 					elseif value == "star" then
 						planet.typeof = "sphere"
 						
@@ -217,8 +221,6 @@ function RegisterEnvironments()
 						i=i+1
 						table.insert(stars, planet)
 						print("//	  New Spacebuild 3 Star Added")
-					elseif value == "insert cool star name here" then
-						table.insert(stars, planet)
 					end
 				end 
 			end
@@ -233,7 +235,9 @@ function RegisterEnvironments()
 	end
 	
 	for k,v in pairs(planets) do
-		CreateEnvironment(v)
+		if not v.sb2 then
+			CreateEnvironment(v)
+		end
 	end
 	for k,v in pairs(stars) do
 		CreateStarEnv(v)
@@ -275,7 +279,7 @@ function CheckSpaceEnts()
 					end*/
 					e:SetNWBool( "inspace", true )
 					e.environment = Space()
-					checkls(e)
+					--checkls(e)
 				else
 					e:GetPhysicsObject():EnableDrag( false )
 					e:GetPhysicsObject():EnableGravity( false )
@@ -304,7 +308,8 @@ function CheckGravity()
 					e.environment = p
 					if( e:IsPlayer() ) then
 						e:SetNWBool( "inspace", false )
-						checkls(e)
+						--checkls(e)
+						--checktemp(e)
 					end
 				end
 			end
@@ -326,6 +331,47 @@ function checkls(ent)
 		end
 	end*/
 end
+
+/*function checktemp(ent)
+	local lit = false
+	if table.Count(stars) > 0 then
+		for k,v in pairs(stars) do
+			SunAngle = (entpos - v)
+			SunAngle:Normalize()
+			--local startpos = (entpos - (SunAngle * 4096))
+			local trace = {}
+			trace.start = v.position
+			trace.endpos = ent:GetPos()
+			local tr = util.TraceLine( trace )
+			if (tr.Hit) then
+				if (tr.Entity == ent) then
+					if (ent:IsPlayer()) then
+						if self.sbenvironment.sunburn then
+							if (ent:Health() > 0) then
+								ent:TakeDamage( 5, 0 )
+								ent:EmitSound( "HL2Player.BurnPain" )
+							end
+						end
+					end
+					lit = true
+				else
+					//lit = false
+				end
+			else
+				lit = true
+			end
+		end
+	end
+	if lit then
+		if ent.environment.temperature2 then
+			return ent.environment.temperature2 + (( ent.environment.temperature2 * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2)
+		end
+	end
+	if not ent.environment.temperature then
+		return 0
+	end
+	print(ent.environment.temperature + (( ent.environment.temperature * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2))
+end*/
 
 local function PrintPlanets()
 	local ent = ents.FindByClass( "logic_case" )

@@ -13,6 +13,34 @@ local mt = {} -- The metatable
 local methods = {} -- Methods for our objects
 mt.__index = methods -- Redirect all key "requests" to the methods table
 
+local function Extract_Bit(bit, field)
+	if not bit or not field then return false end
+	local retval = 0
+	if ((field <= 7) and (bit <= 4)) then
+		if (field >= 4) then
+			field = field - 4
+			if (bit == 4) then return true end
+		end
+		if (field >= 2) then
+			field = field - 2
+			if (bit == 2) then return true end
+		end
+		if (field >= 1) then
+			field = field - 1
+			if (bit == 1) then return true end
+		end
+	end
+	return false
+end
+
+function GetFlags(flags)
+	if not flags or type(flags) != "number" then return end
+	local habitat = Extract_Bit(1, flags)
+	local unstable = Extract_Bit(2, flags)
+	local sunburn = Extract_Bit(3, flags)
+	return habitat, unstable, sunburn
+end
+
 function CreateEnvironment(planet, isstar)
 	local compounds = {}
 	compounds["o2"] = planet.atmosphere.oxygen
@@ -27,13 +55,13 @@ function CreateEnvironment(planet, isstar)
 	local h = planet.atmosphere.hydrogen
 	local temperature = planet.temperature
 	local atmosphere = 1
-	local name = planet.name
 	local radius = planet.radius
 	
 	local self = {}
 	self.radius = radius
 	self.position = planet.position
 	self.typeof = planet.typeof
+	self.temperature2 = planet.temperature2
 	if gravity and type(gravity) == "number" then
 		if gravity < 0 then
 			gravity = 0
@@ -99,14 +127,43 @@ function CreateEnvironment(planet, isstar)
 		self.air.empty = 0
 		self.air.emptyper = 0
 	end
-	if name then
-		self.name = name
+	if planet.name then
+		self.name = planet.name
 	end
 	self.air.max = math.Round(100 * 5 * (GetVolume(radius)/1000) * self.atmosphere)
-		
+	self.firstenvironment = table.Copy(self)
 	//Add it to the table
 	setmetatable(self, mt)
 	table.insert(environments, self)
+end
+
+//Borrowed from SB3
+function CreateSB2Environment(planet)
+	local habitat, unstable, sunburn = GetFlags(planet.flags)
+	local o2 = 0
+	local co2 = 0
+	local n = 0
+	local h = 0
+	local pressure = atmosphere
+	//set Radius if one is given
+	if planet.radius and type(radius) == "number" then
+		if planet.radius < 0 then
+			planet.radius = 0
+		end
+	end
+	//set temperature2 if given
+	if habitat then //Based on values for earth
+		planet.atmosphere.oxygen = 21
+		planet.atmosphere.carbondioxide = 0.45
+		planet.atmosphere.nitrogen = 78
+		planet.atmosphere.hydrogen = 0.55
+	else //Based on values for Venus
+		planet.atmosphere.oxygen = 0
+		planet.atmosphere.carbondioxide = 96.5
+		planet.atmosphere.nitrogen = 3.5
+		planet.atmosphere.hydrogen = 0
+	end
+	CreateEnvironment(planet)
 end
 
 function CreateStarEnv(planet)
@@ -121,8 +178,6 @@ function CreateStarEnv(planet)
 	self.air.o2per = 0
 	table.insert(environments, self)
 end
-
-
 
 ///////////////////////////////////////////////
 //       Meta Table Stuff For Planets        //
