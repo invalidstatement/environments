@@ -235,6 +235,9 @@ function RegisterEnvironments()
 	for k,v in pairs(planets) do
 		CreateEnvironment(v)
 	end
+	for k,v in pairs(stars) do
+		CreateEnvironment(v, true)
+	end
 	
 	--Add the file for the client to download so they can access its info
 	resource.AddFile("environments/" .. map .. ".txt")

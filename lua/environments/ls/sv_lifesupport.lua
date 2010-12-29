@@ -81,6 +81,10 @@ function LSCheck()
 				end
 				//Do temperature check
 				if env.temperature >= 300 then
+					if env.temperature >= 1000 then
+						ply:TakeDamage(50)
+					end
+					
 					if suit.coolant > 0 then
 						suit.coolant = suit.coolant - 10
 					else
