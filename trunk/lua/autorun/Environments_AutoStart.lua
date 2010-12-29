@@ -5,7 +5,7 @@
 local Version = 0.1
 
 UseLS = true --Should the ALPHA lifesupport be loaded? Not recomended, its still in development.
-local UseRD = true --Should the EXTREME WIP RD be loaded?
+local UseRD = false --Should the EXTREME WIP RD be loaded?
 
 if CLIENT then
 	include("environments/spawn_menu.lua")
@@ -34,7 +34,7 @@ else
 	
 	if UseLS then
 		include("environments/ls/sv_lifesupport.lua")
-	
+		resource.AddFile("resource/fonts/digital-7 (italic).ttf")
 		AddCSLuaFile("vgui/HUD.lua")
 		AddCSLuaFile("vgui/lsinfo.lua")
 		AddCSLuaFile("environments/ls/cl_lifesupport.lua")

@@ -5,9 +5,12 @@
 
 SRP = {}
 UseEnvironments = true
-UseSimpleSpace = false
 PlayerGravity = true
 
+CreateConVar( "srp_noclip", "1" )
+CreateConVar( "srp_planetnocliponly", "1" )
+CreateConVar( "srp_adminspacenoclip", "1" )
+CreateConVar( "srp_superadminspacenoclip", "1" )
 //
 environments = {}
 stars = {}
@@ -52,7 +55,7 @@ local function NoClip( ply, on )
 	end
 	return true
 end
-hook.Add("PlayerNoClip","EnvNoClip", NoClip)
+--hook.Add("PlayerNoClip","EnvNoClip", NoClip)
 
 local function LoadEnvironments()
 	print("/////////////////////////////////////")
@@ -256,7 +259,9 @@ function CheckSpaceEnts()
 			if( !e:GetTable().sgravity ) then
 				if( e:IsPlayer() ) then
 					if( PlayerGravity ) then
-						e:SetGravity( 0.000000001 )
+						e:SetGravity( 0.00001 )
+					else
+						e:SetGravity( 1 )
 					end
 					/*if( CanNoclipInSpace ) then
 						if( AdminOnlyNoclip and !e:IsAdmin() ) then
@@ -267,6 +272,7 @@ function CheckSpaceEnts()
 					end*/
 					e:SetNWBool( "inspace", true )
 					e.environment = Space()
+					checkls(e)
 				else
 					e:GetPhysicsObject():EnableDrag( false )
 					e:GetPhysicsObject():EnableGravity( false )
@@ -292,15 +298,30 @@ function CheckGravity()
 					e:GetPhysicsObject():EnableDrag( true )
 					e:GetPhysicsObject():EnableGravity( true )
 					e:GetTable().sgravity = true
+					e.environment = p
 					if( e:IsPlayer() ) then
 						e:SetNWBool( "inspace", false )
-						e.environment = p
+						checkls(e)
 					end
 				end
 			end
 		end
 		CheckSpaceEnts()
 	end
+end
+
+function checkls(ent)
+	/*local trace = {}
+	local pos = ent:GetPos()
+	trace.start = pos
+	trace.endpos = pos - Vector(0,0,512)
+	trace.filter = { ent }
+	local tr = util.TraceLine( trace )
+	if tr.Hit then
+		if tr.Entity.sbenvironment then
+			ent.environment = tr.Entity.sbenvironment
+		end
+	end*/
 end
 
 local function PrintPlanets()

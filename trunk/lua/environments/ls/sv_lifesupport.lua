@@ -60,7 +60,7 @@ end
 function LSCheck()
 	for _, ply in pairs(player.GetAll()) do
 		if not ply:Alive() or not ply:IsValid() then return end
-		airused = true
+		local airused = true
 		local env = ply.environment
 		local suit = ply.suit
 		if ply:GetNWBool("inspace") == true then
