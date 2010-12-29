@@ -236,7 +236,7 @@ function RegisterEnvironments()
 		CreateEnvironment(v)
 	end
 	for k,v in pairs(stars) do
-		CreateEnvironment(v, true)
+		CreateStarEnv(v)
 	end
 	
 	--Add the file for the client to download so they can access its info
