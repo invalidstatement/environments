@@ -19,6 +19,7 @@ if CLIENT then
 	
 	local function Reload()
 		include("vgui/HUD.lua")
+		include("vgui/lsinfo.lua")
 	end
 	concommand.Add("Env_Reload_Hud", Reload)
 	

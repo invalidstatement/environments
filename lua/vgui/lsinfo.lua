@@ -22,7 +22,7 @@ function DEBUGBAR:Paint()
 	local coolant = SRP.suit.coolant
 	local energy = SRP.suit.energy
 	local temperature = SRP.suit.temperature
-	local o2 = SRP.suit.o2per
+	local o2 = SRP.suit.o2
 	
 	local length     = -35 --should make 5 w/ spacer
 	local spacer     = 40
