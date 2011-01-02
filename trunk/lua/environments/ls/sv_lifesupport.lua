@@ -50,7 +50,7 @@ function Space()
 	hash.oxygen = 0
 	hash.carbondioxide = 0
 	hash.pressure = 0
-	hash.temperature = 60
+	hash.temperature = 2.75
 	hash.air.o2per = 0
 	
 	return hash

@@ -4,7 +4,7 @@
 ------------------------------------------
 
 SRP = {}
-UseEnvironments = true
+UseEnvironments = false
 PlayerGravity = true
 
 CreateConVar( "srp_noclip", "1" )
@@ -32,7 +32,7 @@ function Space()
 	hash.oxygen = 0
 	hash.carbondioxide = 0
 	hash.pressure = 0
-	hash.temperature = 60
+	hash.temperature = 3
 	hash.air.o2per = 0
 	
 	return hash
@@ -67,15 +67,19 @@ local function LoadEnvironments()
 	print("// Registering Sun..               //")
 	--Register all things related to the sun
 	RegisterSun()
-	print("// Starting Periodicals..          //")
-	--Start all things running on timers
-	timer.Create("GravityCheck", 1, 0, CheckGravity )
-	print("//   Environment Checker Started   //")
-	if UseLS then
-		--Start Life Support like Functions
-		SRP.InitLS()
-		--timer.Create("RadiationCheck", 0.5, 0, RadiationCheck)
-		--print("//   Radiation Checker Started     //")
+	if UseEnvironments then
+		print("// Starting Periodicals..          //")
+		--Start all things running on timers
+		timer.Create("GravityCheck", 1, 0, CheckGravity )
+		print("//   Environment Checker Started   //")
+		if UseLS then
+			--Start Life Support like Functions
+			SRP.InitLS()
+			--timer.Create("RadiationCheck", 0.5, 0, RadiationCheck)
+			--print("//   Radiation Checker Started     //")
+		end
+	else --Not a spacebuild map
+		print("// This is not a valid SB map      //")
 	end
 	print("/////////////////////////////////////")
 	print("//       Environments Loaded       //")
@@ -145,8 +149,10 @@ function RegisterEnvironments()
 						for k2,v2 in pairs(values) do
 							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
 							elseif (k2 == "Case03") then planet.gravity = tonumber(v2) --Get Gravity
+							elseif (k2 == "Case04") then atmosphere = tonumber(v2)
 							elseif (k2 == "Case05") then planet.temperature = tonumber(v2)
-							elseif (k2 == "Case06") then planet.temperature2 = tonumber(v2) end
+							elseif (k2 == "Case06") then planet.temperature2 = tonumber(v2)
+							elseif (k2 == "Case16") then planet.flags = tonumber(v2) end
 						end
 						
 						planet.position = ent:GetPos()
@@ -229,10 +235,7 @@ function RegisterEnvironments()
 		file.Write( "environments/" .. map .. "_stars.txt", util.TableToKeyValues( table.Sanitise(stars) ) )
 		file.Write( "environments/" .. map .. ".txt", util.TableToKeyValues( table.Sanitise(hash) ) )
 	end
-	local numberofplanets = table.Count( planets ) or 0
-	if numberofplanets > 0 then
-		UseEnvironments = true
-	end
+	
 	
 	for k,v in pairs(planets) do
 		if not v.sb2 then
@@ -241,6 +244,11 @@ function RegisterEnvironments()
 	end
 	for k,v in pairs(stars) do
 		CreateStarEnv(v)
+	end
+	
+	local numberofplanets = table.Count( environments ) or 0
+	if numberofplanets > 0 then
+		UseEnvironments = true
 	end
 	
 	--Add the file for the client to download so they can access its info
@@ -279,7 +287,7 @@ function CheckSpaceEnts()
 					end*/
 					e:SetNWBool( "inspace", true )
 					e.environment = Space()
-					--checkls(e)
+					SunCheck(e)
 				else
 					e:GetPhysicsObject():EnableDrag( false )
 					e:GetPhysicsObject():EnableGravity( false )
@@ -309,7 +317,7 @@ function CheckGravity()
 					if( e:IsPlayer() ) then
 						e:SetNWBool( "inspace", false )
 						--checkls(e)
-						--checktemp(e)
+						SunCheck(e)
 					end
 				end
 			end
@@ -332,46 +340,43 @@ function checkls(ent)
 	end*/
 end
 
-/*function checktemp(ent)
+function SunCheck(ent)
 	local lit = false
 	if table.Count(stars) > 0 then
 		for k,v in pairs(stars) do
-			SunAngle = (entpos - v)
-			SunAngle:Normalize()
+			--SunAngle = (entpos - v)
+			--SunAngle:Normalize()
 			--local startpos = (entpos - (SunAngle * 4096))
 			local trace = {}
-			trace.start = v.position
-			trace.endpos = ent:GetPos()
+			trace.start = ent:GetPos()
+			trace.filter = ent
+			trace.endpos = v.position
 			local tr = util.TraceLine( trace )
 			if (tr.Hit) then
-				if (tr.Entity == ent) then
-					if (ent:IsPlayer()) then
-						if self.sbenvironment.sunburn then
-							if (ent:Health() > 0) then
-								ent:TakeDamage( 5, 0 )
-								ent:EmitSound( "HL2Player.BurnPain" )
-							end
-						end
-					end
+				local distance = tr.HitPos:Distance(v.position)
+				if distance <= v.radius then
 					lit = true
 				else
-					//lit = false
+					lit = false
 				end
 			else
 				lit = true
 			end
 		end
 	end
-	if lit then
+	print(lit)
+	--print(tr.HitPos)
+	/*if lit then
 		if ent.environment.temperature2 then
 			return ent.environment.temperature2 + (( ent.environment.temperature2 * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2)
 		end
 	end
 	if not ent.environment.temperature then
 		return 0
-	end
-	print(ent.environment.temperature + (( ent.environment.temperature * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2))
-end*/
+	end*/
+	--print(ent.environment.temperature + (( ent.environment.temperature * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2))
+	--print(lit)
+end
 
 local function PrintPlanets()
 	local ent = ents.FindByClass( "logic_case" )
