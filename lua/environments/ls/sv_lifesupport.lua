@@ -96,8 +96,8 @@ function LSCheck()
 					else
 						airused = false
 					end
-				elseif temperature <= 268 then
-					local amt = math.ceil((268 - temperature)/16)
+				elseif temperature <= 280 then
+					local amt = math.ceil((280 - temperature)/16)
 					if amt < 5 then
 						amt = 5
 					end
@@ -154,7 +154,7 @@ function SunCheck(ent)
 	end
 	if lit then
 		if ent.environment.temperature2 then
-			return ent.environment.temperature2 + (( ent.environment.temperature2 * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2)
+			return ent.environment.suntemperature + (( ent.environment.suntemperature * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2)
 		end
 	end
 	if not ent.environment.temperature then

@@ -151,7 +151,7 @@ function RegisterEnvironments()
 							elseif (k2 == "Case03") then planet.gravity = tonumber(v2) --Get Gravity
 							elseif (k2 == "Case04") then atmosphere = tonumber(v2)
 							elseif (k2 == "Case05") then planet.temperature = tonumber(v2)
-							elseif (k2 == "Case06") then planet.temperature2 = tonumber(v2)
+							elseif (k2 == "Case06") then planet.suntemperature = tonumber(v2)
 							elseif (k2 == "Case16") then planet.flags = tonumber(v2) end
 						end
 						
@@ -179,7 +179,7 @@ function RegisterEnvironments()
 							elseif (k2 == "Case04") then planet.tmosphere = tonumber(v2) --What does this mean?
 							elseif (k2 == "Case05") then planet.pressure = tonumber(v2)
 							elseif (k2 == "Case06") then planet.temperature = tonumber(v2)
-							elseif (k2 == "Case07") then planet.temperature2 = tonumber(v2)
+							elseif (k2 == "Case07") then planet.suntemperature = tonumber(v2)
 							elseif (k2 == "Case09") then planet.atmosphere.oxygen = tonumber(v2)
 							elseif (k2 == "Case10") then planet.atmosphere.carbondioxide = tonumber(v2)
 							elseif (k2 == "Case11") then planet.atmosphere.nitrogen = tonumber(v2)
