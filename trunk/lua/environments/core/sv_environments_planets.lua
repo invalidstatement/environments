@@ -61,7 +61,7 @@ function CreateEnvironment(planet, isstar)
 	self.radius = radius
 	self.position = planet.position
 	self.typeof = planet.typeof
-	self.temperature2 = planet.temperature2
+	self.suntemperature = planet.suntemperature
 	if gravity and type(gravity) == "number" then
 		if gravity < 0 then
 			gravity = 0

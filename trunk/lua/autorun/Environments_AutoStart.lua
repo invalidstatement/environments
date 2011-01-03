@@ -21,7 +21,7 @@ if CLIENT then
 		include("vgui/HUD.lua")
 		include("vgui/lsinfo.lua")
 	end
-	concommand.Add("Env_Reload_Hud", Reload)
+	concommand.Add("env_reload_hud", Reload)
 	
 	if UseRD then
 	
@@ -40,14 +40,7 @@ else
 		AddCSLuaFile("vgui/lsinfo.lua")
 		AddCSLuaFile("environments/ls/cl_lifesupport.lua")
 	end
-	
-	local function Reload()
-		include("environments/core/sv_environments.lua")
-		include("environments/core/sv_environments_planets.lua")
-		include("environments/ls/sv_lifesupport.lua")
-	end
-	concommand.Add("Env_Reload_All", Reload)
-	
+
 	if UseRD then
 	
 	end
