@@ -64,10 +64,10 @@ local function LoadEnvironments()
 	print("// Adding Environments..           //")
 	--Get All Planets Loaded
 	RegisterEnvironments() 
-	print("// Registering Sun..               //")
-	--Register all things related to the sun
-	RegisterSun()
-	if UseEnvironments then
+	if UseEnvironments then --It is a spacebuild map
+		print("// Registering Sun..               //")
+		--Register all things related to the sun
+		RegisterSun()
 		print("// Starting Periodicals..          //")
 		--Start all things running on timers
 		timer.Create("GravityCheck", 1, 0, CheckGravity )
@@ -79,7 +79,7 @@ local function LoadEnvironments()
 			--print("//   Radiation Checker Started     //")
 		end
 	else --Not a spacebuild map
-		print("// This is not a valid SB map      //")
+		print("//   This is not a valid SB map      //")
 	end
 	print("/////////////////////////////////////")
 	print("//       Environments Loaded       //")
@@ -287,7 +287,6 @@ function CheckSpaceEnts()
 					end*/
 					e:SetNWBool( "inspace", true )
 					e.environment = Space()
-					SunCheck(e)
 				else
 					e:GetPhysicsObject():EnableDrag( false )
 					e:GetPhysicsObject():EnableGravity( false )
@@ -316,66 +315,12 @@ function CheckGravity()
 					e.environment = p
 					if( e:IsPlayer() ) then
 						e:SetNWBool( "inspace", false )
-						--checkls(e)
-						SunCheck(e)
 					end
 				end
 			end
 		end
 		CheckSpaceEnts()
 	end
-end
-
-function checkls(ent)
-	/*local trace = {}
-	local pos = ent:GetPos()
-	trace.start = pos
-	trace.endpos = pos - Vector(0,0,512)
-	trace.filter = { ent }
-	local tr = util.TraceLine( trace )
-	if tr.Hit then
-		if tr.Entity.sbenvironment then
-			ent.environment = tr.Entity.sbenvironment
-		end
-	end*/
-end
-
-function SunCheck(ent)
-	local lit = false
-	if table.Count(stars) > 0 then
-		for k,v in pairs(stars) do
-			--SunAngle = (entpos - v)
-			--SunAngle:Normalize()
-			--local startpos = (entpos - (SunAngle * 4096))
-			local trace = {}
-			trace.start = ent:GetPos()
-			trace.filter = ent
-			trace.endpos = v.position
-			local tr = util.TraceLine( trace )
-			if (tr.Hit) then
-				local distance = tr.HitPos:Distance(v.position)
-				if distance <= v.radius then
-					lit = true
-				else
-					lit = false
-				end
-			else
-				lit = true
-			end
-		end
-	end
-	print(lit)
-	--print(tr.HitPos)
-	/*if lit then
-		if ent.environment.temperature2 then
-			return ent.environment.temperature2 + (( ent.environment.temperature2 * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2)
-		end
-	end
-	if not ent.environment.temperature then
-		return 0
-	end*/
-	--print(ent.environment.temperature + (( ent.environment.temperature * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2))
-	--print(lit)
 end
 
 local function PrintPlanets()

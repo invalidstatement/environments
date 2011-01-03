@@ -63,8 +63,11 @@ function LSCheck()
 		local airused = true
 		local env = ply.environment
 		local suit = ply.suit
+		local temperature = env.temperature
 		if ply:GetNWBool("inspace") == true then
 			env = Space()
+		else
+			temperature = SunCheck(ply)
 		end
 		if ply.suit.worn then
 			if env == nil or env == {} then --is the env already prechecked to be ok or is it nil?
@@ -80,19 +83,26 @@ function LSCheck()
 					end
 				end
 				//Do temperature check
-				if env.temperature >= 300 then
-					if env.temperature >= 1000 then
+				if temperature >= 300 then
+					local amt = math.ceil((temperature - 300)/16)
+					if temperature >= 1000 then
 						ply:TakeDamage(50)
 					end
-					
+					if amt < 5 then
+						amt = 5
+					end
 					if suit.coolant > 0 then
-						suit.coolant = suit.coolant - 10
+						suit.coolant = suit.coolant - amt
 					else
 						airused = false
 					end
-				elseif env.temperature <= 268 then
+				elseif temperature <= 268 then
+					local amt = math.ceil((268 - temperature)/16)
+					if amt < 5 then
+						amt = 5
+					end
 					if suit.energy > 0 then
-						suit.energy = suit.energy - 10
+						suit.energy = suit.energy - amt
 					else
 						airused = false
 					end
@@ -102,7 +112,7 @@ function LSCheck()
 				else --ply cant survive
 					ply:TakeDamage(10)
 				end
-				UpdateLS(ply)
+				UpdateLS(ply, temperature)
 			end
 		else//player is not wearing suit
 			//you cant survive in a vacuum :P
@@ -114,6 +124,44 @@ function LSCheck()
 	end
 end
 
+function SunCheck(ent)
+	local lit = false
+	if table.Count(stars) > 0 then
+		for k,v in pairs(stars) do
+			local trace = {}
+			trace.start = ent:GetPos()
+			trace.filter = ent
+			trace.endpos = v.position
+			local tr = util.TraceLine( trace )
+			if (tr.Hit) then
+				local distance = tr.HitPos:Distance(v.position)
+				if distance <= v.radius then
+					lit = true
+				else
+					lit = false
+				end
+			else
+				lit = true
+			end
+		end
+	else --No stars on map
+		local trace = {}
+		trace.start = ent:GetPos()
+		trace.filter = ent
+		trace.endpos = ent:GetPos() + Vector(0,0,2000)
+		local tr = util.TraceLine( trace )
+		lit = not tr.Hit
+	end
+	if lit then
+		if ent.environment.temperature2 then
+			return ent.environment.temperature2 + (( ent.environment.temperature2 * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2)
+		end
+	end
+	if not ent.environment.temperature then
+		return 0
+	end
+	return ent.environment.temperature + (( ent.environment.temperature * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2)
+end
 
 --------------------------------------------------------
 --              Life Support Meta Tables              --
@@ -122,9 +170,9 @@ local meta = FindMetaTable("Player")
 
 function meta:ResetSuit() --Resets a player's suit
 	local hash = self.suit
-	hash.air = 200 --100
-	hash.energy = 200 --100
-	hash.coolant = 200 --100
+	hash.air = 2000 --200
+	hash.energy = 2000 --200
+	hash.coolant = 2000 --200
 	hash.worn = true
 	self.suit = hash
 end
@@ -160,13 +208,12 @@ concommand.Add("ToggleSuit", ToggleSuit)
 --------------------------------------------------------
 --              Life Support Usermessages             --
 --------------------------------------------------------
-function UpdateLS(ply)
-	local u = ply:UniqueID()
+function UpdateLS(ply, temp)
 	umsg.Start("LSUpdate", ply)
 		umsg.Short(ply.suit.air)
 		umsg.Short(ply.suit.coolant)
 		umsg.Short(ply.suit.energy)
-		umsg.Short(ply.environment.temperature)
+		umsg.Short(temp)
 		umsg.Short(ply.environment.air.o2per)
 	umsg.End()
 end
@@ -180,7 +227,7 @@ end
 hook.Add("PlayerInitialSpawn","CreateLS", Spawn)
 
 local function lsspawn(ply)
-	ply:ResetSuit()
+	timer.Create("ResetSuit"..ply:Nick(), 1, 1, function() ply:ResetSuit() end)
 	--ply:SetModel("models/SBEP Player Models/orangehevsuit.mdl")
 end
 hook.Add("PlayerSpawn", "SpawnLS", lsspawn)

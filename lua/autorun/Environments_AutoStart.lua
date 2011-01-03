@@ -41,6 +41,13 @@ else
 		AddCSLuaFile("environments/ls/cl_lifesupport.lua")
 	end
 	
+	local function Reload()
+		include("environments/core/sv_environments.lua")
+		include("environments/core/sv_environments_planets.lua")
+		include("environments/ls/sv_lifesupport.lua")
+	end
+	concommand.Add("Env_Reload_All", Reload)
+	
 	if UseRD then
 	
 	end
