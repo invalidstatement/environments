@@ -41,6 +41,7 @@ function SRP.CreateLS(ply)--When a player joins
 	hash.air = 200 --100
 	hash.energy = 200 --100
 	hash.coolant = 200 --100
+	hash.temperature = 288
 	ply.suit = hash
 end
 
@@ -56,8 +57,12 @@ function Space()
 	return hash
 end
 
+//basic working LS
+
+//vars
+//ply.suit.temp = suit temperature
 //Does the environmental check for each player
-function LSCheck()
+/*function LSCheck()
 	for _, ply in pairs(player.GetAll()) do
 		if not ply:Alive() or not ply:IsValid() then return end
 		local airused = true
@@ -122,6 +127,79 @@ function LSCheck()
 			//do stuff differently :D
 		end
 	end
+end*/
+
+//prototype suit environment ls
+local efficiency = 0.02 --the insulating efficiency of the suit, how fast the suit gains or loses temperature
+function LSCheck()
+	for k, ply in pairs(player.GetAll()) do
+		if not ply:Alive() and ply:IsValid() then return end
+		local env = ply.environment
+		local suit = ply.suit
+		local temperature = env.temperature
+		local airused = true
+		
+		if ply:GetNWBool("inspace") == true then
+			env = Space()
+		else
+			temperature = SunCheck(ply)
+		end
+		
+		//Temperature Stuff
+		local tempchange
+		
+		//Conduction
+		if suit.temperature > env.temperature then
+			tempchange = (suit.temperature - env.temperature) * efficiency
+			suit.temperature = suit.temperature - tempchange
+		elseif suit.temperature < env.temperature then
+			tempchange = (env.temperature - suit.temperature) * efficiency
+			suit.temperature = suit.temperature + tempchange
+		end
+			
+		//Resource Usage
+		if suit.temperature > 310 then --is it above the comfortable range?
+			local needed = math.abs(tempchange)*5
+			if suit.energy >= needed then
+				suit.coolant = suit.coolant - needed
+				suit.temperature = suit.temperature - tempchange
+			elseif suit.coolant > 0 then
+					
+			end
+		elseif suit.temperature < 284 then --is it below the comfortable range?
+			local needed = math.abs(tempchange)*5
+			if suit.energy >= needed then
+				suit.energy = suit.energy - needed
+				suit.temperature = suit.temperature + tempchange
+			elseif suit.energy > 0 then
+					
+			end
+		end
+		
+		//check if damage needs to be done
+		if suit.temperature > 320 then
+			airused = false
+		elseif suit.temperature < 250 then
+			airused = false
+		end
+		
+		//Air Stuff
+		if env.air.o2per < 10 or ply:WaterLevel() > 2 then
+			if suit.air > 0 then
+				suit.air = suit.air - 10
+			else
+				airused = false
+			end
+		end
+		
+		//Damage Stuff
+		if airused then--player is all fine and dandy
+	
+		else --ply cant survive
+			ply:TakeDamage(10)
+		end
+		UpdateLS(ply, temperature)
+	end
 end
 
 function SunCheck(ent)
@@ -173,6 +251,7 @@ function meta:ResetSuit() --Resets a player's suit
 	hash.air = 2000 --200
 	hash.energy = 2000 --200
 	hash.coolant = 2000 --200
+	hash.temperature = 288
 	hash.worn = true
 	self.suit = hash
 end
@@ -215,6 +294,7 @@ function UpdateLS(ply, temp)
 		umsg.Short(ply.suit.energy)
 		umsg.Short(temp)
 		umsg.Short(ply.environment.air.o2per)
+		umsg.Short(ply.suit.temperature)
 	umsg.End()
 end
 

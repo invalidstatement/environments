@@ -129,7 +129,7 @@ LoadHud()
 
 
 local function LS_umsg_hook1( um )
-	SRP.suit.o2 = um:ReadFloat()
+	SRP.suit.o2per = um:ReadFloat()
 	SRP.suit.air = um:ReadShort()
 	SRP.suit.temperature = um:ReadShort()
 	SRP.suit.coolant = um:ReadShort()
