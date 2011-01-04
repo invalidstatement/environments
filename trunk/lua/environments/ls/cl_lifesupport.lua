@@ -21,5 +21,6 @@ local function LSUpdate(msg) --recieves life support update packet
 	SRP.suit = hash
 	SRP.suit.temperature = msg:ReadShort() --Get energy left in suit
 	SRP.suit.o2per = msg:ReadShort()
+	SRP.suit.temp = msg:ReadShort()
 end
 usermessage.Hook( "LSUpdate", LSUpdate )

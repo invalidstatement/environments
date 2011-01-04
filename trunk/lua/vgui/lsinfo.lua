@@ -22,7 +22,7 @@ function DEBUGBAR:Paint()
 	local coolant = SRP.suit.coolant
 	local energy = SRP.suit.energy
 	local temperature = SRP.suit.temperature
-	local o2 = SRP.suit.o2
+	local o2 = SRP.suit.o2per
 	
 	local length     = -35 --should make 5 w/ spacer
 	local spacer     = 40
@@ -46,6 +46,11 @@ function DEBUGBAR:Paint()
 	surface.SetTextPos( length + spacer, 5 )
 		surface.DrawText( "Energy: " .. tostring(energy) )
 		local x, y = surface.GetTextSize( "Energy: " .. tostring(energy) )
+		length = length + x + spacer
+		
+	surface.SetTextPos( length + spacer, 5 )
+		surface.DrawText( "Suit Temp: " .. tostring(SRP.suit.temp) )
+		local x, y = surface.GetTextSize( "Suit Temp: " .. tostring(SRP.suit.temp) )
 		length = length + x + spacer
 		
 	surface.SetTextPos( length + spacer, 5 )
