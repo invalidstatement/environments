@@ -288,6 +288,27 @@ function methods:GetResourcePercentage(res)
 	return ((self.air[res] / self.air.max) * 100)
 end
 
+//Basic LS3 Compatibility
 function methods:IsOnPlanet()
+	return self
+end
+
+function methods:GetAtmosphere()
+	return self.atmosphere
+end
+
+function methods:IsSpace()
+	return false
+end
+
+function methods:IsStar()
+	return false
+end
+
+function methods:IsEnvironment()
+	return true
+end
+
+function methods:IsPlanet()
 	return true
 end
