@@ -146,9 +146,8 @@ function LSCheck()
 		end
 		
 		//Temperature Stuff
-		local tempchange
-		
 		//Conduction
+		local tempchange
 		if suit.temperature > env.temperature then
 			tempchange = (suit.temperature - env.temperature) * efficiency
 			suit.temperature = suit.temperature - tempchange
@@ -164,7 +163,9 @@ function LSCheck()
 				suit.coolant = suit.coolant - needed
 				suit.temperature = suit.temperature - tempchange
 			elseif suit.coolant > 0 then
-					
+				local per = self.coolant/needed
+				suit.coolant = suit.coolant - self.coolant
+				suit.temperature = suit.temperature - (tempchange * per)
 			end
 		elseif suit.temperature < 284 then --is it below the comfortable range?
 			local needed = math.abs(tempchange)*5
@@ -172,7 +173,9 @@ function LSCheck()
 				suit.energy = suit.energy - needed
 				suit.temperature = suit.temperature + tempchange
 			elseif suit.energy > 0 then
-					
+				local per = self.energy/needed
+				suit.energy = suit.energy - self.energy
+				suit.temperature = suit.temperature + (tempchange * per)
 			end
 		end
 		
@@ -186,7 +189,7 @@ function LSCheck()
 		//Air Stuff
 		if env.air.o2per < 10 or ply:WaterLevel() > 2 then
 			if suit.air > 0 then
-				suit.air = suit.air - 10
+				suit.air = suit.air - 5
 			else
 				airused = false
 			end
