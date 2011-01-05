@@ -46,17 +46,39 @@ end
 end)
 //End LS3
 
-function Space()
-	local hash = {}
-	hash.air = {}
-	hash.oxygen = 0
-	hash.carbondioxide = 0
-	hash.pressure = 0
-	hash.temperature = 3
-	hash.air.o2per = 0
+//Space Definition
+local space = {}
+space.air = {}
+space.oxygen = 0
+space.carbondioxide = 0
+space.pressure = 0
+space.temperature = 3
+space.air.o2per = 0
 	
-	return hash
+function space:IsOnPlanet()
+	return nil
 end
+	
+function space:GetAtmosphere()
+	return 0
+end
+	
+function space:IsPlanet()
+	return false
+end
+	
+function space:IsSpace()
+	return true
+end
+	
+function space:IsStar()
+	return false
+end
+
+function Space()
+	return space
+end
+//End Space Definition
 
 local function NoClip( ply, on )
 	// Don't allow if player is in vehicle
