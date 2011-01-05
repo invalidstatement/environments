@@ -287,3 +287,7 @@ function methods:GetResourcePercentage(res)
 	if table.HasValue(ignore, res) then return 0 end
 	return ((self.air[res] / self.air.max) * 100)
 end
+
+function methods:IsOnPlanet()
+	return true
+end

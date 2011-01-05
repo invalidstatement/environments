@@ -17,7 +17,7 @@ function LoadHud()
 		--surface.DrawTexturedRect(a.x-58,a.y-43,166,43)
 		--surface.SetDrawColor(220,220,220,alpha)
 		--surface.DrawTexturedRect(a.x-55,a.y-40,160,40)
-		draw.RoundedBox(16,a.x-54,a.y-88,160,92,Color(220,220,220,alpha))
+		draw.RoundedBox(30,a.x-54,a.y-88,160,92,Color(220,220,220,alpha))--16 first
 		draw.NoTexture()
 		
 		surface.SetDrawColor(0,0,0,alpha)
