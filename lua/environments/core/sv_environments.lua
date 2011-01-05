@@ -26,6 +26,26 @@ default.atmosphere.hydrogen = 22
 --default.atmosphere.helium = 1
 --default.atmosphere.ammonia = 1
 
+//LS3 Compatability
+/*if not CAF then
+	CAF = {}
+	print("Caf not loaded yet")
+end*/
+timer.Create("registerCAFOverwrites", 5, 1, function()
+local old = CAF.GetAddon
+local SB = {}
+function CAF.GetAddon(name)
+	if name == "Spacebuild" then
+		return SB
+	end
+	return old(name)
+end
+function SB.GetStatus()
+	return true
+end
+end)
+//End LS3
+
 function Space()
 	local hash = {}
 	hash.air = {}
