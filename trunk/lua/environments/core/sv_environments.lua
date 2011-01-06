@@ -47,7 +47,6 @@ end)
 //End LS3
 
 //Space Definition
-
 local space = {}
 space.air = {}
 space.oxygen = 0

@@ -131,7 +131,7 @@ function CreateEnvironment(planet, isstar)
 		self.name = planet.name
 	end
 	self.air.max = math.Round(100 * 5 * (GetVolume(radius)/1000) * self.atmosphere)
-	self.firstenvironment = table.Copy(self)
+	self.original = table.Copy(self)
 	//Add it to the table
 	setmetatable(self, mt)
 	table.insert(environments, self)

@@ -261,14 +261,14 @@ function SunCheck(ent)
 	end
 	if lit then
 		if ent.environment.temperature2 then
-			return ent.environment.suntemperature + (( ent.environment.suntemperature * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2)
+			return ent.environment.suntemperature + (( ent.environment.suntemperature * ((ent.environment.original.air.co2per - ent.environment.air.co2per)/100))/2)
 		end
 	end
 	if not ent.environment.temperature then
 		return 0
 	end
-	if ent.environment.firstenvironment then
-		return ent.environment.temperature + (( ent.environment.temperature * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2)
+	if ent.environment.original then
+		return ent.environment.temperature + (( ent.environment.temperature * ((ent.environment.original.air.co2per - ent.environment.air.co2per)/100))/2)
 	else 
 		return ent.environment.temperature
 	end

@@ -2,10 +2,11 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
-local version = 17
+local version = 18
+local onlineversion
 
 UseLS = true --Should the ALPHA lifesupport be loaded? Not recomended, its still in development.
-local UseRD = false --Should the EXTREME WIP RD be loaded?
+--local UseRD = false --Should the EXTREME WIP RD be loaded?
 
 if CLIENT then	
 	include("environments/spawn_menu.lua")
@@ -23,9 +24,9 @@ if CLIENT then
 	end
 	concommand.Add("env_reload_hud", Reload)
 	
-	if UseRD then
-	
-	end
+	concommand.Add("env_update_check", function(ply, cmd, args)
+		GetOnlineVersion(VersionCheck, true)
+	end)
 else
 	include("environments/core/sv_environments.lua")
 	include("environments/core/sv_environments_planets.lua")
@@ -40,27 +41,31 @@ else
 		AddCSLuaFile("vgui/lsinfo.lua")
 		AddCSLuaFile("environments/ls/cl_lifesupport.lua")
 	end
-
-	if UseRD then
-	
-	end
 end
 print("==============================================")
 print("== Environments ALPHA Revision "..version.." Installed ==")
 print("==============================================")
 
-local function GetOnlineVersion( callback )
+local function GetOnlineVersion( callback, printChecking )
+	if printChecking then
+		print("Checking for updates....")
+	end
 	http.Get("http://environments.googlecode.com/svn/trunk/","",function(contents,size)
 		local rev = tonumber(string.match( contents, "Revision ([0-9]+)" ))
-		callback(rev,contents,size)
+		callback(rev,contents,size,printChecking)
 	end)
 end
 
-local function VersionCheck(rev, contents, size)
-	if version >= rev then
-		print("Environments Is Up To Date")
-	else
-		print("A newer version of Environments is availible! Version: "..rev)
+local function VersionCheck(rev, contents, size, pc)
+	if not pc then
+		if version >= rev then
+			print("   Environments Is Up To Date")
+		else
+			print("   A newer version of Environments is availible! Version: "..rev)
+			print("   Please update!")
+		end
 	end
+	onlineversion = rev
 end
+
 GetOnlineVersion(VersionCheck)
