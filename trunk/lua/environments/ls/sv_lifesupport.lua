@@ -148,12 +148,16 @@ function LSCheck()
 		//Temperature Stuff
 		//Conduction
 		local tempchange = 0
-		if suit.temperature > env.temperature then
-			tempchange = (suit.temperature - env.temperature) * efficiency
-			suit.temperature = suit.temperature - tempchange
-		elseif suit.temperature < env.temperature then
-			tempchange = (env.temperature - suit.temperature) * efficiency
-			suit.temperature = suit.temperature + tempchange
+		if env.temperature < 1000 then
+			if suit.temperature > env.temperature then
+				tempchange = (suit.temperature - env.temperature) * efficiency
+				suit.temperature = suit.temperature - tempchange
+			elseif suit.temperature < env.temperature then
+				tempchange = (env.temperature - suit.temperature) * efficiency
+				suit.temperature = suit.temperature + tempchange
+			end
+		else
+			ply:TakeDamage(100)
 		end
 		
 		//Resource Usage
@@ -161,9 +165,11 @@ function LSCheck()
 			local needed = math.abs(tempchange)*5
 			if needed < 5 then
 				needed = 5
+			elseif needed > 20 then
+				needed = 20
 			end
 			
-			if suit.energy >= needed then
+			if suit.coolant >= needed then
 				suit.coolant = suit.coolant - needed
 				suit.temperature = suit.temperature - tempchange
 				if suit.temperature + tempchange > 310 then
@@ -180,6 +186,8 @@ function LSCheck()
 			local needed = math.abs(tempchange)*5
 			if needed < 5 then
 				needed = 5
+			elseif needed > 20 then
+				needed = 20
 			end
 			
 			if suit.energy >= needed then
@@ -259,7 +267,11 @@ function SunCheck(ent)
 	if not ent.environment.temperature then
 		return 0
 	end
-	return ent.environment.temperature + (( ent.environment.temperature * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2)
+	if ent.environment.firstenvironment then
+		return ent.environment.temperature + (( ent.environment.temperature * ((ent.environment.firstenvironment.air.co2per - ent.environment.air.co2per)/100))/2)
+	else 
+		return ent.environment.temperature
+	end
 end
 
 --------------------------------------------------------
