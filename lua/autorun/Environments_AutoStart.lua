@@ -2,10 +2,12 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
+local version = 17
+
 UseLS = true --Should the ALPHA lifesupport be loaded? Not recomended, its still in development.
 local UseRD = false --Should the EXTREME WIP RD be loaded?
 
-if CLIENT then
+if CLIENT then	
 	include("environments/spawn_menu.lua")
 	include("environments/core/cl_environments.lua")
 	
@@ -25,12 +27,6 @@ if CLIENT then
 	
 	end
 else
-	if file.Exists("../lua/environments/.svn/entries") then
-		revision = tonumber( string.Explode( "\n", file.Read( "../lua/environments/.svn/entries" ) )[ 4 ] )
-	else
-		revision = 11
-	end
-	
 	include("environments/core/sv_environments.lua")
 	include("environments/core/sv_environments_planets.lua")
 	
@@ -50,5 +46,21 @@ else
 	end
 end
 print("==============================================")
-print("== Environments ALPHA Revision "..revision.." Installed ==")
+print("== Environments ALPHA Revision "..version.." Installed ==")
 print("==============================================")
+
+local function GetOnlineVersion( callback )
+	http.Get("http://environments.googlecode.com/svn/trunk/","",function(contents,size)
+		local rev = tonumber(string.match( contents, "Revision ([0-9]+)" ))
+		callback(rev,contents,size)
+	end)
+end
+
+local function VersionCheck(rev, contents, size)
+	if version >= rev then
+		print("Environments Is Up To Date")
+	else
+		print("A newer version of Environments is availible! Version: "..rev)
+	end
+end
+GetOnlineVersion(VersionCheck)
