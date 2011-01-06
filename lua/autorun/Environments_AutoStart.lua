@@ -2,8 +2,6 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
-local Version = 0.15
-
 UseLS = true --Should the ALPHA lifesupport be loaded? Not recomended, its still in development.
 local UseRD = false --Should the EXTREME WIP RD be loaded?
 
@@ -27,6 +25,12 @@ if CLIENT then
 	
 	end
 else
+	if file.Exists("../lua/environments/.svn/entries") then
+		revision = tonumber( string.Explode( "\n", file.Read( "../lua/environments/.svn/entries" ) )[ 4 ] )
+	else
+		revision = 11
+	end
+	
 	include("environments/core/sv_environments.lua")
 	include("environments/core/sv_environments_planets.lua")
 	
@@ -45,7 +49,6 @@ else
 	
 	end
 end
-
 print("==============================================")
-print("== Environments ALPHA Version "..Version.." Installed ==")
+print("== Environments ALPHA Revision "..revision.." Installed ==")
 print("==============================================")
