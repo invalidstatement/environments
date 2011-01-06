@@ -147,7 +147,7 @@ function LSCheck()
 		
 		//Temperature Stuff
 		//Conduction
-		local tempchange
+		local tempchange = 0
 		if suit.temperature > env.temperature then
 			tempchange = (suit.temperature - env.temperature) * efficiency
 			suit.temperature = suit.temperature - tempchange
@@ -159,9 +159,18 @@ function LSCheck()
 		//Resource Usage
 		if suit.temperature > 310 then --is it above the comfortable range?
 			local needed = math.abs(tempchange)*5
+			if needed < 5 then
+				needed = 5
+			end
+			
 			if suit.energy >= needed then
 				suit.coolant = suit.coolant - needed
 				suit.temperature = suit.temperature - tempchange
+				if suit.temperature + tempchange > 310 then
+					suit.temperature = 310
+				elseif suit.temperature - tempchange < 284 then
+					suit.temperature = 284
+				end
 			elseif suit.coolant > 0 then
 				local per = suit.coolant/needed
 				suit.coolant = 0
@@ -169,9 +178,18 @@ function LSCheck()
 			end
 		elseif suit.temperature < 284 then --is it below the comfortable range?
 			local needed = math.abs(tempchange)*5
+			if needed < 5 then
+				needed = 5
+			end
+			
 			if suit.energy >= needed then
 				suit.energy = suit.energy - needed
 				suit.temperature = suit.temperature + tempchange
+				if suit.temperature + tempchange > 310 then
+					suit.temperature = 310
+				elseif suit.temperature - tempchange < 284 then
+					suit.temperature = 284
+				end
 			elseif suit.energy > 0 then
 				local per = suit.energy/needed
 				suit.energy = 0
