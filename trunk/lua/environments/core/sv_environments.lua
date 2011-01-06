@@ -1,5 +1,5 @@
 ------------------------------------------
-//     SpaceRP     //
+//   Environments  //
 //   CmdrMatthew   //
 ------------------------------------------
 
@@ -47,6 +47,7 @@ end)
 //End LS3
 
 //Space Definition
+
 local space = {}
 space.air = {}
 space.oxygen = 0
@@ -54,24 +55,24 @@ space.carbondioxide = 0
 space.pressure = 0
 space.temperature = 3
 space.air.o2per = 0
-	
-function space:IsOnPlanet()
-	return nil
-end
-	
-function space:GetAtmosphere()
-	return 0
-end
-	
-function space:IsPlanet()
+
+function space.IsOnPlanet()
 	return false
 end
 	
-function space:IsSpace()
+function space.GetAtmosphere()
+	return 0
+end
+	
+function space.IsPlanet()
+	return false
+end
+	
+function space.IsSpace()
 	return true
 end
 	
-function space:IsStar()
+function space.IsStar()
 	return false
 end
 
@@ -332,6 +333,7 @@ function CheckSpaceEnts()
 				else
 					e:GetPhysicsObject():EnableDrag( false )
 					e:GetPhysicsObject():EnableGravity( false )
+					e.environment = Space()
 				end
 			end
 			e:GetTable().sgravity = false

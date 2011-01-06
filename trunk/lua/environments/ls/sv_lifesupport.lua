@@ -45,7 +45,7 @@ function SRP.CreateLS(ply)--When a player joins
 	ply.suit = hash
 end
 
-function Space()
+/*function Space()
 	local hash = {}
 	hash.air = {}
 	hash.oxygen = 0
@@ -55,7 +55,7 @@ function Space()
 	hash.air.o2per = 0
 	
 	return hash
-end
+end*/
 
 //basic working LS
 
