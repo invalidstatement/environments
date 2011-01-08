@@ -134,6 +134,7 @@ local efficiency = 0.02 --the insulating efficiency of the suit, how fast the su
 function LSCheck()
 	for k, ply in pairs(player.GetAll()) do
 		if not ply:Alive() and ply:IsValid() then return end
+		if not ply.environment then return end
 		local env = ply.environment
 		local suit = ply.suit
 		local temperature = env.temperature
@@ -162,7 +163,8 @@ function LSCheck()
 		
 		//Resource Usage
 		if suit.temperature > 310 then --is it above the comfortable range?
-			local needed = math.abs(tempchange)*5
+			local needed = tempchange*5
+			
 			if needed < 5 then
 				needed = 5
 			elseif needed > 20 then
@@ -183,7 +185,7 @@ function LSCheck()
 				suit.temperature = suit.temperature - (tempchange * per)
 			end
 		elseif suit.temperature < 284 then --is it below the comfortable range?
-			local needed = math.abs(tempchange)*5
+			local needed = tempchange*5
 			if needed < 5 then
 				needed = 5
 			elseif needed > 20 then

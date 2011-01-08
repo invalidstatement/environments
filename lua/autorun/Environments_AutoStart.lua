@@ -2,7 +2,7 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
-local version = 18
+local version = 19
 local onlineversion
 
 UseLS = true --Should the ALPHA lifesupport be loaded? Not recomended, its still in development.
@@ -11,12 +11,10 @@ UseLS = true --Should the ALPHA lifesupport be loaded? Not recomended, its still
 if CLIENT then	
 	include("environments/spawn_menu.lua")
 	include("environments/core/cl_environments.lua")
-	
-	if UseLS then
-		include("vgui/lsinfo.lua")
-		include("vgui/HUD.lua")
-		include("environments/ls/cl_lifesupport.lua")
-	end
+	include("vgui/lsinfo.lua")
+	include("vgui/HUD.lua")
+	include("environments/ls/cl_lifesupport.lua")
+
 	
 	local function Reload()
 		include("vgui/HUD.lua")
@@ -31,16 +29,15 @@ else
 	include("environments/core/sv_environments.lua")
 	include("environments/core/sv_environments_planets.lua")
 	
+	AddCSLuaFile("autorun/Environments_AutoStart.lua")
 	AddCSLuaFile("environments/core/cl_environments.lua")
 	AddCSLuaFile("environments/spawn_menu.lua")
-	
-	if UseLS then
-		include("environments/ls/sv_lifesupport.lua")
-		resource.AddFile("resource/fonts/digital-7 (italic).ttf")
-		AddCSLuaFile("vgui/HUD.lua")
-		AddCSLuaFile("vgui/lsinfo.lua")
-		AddCSLuaFile("environments/ls/cl_lifesupport.lua")
-	end
+
+	include("environments/ls/sv_lifesupport.lua")
+	resource.AddFile("resource/fonts/digital-7 (italic).ttf")
+	AddCSLuaFile("vgui/HUD.lua")
+	AddCSLuaFile("vgui/lsinfo.lua")
+	AddCSLuaFile("environments/ls/cl_lifesupport.lua")
 end
 print("==============================================")
 print("== Environments ALPHA Revision "..version.." Installed ==")
