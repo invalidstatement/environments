@@ -24,3 +24,5 @@ local function LSUpdate(msg) --recieves life support update packet
 	SRP.suit.temp = msg:ReadShort()
 end
 usermessage.Hook( "LSUpdate", LSUpdate )
+
+

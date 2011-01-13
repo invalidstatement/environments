@@ -20,7 +20,7 @@ default = {}
 default.atmosphere = {}
 default.atmosphere.oxygen = 30
 default.atmosphere.carbondioxide = 5
---default.atmosphere.methane = 1
+default.atmosphere.methane = 0
 default.atmosphere.nitrogen = 40
 default.atmosphere.hydrogen = 22
 --default.atmosphere.helium = 1
@@ -114,12 +114,10 @@ local function LoadEnvironments()
 		--Start all things running on timers
 		timer.Create("GravityCheck", 1, 0, CheckGravity )
 		print("//   Environment Checker Started   //")
-		if UseLS then
-			--Start Life Support like Functions
-			SRP.InitLS()
-			--timer.Create("RadiationCheck", 0.5, 0, RadiationCheck)
-			--print("//   Radiation Checker Started     //")
-		end
+		--Start Life Support like Functions
+		SRP.InitLS()
+		--timer.Create("RadiationCheck", 0.5, 0, RadiationCheck)
+		--print("//   Radiation Checker Started     //")
 	else --Not a spacebuild map
 		print("//   This is not a valid SB map      //")
 	end
@@ -167,7 +165,7 @@ function RegisterEnvironments()
 						
 						--Add Defaults
 						planet.atmosphere = {}
-						planet.atmosphere = default.atmosphere
+						planet.atmosphere = table.Copy(default.atmosphere)
 						planet.unstable = "false"
 						planet.temperature = 288
 						planet.pressure = 1
@@ -191,7 +189,7 @@ function RegisterEnvironments()
 						for k2,v2 in pairs(values) do
 							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
 							elseif (k2 == "Case03") then planet.gravity = tonumber(v2) --Get Gravity
-							elseif (k2 == "Case04") then atmosphere = tonumber(v2)
+							elseif (k2 == "Case04") then planet.atm = tonumber(v2)
 							elseif (k2 == "Case05") then planet.temperature = tonumber(v2)
 							elseif (k2 == "Case06") then planet.suntemperature = tonumber(v2)
 							elseif (k2 == "Case16") then planet.flags = tonumber(v2) end
@@ -204,7 +202,7 @@ function RegisterEnvironments()
 						
 						CreateSB2Environment(planet)
 						table.insert(hash, planet)
-						print("//	  New Spacebuild 2 Planet Added")
+						print("//	  Spacebuild 2 Planet Added //")
 					elseif value == "planet2" then
 						planet.typeof = "sphere"
 						
@@ -218,7 +216,7 @@ function RegisterEnvironments()
 						for k2,v2 in pairs(values) do
 							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
 							elseif (k2 == "Case03") then planet.gravity = tonumber(v2) --Get Gravity
-							elseif (k2 == "Case04") then planet.tmosphere = tonumber(v2) --What does this mean?
+							elseif (k2 == "Case04") then planet.atm = tonumber(v2) --What does this mean?
 							elseif (k2 == "Case05") then planet.pressure = tonumber(v2)
 							elseif (k2 == "Case06") then planet.temperature = tonumber(v2)
 							elseif (k2 == "Case07") then planet.suntemperature = tonumber(v2)
@@ -233,7 +231,7 @@ function RegisterEnvironments()
 						
 						i=i+1
 						table.insert(hash, planet)
-						print("//	  New Spacebuild 3 Planet Added")
+						print("//	  Spacebuild 3 Planet Added //")
 					elseif value == "star" then
 						planet.typeof = "sphere"
 						
@@ -329,6 +327,7 @@ function CheckSpaceEnts()
 					end*/
 					e:SetNWBool( "inspace", true )
 					e.environment = Space()
+					CheckLS(e)
 				else
 					e:GetPhysicsObject():EnableDrag( false )
 					e:GetPhysicsObject():EnableGravity( false )
@@ -351,13 +350,16 @@ function CheckGravity()
 			end
 			for _, e in pairs( someents ) do
 				if( e:GetPhysicsObject():IsValid() and !e:IsWorld() and !e:IsWeapon() ) then
-					e:SetGravity( p.gravity )
-					e:GetPhysicsObject():EnableDrag( true )
-					e:GetPhysicsObject():EnableGravity( true )
-					e:GetTable().sgravity = true
-					e.environment = p
-					if( e:IsPlayer() ) then
-						e:SetNWBool( "inspace", false )
+					if not p == e.environment then
+						e:SetGravity( p.gravity )
+						e:GetPhysicsObject():EnableDrag( true )
+						e:GetPhysicsObject():EnableGravity( true )
+						e:GetTable().sgravity = true
+						e.environment = p
+						if( e:IsPlayer() ) then
+							e:SetNWBool( "inspace", false )
+							CheckLS(e)
+						end
 					end
 				end
 			end
@@ -366,11 +368,22 @@ function CheckGravity()
 	end
 end
 
+//LS checker
+function CheckLS(ent)
+	local trace = {}
+	trace.start = ent:GetPos()
+	trace.filter = ent
+	trace.endpos = ent:GetPos() + Vector(0,0,2000)
+	local tr = util.TraceLine( trace )
+	lit = not tr.Hit
+end
+
 local function PrintPlanets()
 	local ent = ents.FindByClass( "logic_case" )
 	for k,v in pairs(ent) do
 		local values = v:GetKeyValues()
 		PrintTable(values)
+		print("/n")
 	end
 end
 concommand.Add("srp_print", PrintPlanets)

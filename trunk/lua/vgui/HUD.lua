@@ -92,7 +92,7 @@ function LoadHud()
 				}
 		end*/
 		local speedstr = ""
-		if SRP.suit.air/max >= .10 then
+		/*if SRP.suit.air/max >= .10 then
 			speedstr = tostring(math.Round(SRP.suit.air*100/max))
 		else
 			speedstr = tostring(math.Round(SRP.suit.air*100)/max)
@@ -108,26 +108,41 @@ function LoadHud()
 			if not string.find(energystr,"%.") then
 				energystr = energystr .. ".0"
 			end
+		end*/
+		local Air = SRP.suit.air / 40
+		local Energy = SRP.suit.energy / 40
+		local Coolant = SRP.suit.coolant / 40
+		if Air >= 10 then
+			Air = math.Round(Air)
+		end
+		if Energy >= 10 then
+			Energy = math.Round(Energy)
+		end
+		if Coolant >= 10 then
+			Coolant = math.Round(Coolant)
 		end
 		--surface.DrawOutlinedRect(a.x+s*.5+55, a.y-33, 50,40)
-		draw.DrawText(speedstr,"lcd2",a.x+s*.5+55,a.y-33,color_black,2)
+		draw.DrawText(tostring(Air),"lcd2",a.x+s*.5+55,a.y-33,color_black,2)
 		draw.DrawText("Air %", nil,a.x+s*.5+55,a.y-40, color_black, 2)
 		
 		draw.DrawText(tostring(SRP.suit.temperature),"lcd2",a.x+s*.5+55,a.y-73,color_black,2)
 		draw.DrawText("Temperature", nil,a.x+s*.5+55,a.y-80, color_black, 2)
 		
-		draw.DrawText(energystr,"lcd2",a.x+s*.5-30,a.y-73,color_black,2)
+		draw.DrawText(tostring(Energy),"lcd2",a.x+s*.5-30,a.y-73,color_black,2)
 		draw.DrawText("Energy %", nil,a.x+s*.5-30,a.y-80, color_black, 2)
 		
-		draw.DrawText("Pressure", nil,a.x+s*.5-30,a.y-40, color_black, 2)
+		draw.DrawText(tostring(Coolant),"lcd2",a.x+s*.5-30,a.y-33,color_black,2)
+		draw.DrawText("Coolant %", nil,a.x+s*.5-30,a.y-40, color_black, 2)
+		
+		/*draw.DrawText("Pressure", nil,a.x+s*.5-30,a.y-40, color_black, 2)
 		draw.DrawText("atm", nil,a.x+s*.5-10,a.y-16, color_black, 2)
-		draw.DrawText("1.00", "lcd2",a.x+s*.5-30,a.y-33, color_black, 2)
+		draw.DrawText("1.00", "lcd2",a.x+s*.5-30,a.y-33, color_black, 2)*/
 	end
 	hook.Add("HUDPaint", "LsDisplay", Draw)
 end
 LoadHud()
 
-
+//Spacebuild Compatibility :D
 local function LS_umsg_hook1( um )
 	SRP.suit.o2per = um:ReadFloat()
 	SRP.suit.air = um:ReadShort()
@@ -136,5 +151,3 @@ local function LS_umsg_hook1( um )
 	SRP.suit.energy = um:ReadShort()
 end
 usermessage.Hook("LS_umsg1", LS_umsg_hook1) 
-
-
