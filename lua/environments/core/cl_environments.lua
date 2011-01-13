@@ -14,12 +14,7 @@ SRP.environment = {}
 planet = 0
 
 --Attempt to load the planets table from the file from the server.
-planets = util.KeyValuesToTable("environments/" .. game.GetMap() .. ".txt")
-if planets == nil or {} then
-	print("ERROR, planets file not downloaded")
-else
-	PrintTable(planets) --Did it work?
-end
+planets = table.DeSanitise(util.KeyValuesToTable(file.Read("environments/" .. game.GetMap() .. ".txt")))
 
 local function EnvironmentCheck() --Whoah! What planet I am on?!
 	local location -- this goes with the if statement
@@ -28,7 +23,7 @@ local function EnvironmentCheck() --Whoah! What planet I am on?!
 	local plypos = ply:LocalToWorld( Vector(0,0,0) )
 	--if planets[1] == nil then return end
 	for k, p in pairs( planets ) do
-		local ppos = Vector(planets[k].position.x, planets[k].position.y, planets[k].position.z)
+		local ppos = planets[k].position
 		if plypos:Distance(ppos) < p.radius then
 			location = p.name --this goes with the if statement
 			
@@ -48,7 +43,7 @@ local function EnvironmentCheck() --Whoah! What planet I am on?!
 		SRP.environment = Space()
 	end
 end
---timer.Create("EnvironmentCheck", 0.5, 0, EnvironmentCheck )
+timer.Create("EnvironmentCheck", 1, 0, EnvironmentCheck )
 
 function Space()
 	local hash = {}
@@ -101,3 +96,9 @@ local function RecieveStar(msg) --recieves the sun position
 	table.insert(stars, star)
 end
 usermessage.Hook( "AddStar", RecieveStar )
+
+timer.Create("Sbcheck", 2, 1, function() 
+	if CAF.GetAddon("Spacebuild") then
+		print("Spacebuild is active on the server")
+	end
+end)

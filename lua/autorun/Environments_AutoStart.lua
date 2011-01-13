@@ -5,7 +5,6 @@
 local version = 19
 local onlineversion
 
-UseLS = true --Should the ALPHA lifesupport be loaded? Not recomended, its still in development.
 --local UseRD = false --Should the EXTREME WIP RD be loaded?
 
 if CLIENT then	
@@ -43,7 +42,7 @@ print("==============================================")
 print("== Environments ALPHA Revision "..version.." Installed ==")
 print("==============================================")
 
-local function GetOnlineVersion( callback, printChecking )
+function GetOnlineVersion( callback, printChecking )
 	if printChecking then
 		print("Checking for updates....")
 	end

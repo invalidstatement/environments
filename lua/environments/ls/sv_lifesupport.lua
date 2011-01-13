@@ -5,29 +5,7 @@
 --BUGS
 --1. ply.suit.air , coolant, energy, ect is all used by LS too, try and fix the variable clash
 
-////////////////////////////////////////////////////
-//  LS So Far.....                                //
-////////////////////////////////////////////////////
-// ply.suit table...                              //
-//    air and maxair -- self explanitory          //
-//    coolant and maxcoolant -- self explanitory  //
-//    energy and maxenergy -- self explanitory    //
-////////////////////////////////////////////////////
-// LS Equipment Types....                         //
-//    airtank: Stores the suit's air              //
-//    battery: Stores the suit's energy           //
-//    coolanttank: Stores the suit's coolant      //
-////////////////////////////////////////////////////
-// Meta Functions....                             //
-////////////////////////////////////////////////////
-// player:ResetSuit()                             //
-//    sets the player's suit to normal values     //
-// player:FillSuit(air, energy, coolant)          //
-//    fills the players suit with the amounts of  //
-//    resources inputed                           //
-// player:SetupLSGear(type, args...)              //
-//    sets up the players LS equipment values     //
-////////////////////////////////////////////////////
+Devices = {}
 
 function SRP.InitLS()
 	timer.Create("LSCheck", 1, 0, LSCheck) --rename function later
@@ -262,7 +240,7 @@ function SunCheck(ent)
 		lit = not tr.Hit
 	end
 	if lit then
-		if ent.environment.temperature2 then
+		if ent.environment.suntemperature then
 			return ent.environment.suntemperature + (( ent.environment.suntemperature * ((ent.environment.original.air.co2per - ent.environment.air.co2per)/100))/2)
 		end
 	end
@@ -296,7 +274,6 @@ function meta:FillSuit(air, energy, coolant)
 	self.suit.energy = self.suit.energy + energy
 	self.suit.coolant = self.suit.coolant + coolant
 end
-
 
 --------------------------------------------------------
 --              Life Support Concommands              --
