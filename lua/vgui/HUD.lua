@@ -6,8 +6,8 @@ function LoadHud()
 		local max = 4000
 		local speed = SRP.suit.energy
 		local per = speed/max
-		local a = Vector(ScrW()-110,ScrH()-8,0)
-		local s = math.ceil(ScrW()/12/8)*8
+		local a = Vector(ScrW()-120,100,0)
+		local s = 90--math.ceil(ScrW()/12/8)*8
 		s = s
 		
 		draw.NoTexture()
@@ -123,16 +123,16 @@ function LoadHud()
 		end
 		--surface.DrawOutlinedRect(a.x+s*.5+55, a.y-33, 50,40)
 		draw.DrawText(tostring(Air),"lcd2",a.x+s*.5+55,a.y-33,color_black,2)
-		draw.DrawText("Air %", nil,a.x+s*.5+55,a.y-40, color_black, 2)
+		draw.DrawText("Air %", nil,a.x+100,a.y-40, color_black, 2)
 		
 		draw.DrawText(tostring(SRP.suit.temperature),"lcd2",a.x+s*.5+55,a.y-73,color_black,2)
-		draw.DrawText("Temperature", nil,a.x+s*.5+55,a.y-80, color_black, 2)
+		draw.DrawText("Temperature", nil,a.x+100,a.y-80, color_black, 2)
 		
 		draw.DrawText(tostring(Energy),"lcd2",a.x+s*.5-30,a.y-73,color_black,2)
-		draw.DrawText("Energy %", nil,a.x+s*.5-30,a.y-80, color_black, 2)
+		draw.DrawText("Energy %", nil,a.x+15,a.y-80, color_black, 2)
 		
 		draw.DrawText(tostring(Coolant),"lcd2",a.x+s*.5-30,a.y-33,color_black,2)
-		draw.DrawText("Coolant %", nil,a.x+s*.5-30,a.y-40, color_black, 2)
+		draw.DrawText("Coolant %", nil,a.x+15,a.y-40, color_black, 2)
 		
 		/*draw.DrawText("Pressure", nil,a.x+s*.5-30,a.y-40, color_black, 2)
 		draw.DrawText("atm", nil,a.x+s*.5-10,a.y-16, color_black, 2)
@@ -140,7 +140,6 @@ function LoadHud()
 	end
 	hook.Add("HUDPaint", "LsDisplay", Draw)
 end
-LoadHud()
 
 //Spacebuild Compatibility :D
 local function LS_umsg_hook1( um )

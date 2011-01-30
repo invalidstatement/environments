@@ -2,24 +2,29 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
-local version = 19
+local version = 21
 local onlineversion
 
---local UseRD = false --Should the EXTREME WIP RD be loaded?
-
 if CLIENT then	
-	include("environments/spawn_menu.lua")
-	include("environments/core/cl_environments.lua")
-	include("vgui/lsinfo.lua")
-	include("vgui/HUD.lua")
-	include("environments/ls/cl_lifesupport.lua")
-
-	
-	local function Reload()
-		include("vgui/HUD.lua")
+	function Load()
 		include("vgui/lsinfo.lua")
+		include("vgui/HUD.lua")
+		include("environments/core/cl_core.lua")
+	
+		local function Reload()
+			include("vgui/HUD.lua")
+			include("vgui/lsinfo.lua")
+			LoadHud()
+		end
+		concommand.Add("env_reload_hud", Reload)
 	end
-	concommand.Add("env_reload_hud", Reload)
+	usermessage.Hook("Environments", Load)
+	
+	timer.Create("Sbcheck", 2, 1, function()
+		if CAF and CAF.GetAddon("Spacebuild") then
+			Load()
+		end
+	end)
 	
 	concommand.Add("env_update_check", function(ply, cmd, args)
 		GetOnlineVersion(VersionCheck, true)
@@ -27,16 +32,15 @@ if CLIENT then
 else
 	include("environments/core/sv_environments.lua")
 	include("environments/core/sv_environments_planets.lua")
+	include("environments/core/sv_environments_players.lua")
 	
 	AddCSLuaFile("autorun/Environments_AutoStart.lua")
-	AddCSLuaFile("environments/core/cl_environments.lua")
+	AddCSLuaFile("environments/core/cl_core.lua")
 	AddCSLuaFile("environments/spawn_menu.lua")
-
-	include("environments/ls/sv_lifesupport.lua")
-	resource.AddFile("resource/fonts/digital-7 (italic).ttf")
 	AddCSLuaFile("vgui/HUD.lua")
 	AddCSLuaFile("vgui/lsinfo.lua")
-	AddCSLuaFile("environments/ls/cl_lifesupport.lua")
+	
+	resource.AddFile("resource/fonts/digital-7 (italic).ttf")
 end
 print("==============================================")
 print("== Environments ALPHA Revision "..version.." Installed ==")
@@ -63,5 +67,4 @@ local function VersionCheck(rev, contents, size, pc)
 	end
 	onlineversion = rev
 end
-
 GetOnlineVersion(VersionCheck)

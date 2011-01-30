@@ -9,10 +9,7 @@ local SB_AIR_CO2 = 1
 local SB_AIR_N = 2
 local SB_AIR_H = 3
 local SB_AIR_CH4 = 4
-
-local mt = {} -- The metatable
-local methods = {} -- Methods for our objects
-mt.__index = methods -- Redirect all key "requests" to the methods table
+local SB_AIR_AR = 5
 
 local function Extract_Bit(bit, field)
 	if not bit or not field then return false end
@@ -42,13 +39,14 @@ function GetFlags(flags)
 	return habitat, unstable, sunburn
 end
 
-function CreateEnvironment(planet, isstar)
+function CreateEnvironment(planet)
 	local compounds = {}
 	compounds["o2"] = planet.atmosphere.oxygen
 	compounds["co2"] = planet.atmosphere.carbondioxide
 	compounds["h"] = planet.atmosphere.hydrogen
 	compounds["n"] = planet.atmosphere.nitrogen
 	compounds["ch4"] = planet.atmosphere.methane
+	compounds["ar"] = planet.atmosphere.argon
 	
 	local gravity = planet.gravity
 	local o2 = planet.atmosphere.oxygen
@@ -56,7 +54,9 @@ function CreateEnvironment(planet, isstar)
 	local n = planet.atmosphere.nitrogen
 	local h = planet.atmosphere.hydrogen
 	local ch4 = planet.atmosphere.methane
+	local ar = planet.atmosphere.argon
 	local temperature = planet.temperature
+	local suntemperature = planet.suntemperature
 	local atmosphere = planet.atm
 	local radius = planet.radius
 	local volume = GetVolume(radius)
@@ -65,7 +65,8 @@ function CreateEnvironment(planet, isstar)
 	self.radius = radius
 	self.position = planet.position
 	self.typeof = planet.typeof
-	self.suntemperature = planet.suntemperature
+	--self.suntemperature = planet.suntemperature
+	self.noclip = planet.noclip
 	
 	if gravity and type(gravity) == "number" then
 		if gravity < 0 then
@@ -90,8 +91,19 @@ function CreateEnvironment(planet, isstar)
 	end
 	//set temperature if given
 	if temperature and type(temperature) == "number" then
+		if temperature < 35 then
+			temperature = 35
+		end
 		self.temperature = temperature
 	end
+	//set suntemperature if given
+	if suntemperature and type(suntemperature) == "number" then
+		if suntemperature < 35 then
+			suntemperature = 35
+		end
+		self.suntemperature = suntemperature
+	end
+	
 	
 	self.air = {}
 	for k,v in pairs(compounds) do
@@ -107,12 +119,12 @@ function CreateEnvironment(planet, isstar)
 		end
 	end
 	
-	if o2 + co2 + n + h + ch4 < 100 then
-		local tmp = 100 - (o2 + co2 + n + h + ch4)
+	if o2 + co2 + n + h + ch4 + ar < 100 then
+		local tmp = 100 - (o2 + co2 + n + h + ch4 + ar)
 		self.air.empty = math.Round(tmp * 5 * (volume/1000) * self.atmosphere)
 		self.air.emptyper = tmp
-	elseif o2 + co2 + n + h +ch4 > 100 then
-		local tmp = (o2 + co2 + n + h + ch4) - 100
+	elseif o2 + co2 + n + h + ch4 + ar > 100 then
+		local tmp = (o2 + co2 + n + h + ch4 + ar) - 100
 		if co2 > tmp then
 			self.air.co2 = math.Round((co2 - tmp) * 5 * (volume/1000) * self.atmosphere)
 			self.air.co2per = co2 + tmp
@@ -125,6 +137,9 @@ function CreateEnvironment(planet, isstar)
 		elseif o2 > tmp then
 			self.air.o2 = math.Round((o2 - tmp) * 5 * (volume/1000) * self.atmosphere)
 			self.air.o2per = o2 - tmp
+		elseif ar > tmp then
+			self.air.ar = math.Round((ar - tmp) * 5 * (volume/1000) * self.atmosphere)
+			self.air.arper = ar - tmp
 		elseif ch4 > tmp then
 			self.air.ch4 = math.Round((ch4 - tmp) * 5 * (volume/1000) * self.atmosphere)
 			self.air.ch4per = ch4 - tmp
@@ -139,10 +154,17 @@ function CreateEnvironment(planet, isstar)
 		self.name = planet.name
 	end
 	self.air.max = math.Round(100 * 5 * (volume/1000) * self.atmosphere)
+	self.pressure = self.atmosphere * self.gravity * (1 - (self.air.emptyper/100))
 	self.original = table.Copy(self)
+	
 	//Add it to the table
-	setmetatable(self, mt)
-	table.insert(environments, self)
+	local planet = ents.Create("Environment")
+	planet:Spawn()
+	planet:SetPos(self.position)
+	--planet.environment = self
+	planet:Configure(self.radius, self.gravity, self.name, self)
+	
+	table.insert(environments, planet)
 end
 
 //Borrowed from SB3
@@ -171,7 +193,7 @@ function CreateSB2Environment(planet)
 		planet.atmosphere.nitrogen = 3.5
 		planet.atmosphere.hydrogen = 0
 	end
-	CreateEnvironment(planet)
+	return planet
 end
 //End Borrowed code
 
@@ -182,178 +204,18 @@ function CreateStarEnv(planet)
 	self.typeof = planet.typeof
 	self.temperature = planet.temperature
 	self.isstar = true
-	self.gravity = planet.gravity
+	self.gravity = 0 --planet.gravity
 	self.air = {}
 	self.air.o2per = 0
-	table.insert(environments, self)
+	
+	local star = ents.Create("Star")
+	star:Spawn()
+	star:SetPos(self.position)
+	star:Configure(self.radius, self.gravity, self.name, self)
+	
+	table.insert(environments, star)
 end
-
-///////////////////////////////////////////////
-//       Meta Table Stuff For Planets        //
-///////////////////////////////////////////////
 
 function GetVolume(radius)
 	return (4/3) * math.pi * radius * radius
-end
-
-function methods:Convert(air1, air2, value)
-	if not air1 or not air2 or not value then return 0 end
-	if type(air1) != "number" or type(air2) != "number" or type(value) != "number" then return 0 end 
-	air1 = math.Round(air1)
-	air2 = math.Round(air2)
-	value = math.Round(value)
-	if air1 < -1 or air1 > 4 then return 0 end
-	if air2 < -1 or air2 > 4 then return 0 end
-	if air1 == air2 then return 0 end
-	if value < 1 then return 0 end
-	/*if server_settings.Bool( "SB_StaticEnvironment" ) then
-		return value;
-		//Don't do anything else anymore
-	end*/
-	if air1 == -1 then
-		if self.air.empty < value then
-			value = self.air.empty
-		end
-		self.air.empty = self.air.empty - value
-		if air2 == SB_AIR_CO2 then
-			self.air.co2 = self.air.co2 + value
-		elseif air2 == SB_AIR_N then
-			self.air.n = self.air.n + value
-		elseif air2 == SB_AIR_H then
-			self.air.h = self.air.h + value
-		elseif air2 == SB_AIR_CH4 then
-			self.air.ch4 = self.air.ch4 + value
-		elseif air2 == SB_AIR_O2 then
-			self.air.o2 = self.air.o2 + value
-		end
-	elseif air1 == SB_AIR_O2 then
-		if self.air.o2 < value then
-			value = self.air.o2
-		end
-		self.air.o2 = self.air.o2 - value
-		if air2 == SB_AIR_CO2 then
-			self.air.co2 = self.air.co2 + value
-		elseif air2 == SB_AIR_N then
-			self.air.n = self.air.n + value
-		elseif air2 == SB_AIR_H then
-			self.air.h = self.air.h + value
-		elseif air2 == SB_AIR_CH4 then
-			self.air.ch4 = self.air.ch4 + value
-		elseif air2 == -1 then
-			self.air.empty = self.air.empty + value
-		end
-	elseif air1 == SB_AIR_CO2 then
-		if self.air.co2 < value then
-			value = self.air.co2
-		end
-		self.air.co2 = self.air.co2 - value
-		if air2 == SB_AIR_O2 then
-			self.air.o2 = self.air.o2 + value
-		elseif air2 == SB_AIR_N then
-			self.air.n = self.air.n + value
-		elseif air2 == SB_AIR_H then
-			self.air.h = self.air.h + value
-		elseif air2 == SB_AIR_CH4 then
-			self.air.ch4 = self.air.ch4 + value
-		elseif air2 == -1 then
-			self.air.empty = self.air.empty + value
-		end
-	elseif air1 == SB_AIR_N then
-		if self.air.n < value then
-			value = self.air.n
-		end
-		self.air.n = self.air.n - value
-		if air2 == SB_AIR_O2 then
-			self.air.o2 = self.air.o2 + value
-		elseif air2 == SB_AIR_CO2 then
-			self.air.co2 = self.air.co2 + value
-		elseif air2 == SB_AIR_H then
-			self.air.h = self.air.h + value
-		elseif air2 == SB_AIR_CH4 then
-			self.air.ch4 = self.air.ch4 + value
-		elseif air2 == -1 then
-			self.air.empty = self.air.empty + value
-		end
-	elseif air1 == SB_AIR_CH4 then
-		if self.air.ch4 < value then
-			value = self.air.ch4
-		end
-		self.air.n = self.air.ch4 - value
-		if air2 == SB_AIR_O2 then
-			self.air.o2 = self.air.o2 + value
-		elseif air2 == SB_AIR_CO2 then
-			self.air.co2 = self.air.co2 + value
-		elseif air2 == SB_AIR_H then
-			self.air.h = self.air.h + value
-		elseif air2 == SB_AIR_N then
-			self.air.n = self.air.n + value
-		elseif air2 == -1 then
-			self.air.empty = self.air.empty + value
-		end
-	else
-		if self.air.h < value then
-			value = self.air.h
-		end
-		self.air.h = self.air.h - value
-		if air2 == SB_AIR_O2 then
-			self.air.o2 = self.air.o2 + value
-		elseif air2 == SB_AIR_CO2 then
-			self.air.co2 = self.air.co2 + value
-		elseif air2 == SB_AIR_N then
-			self.air.n = self.air.n + value
-		elseif air2 == SB_AIR_CH4 then
-			self.air.ch4 = self.air.ch4 + value
-		elseif air2 == -1 then
-			self.air.empty = self.air.empty + value
-		end
-	end
-	for k,v in pairs(self.air) do
-		self.air[k.."per"] = self:GetResourcePercentage(k)
-	end
-	if air1 or air2 == 1 then
-		self.temperature = self.temperature + (( self.temperature * ((self.air.co2per - self.original.air.co2per)/100))/2)
-	end
-	if air1 or air2 == 4 then
-		self.temperature = self.temperature + (( self.temperature * ((self.air.ch4per - self.original.air.ch4per)/100))/2)
-	end
-	return value
-end
-
-function methods:GetResourcePercentage(res)
-	if not res or type(res) == "number" then return 0 end
-	if self.air.max == 0 then
-		return 0
-	end
-	local ignore = {"o2per", "co2per", "nper", "hper", "emptyper", "max", "nhper"}
-	if table.HasValue(ignore, res) then return 0 end
-	return ((self.air[res] / self.air.max) * 100)
-end
-
-//Basic LS3 Compatibility
-function methods:IsOnPlanet()
-	return self
-end
-
-function methods:GetAtmosphere()
-	return self.atmosphere
-end
-
-function methods:IsSpace()
-	return false
-end
-
-function methods:IsStar()
-	return false
-end
-
-function methods:IsEnvironment()
-	return true
-end
-
-function methods:IsPlanet()
-	return true
-end
-
-function methods:GetGravity()
-	return self.gravity
 end

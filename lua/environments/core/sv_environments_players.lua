@@ -4,13 +4,9 @@
 ------------------------------------------
 --BUGS
 --1. ply.suit.air , coolant, energy, ect is all used by LS too, try and fix the variable clash
+--require("profiler")
 
 Devices = {}
-
-function SRP.InitLS()
-	timer.Create("LSCheck", 1, 0, LSCheck) --rename function later
-	print("//   LifeSupport Checker Started   //")
-end
 
 function SRP.CreateLS(ply)--When a player joins
 	ply.suit = {}
@@ -22,18 +18,6 @@ function SRP.CreateLS(ply)--When a player joins
 	hash.temperature = 288
 	ply.suit = hash
 end
-
-/*function Space()
-	local hash = {}
-	hash.air = {}
-	hash.oxygen = 0
-	hash.carbondioxide = 0
-	hash.pressure = 0
-	hash.temperature = 2.75
-	hash.air.o2per = 0
-	
-	return hash
-end*/
 
 //basic working LS
 
@@ -107,32 +91,45 @@ end*/
 	end
 end*/
 
+ 
+/*local single = profiler.new 'single'
+ 
+single:run( "LSCheck()", LSCheck )
+ 
+single:print()*/
+
 //prototype suit environment ls
 local efficiency = 0.02 --the insulating efficiency of the suit, how fast the suit gains or loses temperature
 function LSCheck()
 	for k, ply in pairs(player.GetAll()) do
 		if not ply:Alive() and ply:IsValid() then return end
-		if not ply.environment then return end
-		local env = ply.environment
-		local suit = ply.suit
-		local temperature = env.temperature
-		local airused = true
 		
 		if ply:GetNWBool("inspace") == true then
-			env = Space()
-		else
+			ply.environment = Space()	
+		end
+		PlayerCheck(ply)
+		
+		local env = ply.environment
+		
+		if not env then return end
+		
+		local suit = ply.suit
+		local airused = true
+		local temperature = env.temperature
+		
+		if ply:GetNWBool("inspace") == false then
 			temperature = SunCheck(ply)
 		end
 		
 		//Temperature Stuff
 		//Conduction
 		local tempchange = 0
-		if env.temperature < 1000 then
-			if suit.temperature > env.temperature then
-				tempchange = (suit.temperature - env.temperature) * efficiency
+		if temperature < 1000 then
+			if suit.temperature > temperature then
+				tempchange = (suit.temperature - temperature) * efficiency
 				suit.temperature = suit.temperature - tempchange
-			elseif suit.temperature < env.temperature then
-				tempchange = (env.temperature - suit.temperature) * efficiency
+			elseif suit.temperature < temperature then
+				tempchange = (temperature - suit.temperature) * efficiency
 				suit.temperature = suit.temperature + tempchange
 			end
 		else
@@ -193,7 +190,7 @@ function LSCheck()
 		end
 		
 		//Air Stuff
-		if env.air.o2per < 10 or ply:WaterLevel() > 2 then
+		if env.air.o2per <= 10 or ply:WaterLevel() > 2 then
 			if suit.air > 0 then
 				suit.air = suit.air - 5
 			else
@@ -239,20 +236,69 @@ function SunCheck(ent)
 		local tr = util.TraceLine( trace )
 		lit = not tr.Hit
 	end
+	
 	if lit then
 		if ent.environment.suntemperature then
-			return ent.environment.suntemperature + (( ent.environment.suntemperature * ((ent.environment.original.air.co2per - ent.environment.air.co2per)/100))/2)
+			return ent.environment.suntemperature + ((ent.environment.suntemperature * ((ent.environment.air.co2per - ent.environment.original.air.co2per)/100))/2)
 		end
 	end
 	if not ent.environment.temperature then
 		return 0
 	end
 	if ent.environment.original then
-		return ent.environment.temperature + (( ent.environment.temperature * ((ent.environment.original.air.co2per - ent.environment.air.co2per)/100))/2)
+		return ent.environment.temperature + ((ent.environment.temperature * ((ent.environment.air.co2per - ent.environment.original.air.co2per)/100))/2)
 	else 
 		return ent.environment.temperature
 	end
 end
+
+function PlayerCheck(ent)
+	--if not ent:GetNWBool("inspace") then return end
+	local phys = ent:GetPhysicsObject()
+	if not phys:IsValid() then return end
+	
+	if ent:GetNWBool("inspace") then
+		if !ent:IsSuperAdmin() then
+			if !ent:IsAdmin() then
+				ent:SetMoveType( MOVETYPE_WALK )
+			end
+		end
+	end
+	
+	local trace = {}
+	local pos = ent:GetPos()
+	trace.start = pos
+	trace.endpos = pos - Vector(0,0,512)
+	trace.filter = { ent }
+	
+	local tr = util.TraceLine( trace )
+	if (tr.Hit) then
+		if tr.Entity.env then
+			ent:SetGravity(tr.Entity.env.gravity)
+			ent.gravity = 1
+			phys:EnableGravity( true )
+			phys:EnableDrag( true )
+			ent.environment = tr.Entity.env
+			tr.Entity.env:Breathe()
+			return
+		elseif (tr.Entity.grav_plate and tr.Entity.grav_plate == 1) then
+			ent:SetGravity(1)
+			ent.gravity = 1
+			phys:EnableGravity( true )
+			phys:EnableDrag( true )
+			return
+		end
+	end
+	if ent.gravity and ent.gravity == 0 then 
+		return 
+	end
+	
+	phys:EnableGravity( false )
+	phys:EnableDrag( false )
+	ent:SetGravity(0.00001)
+	ent.gravity = 0
+end
+
 
 --------------------------------------------------------
 --              Life Support Meta Tables              --
@@ -305,7 +351,7 @@ function UpdateLS(ply, temp)
 		umsg.Short(ply.suit.coolant)
 		umsg.Short(ply.suit.energy)
 		umsg.Short(temp)
-		umsg.Short(ply.environment.air.o2per)
+		umsg.Float(ply.environment.air.o2per)
 		umsg.Short(ply.suit.temperature)
 	umsg.End()
 end
@@ -315,6 +361,8 @@ end
 --------------------------------------------------------
 function Spawn(ply)
 	SRP.CreateLS(ply)
+	umsg.Start("Environments", ply)
+	umsg.End()
 end
 hook.Add("PlayerInitialSpawn","CreateLS", Spawn)
 
