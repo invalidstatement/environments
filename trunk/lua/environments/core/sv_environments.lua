@@ -7,11 +7,7 @@ SRP = {}
 UseEnvironments = false
 PlayerGravity = true
 
-CreateConVar( "srp_noclip", "1" )
-CreateConVar( "srp_planetnocliponly", "1" )
-CreateConVar( "srp_adminspacenoclip", "1" )
-CreateConVar( "srp_superadminspacenoclip", "1" )
-//
+
 environments = {}
 stars = {}
 
@@ -23,6 +19,7 @@ default.atmosphere.carbondioxide = 5
 default.atmosphere.methane = 0
 default.atmosphere.nitrogen = 40
 default.atmosphere.hydrogen = 22
+default.atmosphere.argon = 0
 --default.atmosphere.helium = 1
 --default.atmosphere.ammonia = 1
 
@@ -46,59 +43,6 @@ end
 end)
 //End LS3
 
-//Space Definition
-local space = {}
-space.air = {}
-space.oxygen = 0
-space.carbondioxide = 0
-space.pressure = 0
-space.temperature = 3
-space.air.o2per = 0
-
-function space.IsOnPlanet()
-	return false
-end
-	
-function space.GetAtmosphere()
-	return 0
-end
-	
-function space.IsPlanet()
-	return false
-end
-	
-function space.IsSpace()
-	return true
-end
-	
-function space.IsStar()
-	return false
-end
-
-function Space()
-	return space
-end
-//End Space Definition
-
-local function NoClip( ply, on )
-	// Don't allow if player is in vehicle
-	if ( ply:InVehicle() ) then return false end
-	// Always allow in single player
-	if ( SinglePlayer() ) then return true end
-	// Check based on the player's environment
-	if ply:GetNWBool("inspace") and server_settings.Bool("srp_noclip") then
-		if not (ply:IsAdmin() or ply:IsSuperAdmin()) and server_settings.Bool("srp_adminspacenoclip" ) then
-			if not ply:IsSuperAdmin() and server_settings.Bool("srp_superadminspacenoclip") then
-				if server_settings.Bool( "srp_planetnocliponly") then
-					return false
-				end
-			end
-		end
-	end
-	return true
-end
---hook.Add("PlayerNoClip","EnvNoClip", NoClip)
-
 local function LoadEnvironments()
 	print("/////////////////////////////////////")
 	print("//       Loading Environments      //")
@@ -107,17 +51,26 @@ local function LoadEnvironments()
 	--Get All Planets Loaded
 	RegisterEnvironments() 
 	if UseEnvironments then --It is a spacebuild map
+		hook.Add("PlayerNoClip","EnvNoClip", NoClip)
+		//Fixes spawning ents in space
+		local meta = FindMetaTable("Entity")
+		local olds = meta.Spawn
+		function meta:Spawn()
+			olds(self)
+			local phys = self:GetPhysicsObject()
+			if phys:IsValid() then
+				phys:EnableDrag(false)
+				phys:EnableGravity(false)
+			end
+			self.environment = Space()
+		end
 		print("// Registering Sun..               //")
 		--Register all things related to the sun
 		RegisterSun()
 		print("// Starting Periodicals..          //")
 		--Start all things running on timers
-		timer.Create("GravityCheck", 1, 0, CheckGravity )
-		print("//   Environment Checker Started   //")
-		--Start Life Support like Functions
-		SRP.InitLS()
-		--timer.Create("RadiationCheck", 0.5, 0, RadiationCheck)
-		--print("//   Radiation Checker Started     //")
+		timer.Create("LSCheck", 1, 0, LSCheck) --rename function later
+		print("//   LifeSupport Checker Started   //")
 	else --Not a spacebuild map
 		print("//   This is not a valid SB map      //")
 	end
@@ -128,7 +81,6 @@ end
 hook.Add("InitPostEntity","EnvLoad", LoadEnvironments)
 
 function RegisterEnvironments()
-	local hash = {}
 	local planets = {}
 	local i = 0
 	local map = game.GetMap()
@@ -169,11 +121,12 @@ function RegisterEnvironments()
 						planet.unstable = "false"
 						planet.temperature = 288
 						planet.pressure = 1
+						planet.noclip = 0
 						
 						i=i+1
 						planet.name = i
 
-						table.insert(hash, planet)
+						table.insert(planets, planet)
 						print("//	  New Spacebuild Cube Planet Added")
 					elseif value == "planet" then
 						planet.typeof = "sphere"
@@ -184,7 +137,7 @@ function RegisterEnvironments()
 						planet.unstable = "false"
 						planet.temperature = 288
 						planet.pressure = 1
-						planet.sb2 = true
+						planet.noclip = 0
 						
 						for k2,v2 in pairs(values) do
 							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
@@ -200,8 +153,8 @@ function RegisterEnvironments()
 						i=i+1
 						planet.name = i
 						
-						CreateSB2Environment(planet)
-						table.insert(hash, planet)
+						local planet = CreateSB2Environment(planet)
+						table.insert(planets, planet)
 						print("//	  Spacebuild 2 Planet Added //")
 					elseif value == "planet2" then
 						planet.typeof = "sphere"
@@ -212,6 +165,7 @@ function RegisterEnvironments()
 						planet.unstable = "false"
 						planet.temperature = 288
 						planet.pressure = 1
+						planet.noclip = 0
 						
 						for k2,v2 in pairs(values) do
 							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
@@ -230,7 +184,7 @@ function RegisterEnvironments()
 						planet.position = ent:GetPos()
 						
 						i=i+1
-						table.insert(hash, planet)
+						table.insert(planets, planet)
 						print("//	  Spacebuild 3 Planet Added //")
 					elseif value == "star" then
 						planet.typeof = "sphere"
@@ -260,7 +214,7 @@ function RegisterEnvironments()
 						
 						planet.position = ent:GetPos()
 						
-						planet.temperature = 10000
+						planet.temperature = 5000
 						planet.solaractivity = "med"
 						planet.baseradiation = "1000"
 
@@ -271,16 +225,12 @@ function RegisterEnvironments()
 				end 
 			end
 		end
-		planets = hash
 		file.Write( "environments/" .. map .. "_stars.txt", util.TableToKeyValues( table.Sanitise(stars) ) )
-		file.Write( "environments/" .. map .. ".txt", util.TableToKeyValues( table.Sanitise(hash) ) )
+		file.Write( "environments/" .. map .. ".txt", util.TableToKeyValues( table.Sanitise(planets) ) )
 	end
 	
-	
 	for k,v in pairs(planets) do
-		if not v.sb2 then
-			CreateEnvironment(v)
-		end
+		CreateEnvironment(v)
 	end
 	for k,v in pairs(stars) do
 		CreateStarEnv(v)
@@ -295,6 +245,45 @@ function RegisterEnvironments()
 	resource.AddFile("environments/" .. map .. ".txt")
 end
 
+//Space Definition
+local space = {}
+space.air = {}
+space.oxygen = 0
+space.carbondioxide = 0
+space.pressure = 0
+space.temperature = 3
+space.air.o2per = 0
+space.noclip = 0
+
+function space.IsOnPlanet()
+	return false
+end
+	
+function space.GetAtmosphere()
+	return 0
+end
+	
+function space.IsPlanet()
+	return false
+end
+	
+function space.IsSpace()
+	return true
+end
+	
+function space.IsStar()
+	return false
+end
+
+function space.Convert()
+	return 0
+end
+
+function Space()
+	return space
+end
+//End Space Definition
+
 function RegisterSun()
 	if table.Count(stars) > 0 then
 		--set as core radiation source, and sun angle(needed for solar planels) and other sun effects
@@ -307,76 +296,21 @@ function RegisterSun()
 	end
 end
 
-local someents = {}
-function CheckSpaceEnts()
-	for _, e in pairs( ents.GetAll() ) do
-		if( e:GetPhysicsObject():IsValid() and !e:IsWorld() and !e:IsWeapon() and e:GetTable() != nil and UseEnvironments ) then
-			if( !e:GetTable().sgravity ) then
-				if( e:IsPlayer() ) then
-					if( PlayerGravity ) then
-						e:SetGravity( 0.00001 )
-					else
-						e:SetGravity( 1 )
-					end
-					/*if( CanNoclipInSpace ) then
-						if( AdminOnlyNoclip and !e:IsAdmin() ) then
-							e:SetMoveType( MOVETYPE_WALK )
-						end
-					else
-						e:SetMoveType( MOVETYPE_WALK )
-					end*/
-					e:SetNWBool( "inspace", true )
-					e.environment = Space()
-					CheckLS(e)
-				else
-					e:GetPhysicsObject():EnableDrag( false )
-					e:GetPhysicsObject():EnableGravity( false )
-					e.environment = Space()
-				end
-			end
-			e:GetTable().sgravity = false
+local function NoClip( ply, on )
+	// Don't allow if player is in vehicle
+	--if ( ply:InVehicle() ) then return false end
+	// Always allow in single player
+	--if ( SinglePlayer() ) then return true end
+	// Check based on the player's environment
+	if ply.environment.noclip == "1" or ply.environment.noclip == 1 then
+		return true
+	else
+		if not ply:IsAdmin() then
+			return false
 		end
 	end
 end
 
-function CheckGravity()
-	if UseEnvironments then
-		for _, p in pairs( environments ) do
-			if p.typeof == "sphere" then
-				someents = ents.FindInSphere( p.position , p.radius )
-			end
-			if p.typeof == "cube" then
-				someents = ents.FindInBox( Vector( p.radius, p.radius, p.radius ) - p.position, p.position + Vector( p.radius, p.radius, p.radius ) )
-			end
-			for _, e in pairs( someents ) do
-				if( e:GetPhysicsObject():IsValid() and !e:IsWorld() and !e:IsWeapon() ) then
-					if not p == e.environment then
-						e:SetGravity( p.gravity )
-						e:GetPhysicsObject():EnableDrag( true )
-						e:GetPhysicsObject():EnableGravity( true )
-						e:GetTable().sgravity = true
-						e.environment = p
-						if( e:IsPlayer() ) then
-							e:SetNWBool( "inspace", false )
-							CheckLS(e)
-						end
-					end
-				end
-			end
-		end
-		CheckSpaceEnts()
-	end
-end
-
-//LS checker
-function CheckLS(ent)
-	local trace = {}
-	trace.start = ent:GetPos()
-	trace.filter = ent
-	trace.endpos = ent:GetPos() + Vector(0,0,2000)
-	local tr = util.TraceLine( trace )
-	lit = not tr.Hit
-end
 
 local function PrintPlanets()
 	local ent = ents.FindByClass( "logic_case" )
