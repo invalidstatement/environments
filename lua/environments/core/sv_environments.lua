@@ -275,6 +275,42 @@ function space.IsStar()
 	return false
 end
 
+function space.GetEnvironmentName()
+	return "Space"
+end
+
+function space.GetGravity()
+	return 0
+end
+
+function space.GetO2Percentage()
+	return 0
+end
+
+function space.GetCO2Percentage()
+	return 0
+end
+
+function space.GetNPercentage()
+	return 0
+end
+
+function space.GetHPercentage()
+	return 0
+end
+
+function space.GetEmptyAirPercentage()
+	return 100
+end
+
+function space.GetPressure()
+	return 0
+end
+
+function space.GetTemperature()
+	return 3
+end
+
 function space.Convert()
 	return 0
 end
