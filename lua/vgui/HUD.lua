@@ -1,4 +1,5 @@
 //MAKE IT LIKE GAUGES WITH DRAW.ROUNDED BOX :D :D :D and digital ones too!!!
+//move most of the stuff from the top bar into a box in the top left hand corner
 surface.CreateFont( "digital-7", 36, 2, true, false, "lcd2" )
 function LoadHud()
 	function Draw()
