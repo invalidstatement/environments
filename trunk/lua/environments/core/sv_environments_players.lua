@@ -8,7 +8,7 @@
 
 Devices = {}
 
-function SRP.CreateLS(ply)--When a player joins
+local function CreateLS(ply)--When a player joins
 	ply.suit = {}
 	ply.suit.params = {}
 	local hash = {}
@@ -191,8 +191,10 @@ function LSCheck()
 		
 		//Air Stuff
 		if env.air.o2per <= 10 or ply:WaterLevel() > 2 then
-			if suit.air > 0 then
+			if suit.air >= 5 then
 				suit.air = suit.air - 5
+			elseif suit.air > 0 then
+				suit.air = 0
 			else
 				airused = false
 			end
@@ -258,10 +260,8 @@ function PlayerCheck(ent)
 	if not phys:IsValid() then return end
 	
 	if ent:GetNWBool("inspace") then
-		if !ent:IsSuperAdmin() then
-			if !ent:IsAdmin() then
-				ent:SetMoveType( MOVETYPE_WALK )
-			end
+		if !ent:IsAdmin() then
+			ent:SetMoveType( MOVETYPE_WALK )
 		end
 	end
 	
@@ -324,10 +324,10 @@ end
 --------------------------------------------------------
 --              Life Support Concommands              --
 --------------------------------------------------------
-local function RefillLS(ply, cmd, args)
+/*local function RefillLS(ply, cmd, args)
 	ply:ResetSuit()
 end
-concommand.Add("Refill", RefillLS)
+concommand.Add("Refill", RefillLS)*/
 
 local function ToggleSuit(ply, cmd, args)
 	if ply.suit.worn then
@@ -360,7 +360,7 @@ end
 --                  Life Support Hooks                --
 --------------------------------------------------------
 function Spawn(ply)
-	SRP.CreateLS(ply)
+	CreateLS(ply)
 	umsg.Start("Environments", ply)
 	umsg.End()
 end

@@ -6,6 +6,8 @@ local Space = Space
 
 PlayerGravity = true
 
+CompatibleEntities = {"func_precipitation", "env_smokestack", "func_dustcloud"}
+
 include("shared.lua")
 include("core/base.lua")
 	
@@ -29,6 +31,8 @@ function ENT:Initialize()
 	self:SetNotSolid( true )
 	
 	self:SetColor(255,255,255,0) --Make invis
+	
+	//Important Tables
 	self.Entities = {}
 end
 
@@ -37,11 +41,11 @@ function ENT:StartTouch(ent)
 	if ent:IsWorld() then return end
 	
 	if not self.Enabled then 
-		if self.Debugging then Msg("Entity ", ent, " tried to enter but ", self, " wasn't on.\n") end
+		if self.Debugging then Msg("Entity ", ent, " tried to enter but ", self.name, " wasn't on.\n") end
 		
 		return
 	elseif self.Debugging then 
-		Msg("Entity ", ent, " has started touching ", self, " in unusual places....\n")
+		Msg("Entity ", ent, " has started touching ", self.name, " in unusual places....\n")
 	end
 	
 	self.Entities[ent:EntIndex()] = ent
@@ -51,7 +55,7 @@ function ENT:EndTouch(ent)
 	if ent:IsWorld() then return end
 	
 	if self.Debugging then
-		Msg("Entity ", ent, " has stopped touching ", self, " in unusual places....\n")
+		Msg("Entity ", ent, " has stopped touching ", self.name, " in unusual places....\n")
 	end
 	
 	self.Entities[ent:EntIndex()] = nil
@@ -148,5 +152,12 @@ function ENT:Configure(rad, gravity, name, env)
 		Msg("------------ START DUMP ------------\n")
 		PrintTable(self.air)
 		Msg("------------- END DUMP -------------\n\n")
+	end
+	
+	//Fill World Entity Tables
+	for k,ent in pairs(ents.FindInSphere(self:GetPos(), self.radius)) do
+		if table.HasValue(CompatibleEntities, ent:GetClass()) then
+			RegisterWorldSFXEntity(ent, self)
+		end
 	end
 end

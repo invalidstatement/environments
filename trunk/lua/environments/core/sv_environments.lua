@@ -338,6 +338,7 @@ local function NoClip( ply, on )
 	// Always allow in single player
 	--if ( SinglePlayer() ) then return true end
 	// Check based on the player's environment
+	if not ply.environment then return false end
 	if ply.environment.noclip == "1" or ply.environment.noclip == 1 then
 		return true
 	else
@@ -346,6 +347,27 @@ local function NoClip( ply, on )
 		end
 	end
 end
+
+local SFX = {}
+function RegisterWorldSFXEntity(ent, planet)
+	SFX[ent:EntIndex()] = ent
+	SFX[ent:EntIndex()].planet = planet
+end
+
+local function SFXManager()
+	if not SFX then return end
+	for k,v in pairs(SFX) do
+		local class = string.lower(v:GetClass())
+		if class == "func_precipitation" then
+
+		elseif class == "func_dustcloud" then
+			--v:Fire("TurnOff")
+		elseif class == "env_smokestack" then
+		
+		end
+	end
+end
+timer.Create("SFXCHECKER", 10, 0, SFXManager)
 
 
 local function PrintPlanets()

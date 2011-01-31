@@ -8,6 +8,7 @@ ENT.Instructions = "Eat up!"
 ENT.Category = "Environments"
 
 ENT.Spawnable = true
+ENT.AdminSpawnable = true
 
 
 list.Set( "LSEntOverlayText" , "lscore", {HasOOO = true, resnames ={ "oxygen", "energy", "water", "nitrogen"} } )
