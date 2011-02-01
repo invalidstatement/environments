@@ -120,7 +120,16 @@ end
 
 function ENT:Think()
 	if self.Entities == {} or nil then return end
+	
 	self:Check()
+	
+	if self.unstable then
+		local rand = math.random(1,40)
+		if rand == 5 then
+			self.Shaker:Fire("StartShake")
+		end
+	end
+	
 	self:NextThink(CurTime() + 1)
 	return true
 end
@@ -144,10 +153,10 @@ function ENT:Configure(rad, gravity, name, env)
 	self.radius = rad
 	self.Enabled = true
 	self.gravity = gravity
-	self.ID = name
+	
 	if Init_Debugging_Override or self.Debugging then
 		Msg("Initialized a new entity env: ", self, "\n")
-		Msg("ID is: ", self.ID, "\n")
+		Msg("ID is: ", self.name, "\n")
 		Msg("Dumping stats:\n")
 		Msg("------------ START DUMP ------------\n")
 		PrintTable(self.air)
@@ -160,4 +169,17 @@ function ENT:Configure(rad, gravity, name, env)
 			RegisterWorldSFXEntity(ent, self)
 		end
 	end
+	
+	//Create the earthquaker if need be :)
+	if self.unstable then
+		self.Shaker = ents.Create("env_shake")
+		self.Shaker:Spawn()
+		self.Shaker:SetPos(self:GetPos())
+		self.Shaker:SetKeyValue("radius", self.radius)
+		self.Shaker:SetKeyValue("duration", 6)
+		self.Shaker:Fire("Amplitude", 14)
+		self.Shaker:Fire("Frequency", 255)
+	end
 end
+
+
