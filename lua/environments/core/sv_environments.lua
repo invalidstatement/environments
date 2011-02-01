@@ -363,7 +363,10 @@ local function SFXManager()
 		elseif class == "func_dustcloud" then
 			--v:Fire("TurnOff")
 		elseif class == "env_smokestack" then
-		
+			v:SetKeyValue("BaseSpread", 300)
+			v:SetKeyValue("rendercolor", "0 0 0")
+			v:Fire("JetLength", 1000)
+			v:Fire("Rate", 400)
 		end
 	end
 end
