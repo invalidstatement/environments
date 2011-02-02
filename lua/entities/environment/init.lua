@@ -123,7 +123,7 @@ function ENT:Think()
 	
 	self:Check()
 	
-	if self.unstable then
+	if self.Shaker then
 		local rand = math.random(1,40)
 		if rand == 5 then
 			self.Shaker:Fire("StartShake")
@@ -163,7 +163,7 @@ function ENT:Configure(rad, gravity, name, env)
 		Msg("------------- END DUMP -------------\n\n")
 	end
 	
-	//Fill World Entity Tables
+	//Fill World Entity Table
 	for k,ent in pairs(ents.FindInSphere(self:GetPos(), self.radius)) do
 		if table.HasValue(CompatibleEntities, ent:GetClass()) then
 			RegisterWorldSFXEntity(ent, self)
@@ -171,7 +171,7 @@ function ENT:Configure(rad, gravity, name, env)
 	end
 	
 	//Create the earthquaker if need be :)
-	if self.unstable then
+	if self.unstable == "true" then
 		self.Shaker = ents.Create("env_shake")
 		self.Shaker:Spawn()
 		self.Shaker:SetPos(self:GetPos())

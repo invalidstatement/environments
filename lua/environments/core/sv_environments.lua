@@ -323,9 +323,8 @@ end
 function RegisterSun()
 	if table.Count(stars) > 0 then
 		--set as core radiation source, and sun angle(needed for solar planels) and other sun effects
-		--local suneffect ents.Create("sun_effects")
-		--suneffect:SetPos(stars[1].position)
-		--suneffect:Configure(stars[1].radius, stars[1].intensity)
+		TrueSun = {}
+		TrueSun[1] = table.Random(stars).position
 		print("//   Sun Registered                //")
 	else
 		print("//   No Stars Found                //")

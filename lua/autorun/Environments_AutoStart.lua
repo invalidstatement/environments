@@ -2,7 +2,7 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
-local version = 29
+local version = 30
 local onlineversion
 
 if CLIENT then	
@@ -10,6 +10,7 @@ if CLIENT then
 		include("vgui/lsinfo.lua")
 		include("vgui/HUD.lua")
 		include("environments/core/cl_core.lua")
+		include("environments/spacesuits/cl_suit.lua")
 	
 		local function Reload()
 			include("vgui/HUD.lua")
@@ -33,14 +34,19 @@ else
 	include("environments/core/sv_environments.lua")
 	include("environments/core/sv_environments_planets.lua")
 	include("environments/core/sv_environments_players.lua")
+	include("environments/spacesuits/sv_suit.lua")
 	
 	AddCSLuaFile("autorun/Environments_AutoStart.lua")
 	AddCSLuaFile("environments/core/cl_core.lua")
 	AddCSLuaFile("environments/spawn_menu.lua")
 	AddCSLuaFile("vgui/HUD.lua")
 	AddCSLuaFile("vgui/lsinfo.lua")
+	AddCSLuaFile("environments/spacesuits/cl_suit.lua")
 	
 	resource.AddFile("resource/fonts/digital-7 (italic).ttf")
+	resource.AddFile( "materials/models/null.vmt" )
+	resource.AddFile( "materials/models/null.vtf" )
+
 end
 print("==============================================")
 print("== Environments ALPHA Revision "..version.." Installed ==")

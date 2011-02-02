@@ -121,90 +121,115 @@ function LSCheck()
 			temperature = SunCheck(ply)
 		end
 		
-		//Temperature Stuff
-		//Conduction
-		local tempchange = 0
-		if temperature < 1000 then
-			if suit.temperature > temperature then
-				tempchange = (suit.temperature - temperature) * efficiency
-				suit.temperature = suit.temperature - tempchange
-			elseif suit.temperature < temperature then
-				tempchange = (temperature - suit.temperature) * efficiency
-				suit.temperature = suit.temperature + tempchange
-			end
-		else
-			ply:TakeDamage(100)
-		end
-		
-		//Resource Usage
-		if suit.temperature > 310 then --is it above the comfortable range?
-			local needed = tempchange*5
-			
-			if needed < 5 then
-				needed = 5
-			elseif needed > 20 then
-				needed = 20
-			end
-			
-			if suit.coolant >= needed then
-				suit.coolant = suit.coolant - needed
-				suit.temperature = suit.temperature - tempchange
-				if suit.temperature + tempchange > 310 then
-					suit.temperature = 310
-				elseif suit.temperature - tempchange < 284 then
-					suit.temperature = 284
+		if ply.suit.worn and ply.suit.helmet then
+			//Temperature Stuff
+			//Conduction
+			local tempchange = 0
+			if temperature < 1500 then
+				if suit.temperature > temperature then
+					tempchange = (suit.temperature - temperature) * efficiency
+					suit.temperature = suit.temperature - tempchange
+				elseif suit.temperature < temperature then
+					tempchange = (temperature - suit.temperature) * efficiency
+					suit.temperature = suit.temperature + tempchange
 				end
-			elseif suit.coolant > 0 then
-				local per = suit.coolant/needed
-				suit.coolant = 0
-				suit.temperature = suit.temperature - (tempchange * per)
-			end
-		elseif suit.temperature < 284 then --is it below the comfortable range?
-			local needed = tempchange*5
-			if needed < 5 then
-				needed = 5
-			elseif needed > 20 then
-				needed = 20
-			end
-			
-			if suit.energy >= needed then
-				suit.energy = suit.energy - needed
-				suit.temperature = suit.temperature + tempchange
-				if suit.temperature + tempchange > 310 then
-					suit.temperature = 310
-				elseif suit.temperature - tempchange < 284 then
-					suit.temperature = 284
-				end
-			elseif suit.energy > 0 then
-				local per = suit.energy/needed
-				suit.energy = 0
-				suit.temperature = suit.temperature + (tempchange * per)
-			end
-		end
-		
-		//check if damage needs to be done
-		if suit.temperature > 320 then
-			airused = false
-		elseif suit.temperature < 250 then
-			airused = false
-		end
-		
-		//Air Stuff
-		if env.air.o2per <= 10 or ply:WaterLevel() > 2 then
-			if suit.air >= 5 then
-				suit.air = suit.air - 5
-			elseif suit.air > 0 then
-				suit.air = 0
 			else
+				ply:TakeDamage(100)
+			end
+			
+			//Resource Usage
+			if suit.temperature > 310 then --is it above the comfortable range?
+				local needed = tempchange*5
+				
+				if needed < 5 then
+					needed = 5
+				elseif needed > 20 then
+					needed = 20
+				end
+				
+				if suit.coolant >= needed then
+					suit.coolant = suit.coolant - needed
+					suit.temperature = suit.temperature - tempchange
+					if suit.temperature + tempchange > 310 then
+						suit.temperature = 310
+					elseif suit.temperature - tempchange < 284 then
+						suit.temperature = 284
+					end
+				elseif suit.coolant > 0 then
+					local per = suit.coolant/needed
+					suit.coolant = 0
+					suit.temperature = suit.temperature - (tempchange * per)
+				end
+			elseif suit.temperature < 284 then --is it below the comfortable range?
+				local needed = tempchange*5
+				if needed < 5 then
+					needed = 5
+				elseif needed > 20 then
+					needed = 20
+				end
+				
+				if suit.energy >= needed then
+					suit.energy = suit.energy - needed
+					suit.temperature = suit.temperature + tempchange
+					if suit.temperature + tempchange > 310 then
+						suit.temperature = 310
+					elseif suit.temperature - tempchange < 284 then
+						suit.temperature = 284
+					end
+				elseif suit.energy > 0 then
+					local per = suit.energy/needed
+					suit.energy = 0
+					suit.temperature = suit.temperature + (tempchange * per)
+				end
+			end
+			
+			//check if damage needs to be done
+			if suit.temperature > 320 then
+				airused = false
+			elseif suit.temperature < 250 then
 				airused = false
 			end
-		end
+			
+			//Air Stuff
+			if env.air.o2per <= 10 or ply:WaterLevel() > 2 then
+				if suit.air >= 5 then
+					suit.air = suit.air - 5
+				elseif suit.air > 0 then
+					suit.air = 0
+				else
+					airused = false
+				end
+			end
+			
+			//Damage Stuff
+			if airused then--player is all fine and dandy
 		
-		//Damage Stuff
-		if airused then--player is all fine and dandy
-	
-		else --ply cant survive
-			ply:TakeDamage(10)
+			else --ply cant survive
+				ply:TakeDamage(10)
+			end
+		else --player is not wearing thier suit or helmet
+			if temperature > 320 then
+				--do burn damage
+				if temperature > 400 then
+					ply:TakeDamage(10)
+				else
+					ply:TakeDamage(5)
+				end
+			elseif temperature < 250 then
+				--do cold damage
+				ply:TakeDamage(5)
+			end
+			
+			if env.air.o2per <= 10 or ply:WaterLevel() > 2 then
+				airused = false
+			end
+			
+			//Damage Stuff
+			if airused then--player is all fine and dandy
+		
+			else --ply cant survive add breath here later
+				ply:TakeDamage(5)
+			end
 		end
 		UpdateLS(ply, temperature)
 	end
@@ -312,6 +337,7 @@ function meta:ResetSuit() --Resets a player's suit
 	hash.coolant = 2000 --200
 	hash.temperature = 288
 	hash.worn = true
+	hash.helmet = false
 	self.suit = hash
 end
 
@@ -331,15 +357,28 @@ concommand.Add("Refill", RefillLS)*/
 
 local function ToggleSuit(ply, cmd, args)
 	if ply.suit.worn then
+		ply:TakeOffSuit()
+		ply:TakeOffHelmet()
 		ply.suit.worn = false
-		ply:SetModel(ply.model)
 	else
+		ply:PutOnSuit()
+		ply:PutOnHelmet()
 		ply.suit.worn = true
-		ply.model = ply:GetModel()
-		ply:SetModel("models/SBEP Player Models/orangehevsuit.mdl")
 	end
 end
 concommand.Add("ToggleSuit", ToggleSuit)
+
+local function ToggleHelmet(ply, cmd, args)
+	if ply.suit.worn == false then return end
+	if ply.suit.helmet then
+		ply:TakeOffHelmet()
+		ply.suit.helmet = false
+	else
+		ply:PutOnHelmet()
+		ply.suit.helmet = true
+	end
+end
+concommand.Add("ToggleHelmet", ToggleHelmet)
 
 
 --------------------------------------------------------
@@ -367,6 +406,10 @@ end
 hook.Add("PlayerInitialSpawn","CreateLS", Spawn)
 
 local function lsspawn(ply)
+	if not ply.msged then
+		ply:ChatPrint("This server is running Environments, please report any bugs to CmdrMatthew")
+		ply.msged = true
+	end
 	timer.Create("ResetSuit"..ply:Nick(), 1, 1, function() ply:ResetSuit() end)
 	--ply:SetModel("models/SBEP Player Models/orangehevsuit.mdl")
 end
