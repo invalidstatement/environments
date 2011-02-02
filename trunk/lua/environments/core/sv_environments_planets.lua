@@ -67,6 +67,7 @@ function CreateEnvironment(planet)
 	self.typeof = planet.typeof
 	--self.suntemperature = planet.suntemperature
 	self.noclip = planet.noclip
+	self.unstable = planet.unstable
 	
 	if gravity and type(gravity) == "number" then
 		if gravity < 0 then
