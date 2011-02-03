@@ -16,6 +16,7 @@ local function CreateLS(ply)--When a player joins
 	hash.energy = 200 --100
 	hash.coolant = 200 --100
 	hash.temperature = 288
+	hash.recover = 0
 	ply.suit = hash
 end
 
@@ -102,7 +103,7 @@ single:print()*/
 local efficiency = 0.02 --the insulating efficiency of the suit, how fast the suit gains or loses temperature
 function LSCheck()
 	for k, ply in pairs(player.GetAll()) do
-		if not ply:Alive() and ply:IsValid() then return end
+		if not ply:Alive() or not ply:IsValid() then return end
 		
 		if ply:GetNWBool("inspace") == true then
 			ply.environment = Space()	
@@ -206,18 +207,33 @@ function LSCheck()
 		
 			else --ply cant survive
 				ply:TakeDamage(10)
+				ply.suit.recover = ply.suit.recover + 10
+			end
+			
+			//Recovery
+			if ply.suit.temperature >= 284 and ply.suit.temperature <= 310 and airused and ply.suit.recover > 0 then
+				if ((ply:Health() + 5 )>= 100) then
+					ply:SetHealth(100)
+					ply.suit.recover = 0
+				else
+					ply:SetHealth(ply:Health() + 5)
+					ply.suit.recover = ply.suit.recover - 5
+				end
 			end
 		else --player is not wearing thier suit or helmet
 			if temperature > 320 then
 				--do burn damage
 				if temperature > 400 then
 					ply:TakeDamage(10)
+					ply.suit.recover = ply.suit.recover + 10
 				else
 					ply:TakeDamage(5)
+					ply.suit.recover = ply.suit.recover + 5
 				end
 			elseif temperature < 250 then
 				--do cold damage
 				ply:TakeDamage(5)
+				ply.suit.recover = ply.suit.recover + 5
 			end
 			
 			if env.air.o2per <= 10 or ply:WaterLevel() > 2 then
@@ -229,8 +245,21 @@ function LSCheck()
 		
 			else --ply cant survive add breath here later
 				ply:TakeDamage(5)
+				ply.suit.recover = ply.suit.recover + 5
+			end
+			
+			//Recovery
+			if temperature >= 284 and temperature <= 310 and airused and ply.suit.recover > 0 then
+				if ((ply:Health() + 5 )>= 100) then
+					ply:SetHealth(100)
+					ply.suit.recover = 0
+				else
+					ply:SetHealth(ply:Health() + 5)
+					ply.suit.recover = ply.suit.recover - 5
+				end
 			end
 		end
+		
 		UpdateLS(ply, temperature)
 	end
 end
@@ -338,6 +367,7 @@ function meta:ResetSuit() --Resets a player's suit
 	hash.temperature = 288
 	hash.worn = true
 	hash.helmet = false
+	hash.recover = 0
 	self.suit = hash
 end
 
@@ -360,13 +390,15 @@ local function ToggleSuit(ply, cmd, args)
 		ply:TakeOffSuit()
 		ply:TakeOffHelmet()
 		ply.suit.worn = false
+		ply.suit.helmet = false
 	else
 		ply:PutOnSuit()
 		ply:PutOnHelmet()
 		ply.suit.worn = true
+		ply.suit.helmet = true
 	end
 end
-concommand.Add("ToggleSuit", ToggleSuit)
+--concommand.Add("ToggleSuit", ToggleSuit)
 
 local function ToggleHelmet(ply, cmd, args)
 	if ply.suit.worn == false then return end
@@ -379,6 +411,23 @@ local function ToggleHelmet(ply, cmd, args)
 	end
 end
 concommand.Add("ToggleHelmet", ToggleHelmet)
+
+function SuitSwitch( ply )
+	if ply.suit.worn then
+		ply:TakeOffSuit()
+		ply:TakeOffHelmet()
+		ply.suit.worn = false
+		ply.suit.helmet = false
+		ply:ChatPrint("You took off your spacesuit.")
+	else
+		ply:PutOnSuit()
+		ply:PutOnHelmet()
+		ply.suit.worn = true
+		ply.suit.helmet = true
+		ply:ChatPrint("You put on your spacesuit.")
+	end
+end
+hook.Add("ShowTeam", "SuitToggle", SuitSwitch)
 
 
 --------------------------------------------------------

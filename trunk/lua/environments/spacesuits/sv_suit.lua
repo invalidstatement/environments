@@ -25,6 +25,7 @@ end
 function meta:TakeOffHelmet()
 	self.m_hModel:SetModel(player_manager.TranslatePlayerModel(self.m_hClothing:GetParent():GetInfo( "cl_playermodel" )))
 end
+
 /*---------------------------------------------------------
    Name: gamemode:PlayerDeath( )
    Desc: Called when a player dies.

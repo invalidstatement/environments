@@ -321,13 +321,15 @@ end
 //End Space Definition
 
 function RegisterSun()
+	TrueSun = {}
 	if table.Count(stars) > 0 then
 		--set as core radiation source, and sun angle(needed for solar planels) and other sun effects
-		TrueSun = {}
 		TrueSun[1] = table.Random(stars).position
 		print("//   Sun Registered                //")
 	else
+		TrueSun[1] = ents.FindByClass("env_sun")[1]:GetPos()
 		print("//   No Stars Found                //")
+		print("//   Registered Env_Sun            //")
 	end
 end
 
