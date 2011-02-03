@@ -123,10 +123,11 @@ function ENT:Think()
 	
 	self:Check()
 	
-	if self.Shaker then
-		local rand = math.random(1,40)
+	if self.unstable == "true" then
+		local rand = math.random(1,50)
 		if rand == 5 then
-			self.Shaker:Fire("StartShake")
+			util.ScreenShake(self:GetPos(), 14, 255, 6, self.radius)
+			--self.Shaker:Fire("StartShake")
 		end
 	end
 	
@@ -171,7 +172,7 @@ function ENT:Configure(rad, gravity, name, env)
 	end
 	
 	//Create the earthquaker if need be :)
-	if self.unstable == "true" then
+	/*if self.unstable == "true" then
 		self.Shaker = ents.Create("env_shake")
 		self.Shaker:Spawn()
 		self.Shaker:SetPos(self:GetPos())
@@ -179,7 +180,7 @@ function ENT:Configure(rad, gravity, name, env)
 		self.Shaker:SetKeyValue("duration", 6)
 		self.Shaker:Fire("Amplitude", 14)
 		self.Shaker:Fire("Frequency", 255)
-	end
+	end*/
 end
 
 
