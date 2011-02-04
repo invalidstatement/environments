@@ -48,9 +48,10 @@ local function RemovePlayerClothing( ply )
 		ply.m_hClothing:Remove()
 		ply.m_hClothing = nil
 
-		ply:SetMaterial( "" )
-
 	end
+	ply:SetMaterial( "" )
+	ply:SetColor(Color(255,255,255,0))
+	ply:SetRenderMode( RENDERMODE_NONE )
 end
 
 /*---------------------------------------------------------

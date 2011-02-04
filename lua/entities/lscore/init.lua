@@ -81,7 +81,7 @@ function ENT:TurnOff()
 		self.Entity:StopSound( "apc_engine_start" )
 		self.Entity:EmitSound( "apc_engine_stop" )
 		self.Active = 0
-		self.gravity = 0
+		self.gravity = 0.00001
 		--if not (WireAddon == nil) then Wire_TriggerOutput(self.Entity, "On", self.Active) end
 		self:SetOOO(0)
 	end
@@ -96,7 +96,6 @@ function ENT:SetActive( value )
 		end
 	else
 		if ( self.Active == 0 ) then
-			self.lastused = CurTime()
 			self:TurnOn()
 		else
 			self:TurnOff()
@@ -105,8 +104,13 @@ function ENT:SetActive( value )
 end
 
 function ENT:Breathe()
-	self.air.o2 = self.air.o2 - self:ConsumeResource("oxygen", 5)
-	self.air.o2per = (self.air.o2/self.env.size)*100
+	if self.air.o2 >= 5 then
+		self.air.o2 = self.air.o2 - self:ConsumeResource("oxygen", 5)
+		self.air.o2per = (self.air.o2/self.env.size)*100
+	else
+		self.air.o2 = 0
+		self.air.o2per = 0
+	end
 end
 
 function ENT:OnRemove()
