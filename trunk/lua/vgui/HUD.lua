@@ -93,23 +93,7 @@ function LoadHud()
 				}
 		end*/
 		local speedstr = ""
-		/*if SRP.suit.air/max >= .10 then
-			speedstr = tostring(math.Round(SRP.suit.air*100/max))
-		else
-			speedstr = tostring(math.Round(SRP.suit.air*100)/max)
-			if not string.find(speedstr,"%.") then
-				speedstr = speedstr .. ".0"
-			end
-		end
-		local energystr = ""
-		if SRP.suit.energy/4000 >= .10 then
-			speedstr = tostring(math.Round(SRP.suit.energy*100/max))
-		else
-			energystr = tostring(math.Round(SRP.suit.energy*100)/max)
-			if not string.find(energystr,"%.") then
-				energystr = energystr .. ".0"
-			end
-		end*/
+
 		local Air = SRP.suit.air / 40
 		local Energy = SRP.suit.energy / 40
 		local Coolant = SRP.suit.coolant / 40

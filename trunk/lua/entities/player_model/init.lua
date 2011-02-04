@@ -24,6 +24,7 @@ function ENT:Initialize()
 	if (!self.m_hParent:IsValid()) then return end
 
 	self.m_hParent:SetMaterial( "models/null" )
+	self.m_hParent:SetColor(Color(255,255,255,0))
 
 	// Use the player's model just for the bone positions (because we can't scale player bones)
 	local modelname = player_manager.TranslatePlayerModel( self.m_iszModelName )

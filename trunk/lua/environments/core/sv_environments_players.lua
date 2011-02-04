@@ -328,13 +328,23 @@ function PlayerCheck(ent)
 	local tr = util.TraceLine( trace )
 	if (tr.Hit) then
 		if tr.Entity.env then
-			ent:SetGravity(tr.Entity.env.gravity)
-			ent.gravity = 1
-			phys:EnableGravity( true )
-			phys:EnableDrag( true )
-			ent.environment = tr.Entity.env
-			tr.Entity.env:Breathe()
-			return
+			if tr.Entity.env.Active == 1 then
+				ent:SetGravity(1)
+				ent.gravity = 1
+				phys:EnableGravity( true )
+				phys:EnableDrag( true )
+				ent.environment = tr.Entity.env
+				tr.Entity.env:Breathe()
+				return
+			else
+				ent:SetGravity(0.00001)
+				ent.gravity = 1
+				phys:EnableGravity( false )
+				phys:EnableDrag( true )
+				ent.environment = tr.Entity.env
+				tr.Entity.env:Breathe()
+				return
+			end
 		elseif (tr.Entity.grav_plate and tr.Entity.grav_plate == 1) then
 			ent:SetGravity(1)
 			ent.gravity = 1
