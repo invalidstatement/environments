@@ -7,10 +7,10 @@ include("shared.lua")
 include("core/base.lua")
 	
 function ENT:Initialize()
-	self.Entity:SetModel( "models/slyfo/cup_noodle.mdl" ) --setup stuff
-	self.Entity:SetMoveType( MOVETYPE_NONE )
-	self.Entity:SetSolid( SOLID_VPHYSICS )
-	self.Entity:PhysicsInitSphere(1)
+	self:SetModel( "models/slyfo/cup_noodle.mdl" ) --setup stuff
+	self:SetMoveType( MOVETYPE_NONE )
+	self:SetSolid( SOLID_VPHYSICS )
+	self:PhysicsInitSphere(1)
 	self:SetCollisionBounds(Vector(-1,-1,-1),Vector(1,1,1))
 	self:SetTrigger( true )
     self:GetPhysicsObject():EnableMotion( false )
@@ -19,7 +19,7 @@ function ENT:Initialize()
 	self.gravity = 0
 	self.Debugging = false
 	
-	local phys = self.Entity:GetPhysicsObject() --reset physics
+	local phys = self:GetPhysicsObject() --reset physics
 	if (phys:IsValid()) then
 		phys:Wake()
 	end
@@ -120,12 +120,12 @@ function ENT:Think()
 end
 
 function ENT:Configure(rad, gravity, name, env)
-	self.Entity:PhysicsInitSphere(rad)
+	self:PhysicsInitSphere(rad)
 	self:SetCollisionBounds(Vector(-rad,-rad,-rad),Vector(rad,rad,rad))
 	self:SetTrigger( true )
     self:GetPhysicsObject():EnableMotion( false )
 	
-	local phys = self.Entity:GetPhysicsObject()
+	local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Wake()
 	end

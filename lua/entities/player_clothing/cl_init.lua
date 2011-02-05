@@ -5,20 +5,8 @@ include('shared.lua')
    Name: DrawPre
 ---------------------------------------------------------*/
 function ENT:Draw()
-
-	if ( self:GetParent() && self:GetParent():IsValid() ) then
-
-		if ( self:GetParent() == LocalPlayer() ) then
-
-			--if ( !gamemode.Call( "ShouldDrawLocalPlayer" ) ) then return end
-
-		end
-
-	end
-
 	self:DrawModel()
 	self:DrawShadow( false )
-
 end
 
 /*------------------------------------------------------------
