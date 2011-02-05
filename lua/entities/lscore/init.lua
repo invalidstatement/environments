@@ -20,12 +20,12 @@ end
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	
-	self.Entity:SetModel( "models/SBEP_community/d12airscrubber.mdl" ) --setup stuff
+	self:SetModel( "models/SBEP_community/d12airscrubber.mdl" ) --setup stuff
 	self:PhysicsInit( SOLID_VPHYSICS )      -- Make us work with physics,
 	self:SetMoveType( MOVETYPE_VPHYSICS )   -- after all, gmod is a physics
 	self:SetSolid( SOLID_VPHYSICS )         -- Toolbox
 	
-	self.gravity = 0
+	self.gravity = 1
 	self.Debugging = false
 	self.Active = 0
 	self.env = {}
@@ -33,6 +33,8 @@ function ENT:Initialize()
 	self.energy = 0
 	self.coolant = 0
 	self.coolant2 = 0
+	
+	self.mino2 = 10.5
 
 	self.air = {}
 	self.air.o2per = 0
@@ -50,12 +52,20 @@ function ENT:Initialize()
 	self:AddResource("nitrogen", 0)
 	self:AddResource("oxygen", 0)
 	
+	if not (WireAddon == nil) then
+		self.WireDebugName = self.PrintName
+		self.Inputs = Wire_CreateInputs(self.Entity, { "On", "Gravity", "Max O2 level" })
+		self.Outputs = Wire_CreateOutputs(self.Entity, { "On", "Oxygen-Level", "Temperature", "Gravity" })
+	else
+		self.Inputs = {{Name="On"},{Name="Gravity"},{Name="Max O2 level"}}
+	end
+	
 	self:NextThink(CurTime() + 1)
 end
 
 function ENT:Check()
 	local size = 0
-	local constrainedents = constraint.GetAllConstrainedEntities( self.Entity )
+	local constrainedents = constraint.GetAllConstrainedEntities( self )
 	for k,ent in pairs(constrainedents) do
 		local vec = ent:OBBMaxs() - ent:OBBMins()
 		local volume = (vec.x * vec.y * vec.z)
@@ -68,21 +78,22 @@ end
 
 function ENT:TurnOn()
 	if (self.Active == 0) then
-		self.Entity:EmitSound( "apc_engine_start" )
+		self:EmitSound( "apc_engine_start" )
 		self:Check()
 		self.Active = 1
-		self.gravity = 1
+		--self.gravity = 1
+		if not (WireAddon == nil) then Wire_TriggerOutput(self.Entity, "On", self.Active) end
 		self:SetOOO(1)
 	end
 end
 
 function ENT:TurnOff()
 	if (self.Active == 1) then
-		self.Entity:StopSound( "apc_engine_start" )
-		self.Entity:EmitSound( "apc_engine_stop" )
+		self:StopSound( "apc_engine_start" )
+		self:EmitSound( "apc_engine_stop" )
 		self.Active = 0
-		self.gravity = 0.00001
-		--if not (WireAddon == nil) then Wire_TriggerOutput(self.Entity, "On", self.Active) end
+		--self.gravity = 0.00001
+		if not (WireAddon == nil) then Wire_TriggerOutput(self.Entity, "On", self.Active) end
 		self:SetOOO(0)
 	end
 end
@@ -121,6 +132,23 @@ function ENT:OnRemove()
 	end
 	self.BaseClass.OnRemove(self)
 end
+
+function ENT:TriggerInput(iname, value)
+	if (iname == "On") then
+		self:SetActive(value)
+	elseif (iname == "Gravity") then
+		local gravity = value
+		if value <= 0 then
+			gravity = 0
+		end
+		self.gravity = gravity
+	elseif (iname == "Max O2 level") then
+		local level = 100
+		level = math.Clamp(math.Round(value), 0, 100)
+		self.mino2 = level
+	end
+end
+
 
 local mintemp = 284
 local maxtemp = 305
@@ -308,7 +336,7 @@ function ENT:Regulate()
 			end
 		end
 		
-		if self.air.o2per <= mino2 then
+		if self.air.o2per <= self.mino2 then
 			local needed = ((mino2 - self.air.o2per)*self.env.size)/100
 			if needed > 1000 then
 				needed = 1000
@@ -316,12 +344,20 @@ function ENT:Regulate()
 			self.air.o2 = self.air.o2 + self:ConsumeResource("oxygen", needed)
 			self.air.o2per = (self.air.o2/self.env.size)*100
 		end
+		if not (WireAddon == nil) then
+			Wire_TriggerOutput(self.Entity, "Oxygen-Level", tonumber(self.air.o2per))
+			Wire_TriggerOutput(self.Entity, "Temperature", tonumber(self.temperature))
+			Wire_TriggerOutput(self.Entity, "Gravity", tonumber(self.gravity))
+		end
 	end
 end
 
 function ENT:Affect()
 	if not self.environment then return end
 	local temperature = self.environment.temperature
+	if self.temperature == nil then
+		self.temperature = temperature
+	end
 	if temperature < self.temperature then
 		local dif = self.temperature - temperature
 		dif = math.ceil(dif / 100) //Change temperature depending on the outside temperature, 5° difference does a lot less then 10000° difference

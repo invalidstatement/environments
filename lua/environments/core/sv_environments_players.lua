@@ -329,7 +329,7 @@ function PlayerCheck(ent)
 	if (tr.Hit) then
 		if tr.Entity.env then
 			if tr.Entity.env.Active == 1 then
-				ent:SetGravity(1)
+				ent:SetGravity(tr.Entity.env.gravity)
 				ent.gravity = 1
 				phys:EnableGravity( true )
 				phys:EnableDrag( true )
