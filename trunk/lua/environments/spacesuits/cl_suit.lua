@@ -22,4 +22,8 @@ local function OnChangeModel( name, oldvalue, newvalue )
 end
 cvars.AddChangeCallback( "cl_playermodel", OnChangeModel )
 
+local function DrawPlayer( pl )
+	return false
+end
+hook.Add( "ShouldDrawLocalPlayer", "PlayerSetDraw", DrawPlayer)
 

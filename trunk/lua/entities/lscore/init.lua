@@ -33,7 +33,7 @@ function ENT:Initialize()
 	self.energy = 0
 	self.coolant = 0
 	self.coolant2 = 0
-	self.temperature = 1
+
 	self.air = {}
 	self.air.o2per = 0
 	self.air.o2 = 0
@@ -134,11 +134,13 @@ function ENT:Regulate()
 	local energy = self:GetResourceAmount("energy")
 	if energy == 0 then
 		self:TurnOff()
-		--Msg("Turning off\n")
+		if self.temperature == nil then
+			self.temperature = temperature
+		end
 		return
 	else
 		if self.temperature == nil then
-			self.temperature = 0
+			self.temperature = temperature
 		end
 		if temperature < self.temperature then
 			local dif = self.temperature - temperature
@@ -318,7 +320,7 @@ function ENT:Regulate()
 end
 
 function ENT:Affect()
-	/*if not self.environment then return end
+	if not self.environment then return end
 	local temperature = self.environment.temperature
 	if temperature < self.temperature then
 		local dif = self.temperature - temperature
@@ -329,7 +331,7 @@ function ENT:Affect()
 		dif = math.ceil(dif / 100)
 		self.temperature = self.temperature + dif
 	end
-	--Msg("Temperature: "..tostring(temperature).."\n")*/
+	--Msg("Temperature: "..tostring(temperature).."\n")
 end
 
 function ENT:Think()
