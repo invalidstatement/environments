@@ -49,6 +49,7 @@ local function RemovePlayerClothing( ply )
 		ply.m_hClothing = nil
 
 	end
+	ply:SetRenderMode(RENDERMODE_NONE)
 end
 
 /*---------------------------------------------------------
