@@ -73,7 +73,7 @@ local function LoadEnvironments()
 		end
 		print("// Registering Sun..               //")
 		--Register all things related to the sun
-		local status, error = pcall(RegisterSun())
+		local status, error = pcall(RegisterSun)
 		if error then
 			print("//   Registering Sun Failed :(     //")
 			print("ERROR: "..error)
