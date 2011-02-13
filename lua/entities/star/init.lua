@@ -9,7 +9,7 @@ include("core/base.lua")
 function ENT:Initialize()
 	self:SetModel( "models/slyfo/cup_noodle.mdl" ) --setup stuff
 	self:SetMoveType( MOVETYPE_NONE )
-	self:SetSolid( SOLID_VPHYSICS )
+	self:SetSolid( SOLID_NONE )
 	self:PhysicsInitSphere(1)
 	self:SetCollisionBounds(Vector(-1,-1,-1),Vector(1,1,1))
 	self:SetTrigger( true )
@@ -124,11 +124,14 @@ function ENT:Configure(rad, gravity, name, env)
 	self:SetCollisionBounds(Vector(-rad,-rad,-rad),Vector(rad,rad,rad))
 	self:SetTrigger( true )
     self:GetPhysicsObject():EnableMotion( false )
+	self:SetMoveType( MOVETYPE_NONE )
+	self:SetSolid( SOLID_NONE )
 	
-	local phys = self:GetPhysicsObject()
+	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Wake()
 	end
+	self:SetNotSolid( true )
 	
 	for k,v in pairs(env) do
 		self[k] = v
@@ -148,3 +151,16 @@ function ENT:Configure(rad, gravity, name, env)
 		Msg("------------- END DUMP -------------\n\n")
 	end
 end
+
+function ENT:CanTool()
+	return false
+end
+
+function ENT:GravGunPunt()
+	return false
+end
+
+function ENT:GravGunPickupAllowed()
+	return false
+end
+
