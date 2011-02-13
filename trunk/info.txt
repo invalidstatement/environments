@@ -1,7 +1,7 @@
 "AddonInfo"
 {
 	"name"				"Environments"
-	"version"			"0.1"
+	"version"			"1.0"
 	"up_date"			"23th December 2010"
 	"author_name"			"CmdrMatthew"
 	"author_email"			""

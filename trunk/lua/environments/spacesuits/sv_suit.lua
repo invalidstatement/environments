@@ -11,19 +11,21 @@ function meta:PutOnSuit()
 end
 
 function meta:TakeOffSuit()
-	self.m_hClothing:SetModel(player_manager.TranslatePlayerModel(self.m_hClothing:GetParent():GetInfo( "cl_playermodel" )))
-end
-
-function meta:PutOnHelmet()
-	if table.HasValue(nofingers, self.m_hClothing:GetParent():GetInfo( "cl_playermodel" )) then
-		self.m_hModel:SetModel("models/player/barney.mdl")
-	else
-		self.m_hModel:SetModel("models/player/combine_super_soldier.mdl")
+	if self:GetParent() and self:GetParent():IsValid() then
+		self.m_hClothing:SetModel(player_manager.TranslatePlayerModel(self.m_hClothing:GetParent():GetInfo( "cl_playermodel" )))
 	end
 end
 
+function meta:PutOnHelmet()
+	--if table.HasValue(nofingers, self.m_hClothing:GetParent():GetInfo( "cl_playermodel" )) then
+		--self.m_hModel:SetModel("models/player/barney.mdl")
+	--else
+		self.m_hModel:SetModel("models/player/combine_super_soldier.mdl")
+	--end
+end
+
 function meta:TakeOffHelmet()
-	self.m_hModel:SetModel(player_manager.TranslatePlayerModel(self.m_hClothing:GetParent():GetInfo( "cl_playermodel" )))
+	self.m_hModel:SetModel(player_manager.TranslatePlayerModel(self.m_hModel:GetParent():GetInfo( "cl_playermodel" )))
 end
 
 /*---------------------------------------------------------
@@ -80,13 +82,15 @@ hook.Add( "PlayerSpawn", "PlayerSetClothing", PlayerSpawn )
 ---------------------------------------------------------*/
 nofingers = {"barney", "mossman", "alyx", "breen", "gman", "kleiner"}
 function GM:PlayerSetClothing( pl )
-
 	RemovePlayerClothing( pl )
+	
 	pl.m_hModel = ents.Create( "player_model" )
 	pl.m_hModel:SetParent( pl )
 	pl.m_hModel:SetPos( pl:GetPos() )
 	pl.m_hModel:SetAngles( pl:GetAngles() )
 	pl.m_hModel:Spawn()
+	pl.m_hModel:SetModel("models/player/combine_super_soldier.mdl")
+	
 	pl.m_hClothing = ents.Create( "player_clothing" )
 	pl.m_hClothing:SetParent( pl )
 	if table.HasValue(nofingers, pl.m_hClothing:GetParent():GetInfo( "cl_playermodel" )) then
@@ -97,5 +101,4 @@ function GM:PlayerSetClothing( pl )
 	pl.m_hClothing:SetPos( pl:GetPos() )
 	pl.m_hClothing:SetAngles( pl:GetAngles() )
 	pl.m_hClothing:Spawn()
-
 end
