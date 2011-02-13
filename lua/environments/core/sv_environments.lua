@@ -73,7 +73,13 @@ local function LoadEnvironments()
 		end
 		print("// Registering Sun..               //")
 		--Register all things related to the sun
-		RegisterSun()
+		local status, error = pcall(RegisterSun())
+		if error then
+			print("//   Registering Sun Failed :(     //")
+			print("ERROR: "..error)
+			TrueSun = {}
+			TrueSun[1] = Vector(0,0,0)
+		end
 		print("// Starting Periodicals..          //")
 		--Start all things running on timers
 		timer.Create("LSCheck", 1, 0, LSCheck) --rename function later
@@ -334,12 +340,7 @@ function RegisterSun()
 		TrueSun[1] = table.Random(stars).position
 		print("//   Sun Registered                //")
 	else
-		local sun = ents.FindByClass("env_sun")
-		if sun then
-			TrueSun[1] = sun[1]:GetPos()
-		else
-			TrueSun[1] = Vector(0,0,0)
-		end
+		TrueSun[1] = ents.FindByClass("env_sun")[1]:GetPos()
 		print("//   No Stars Found                //")
 		print("//   Registered Env_Sun            //")
 	end
