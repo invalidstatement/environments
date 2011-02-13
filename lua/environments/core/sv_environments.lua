@@ -29,17 +29,24 @@ default.atmosphere.argon = 0
 	print("Caf not loaded yet")
 end*/
 timer.Create("registerCAFOverwrites", 5, 1, function()
-local old = CAF.GetAddon
-local SB = {}
-function CAF.GetAddon(name)
-	if name == "Spacebuild" then
-		return SB
+	local old = CAF.GetAddon
+	local SB = {}
+	function CAF.GetAddon(name)
+		if name == "Spacebuild" then
+			return SB
+		elseif name == "Life Support" then
+			return LS
+		end
+		return old(name)
 	end
-	return old(name)
-end
-function SB.GetStatus()
-	return true
-end
+	function SB.GetStatus()
+		return true
+	end
+
+	local LS = {}
+	function LS.GetStatus()
+		return true
+	end
 end)
 //End LS3
 
@@ -72,7 +79,7 @@ local function LoadEnvironments()
 		timer.Create("LSCheck", 1, 0, LSCheck) --rename function later
 		print("//   LifeSupport Checker Started   //")
 	else --Not a spacebuild map
-		print("//   This is not a valid SB map      //")
+		print("//   This is not a valid SB map    //")
 	end
 	print("/////////////////////////////////////")
 	print("//       Environments Loaded       //")

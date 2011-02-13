@@ -192,7 +192,7 @@ function LSCheck()
 			end
 			
 			//Air Stuff
-			if env.air.o2per <= 10 or ply:WaterLevel() > 2 then
+			if env.air.o2per < 10 or ply:WaterLevel() > 2 then
 				if suit.air >= 5 then
 					suit.air = suit.air - 5
 				elseif suit.air > 0 then
@@ -220,7 +220,21 @@ function LSCheck()
 					ply.suit.recover = ply.suit.recover - 5
 				end
 			end
-		else --player is not wearing thier suit or helmet
+		else --player is not wearing their suit or helmet
+			//Suit still needs to change temps, and stars still should kill you.
+			local tempchange = 0
+			if temperature < 1500 then
+				if suit.temperature > temperature then
+					tempchange = (suit.temperature - temperature) * efficiency
+					suit.temperature = suit.temperature - tempchange
+				elseif suit.temperature < temperature then
+					tempchange = (temperature - suit.temperature) * efficiency
+					suit.temperature = suit.temperature + tempchange
+				end
+			else
+				ply:TakeDamage(100)
+			end
+			
 			if temperature > 320 then
 				--do burn damage
 				if temperature > 400 then
@@ -236,7 +250,7 @@ function LSCheck()
 				ply.suit.recover = ply.suit.recover + 5
 			end
 			
-			if env.air.o2per <= 10 or ply:WaterLevel() > 2 then
+			if env.air.o2per < 10 or ply:WaterLevel() > 2 then
 				airused = false
 			end
 			
@@ -326,8 +340,17 @@ function PlayerCheck(ent)
 	trace.filter = { ent }
 	
 	local tr = util.TraceLine( trace )
+	
+	trace = {}
+	pos = ent:GetPos()
+	trace.start = pos
+	trace.endpos = pos + Vector(0,0,512)
+	trace.filter = { ent }
+	
+	local tr2 = util.TraceLine( trace )
+	
 	if (tr.Hit) then
-		if tr.Entity.env then
+		if tr.Entity.env and tr2.Entity.env then
 			if tr.Entity.env.Active == 1 then
 				ent:SetGravity(tr.Entity.env.gravity)
 				ent.gravity = 1
@@ -376,7 +399,7 @@ function meta:ResetSuit() --Resets a player's suit
 	hash.coolant = 2000 --200
 	hash.temperature = 288
 	hash.worn = true
-	hash.helmet = false
+	hash.helmet = true
 	hash.recover = 0
 	self.suit = hash
 end
@@ -408,7 +431,7 @@ local function ToggleSuit(ply, cmd, args)
 		ply.suit.helmet = true
 	end
 end
---concommand.Add("ToggleSuit", ToggleSuit)
+concommand.Add("ToggleSuit", ToggleSuit)
 
 local function ToggleHelmet(ply, cmd, args)
 	if ply.suit.worn == false then return end
@@ -423,6 +446,23 @@ end
 concommand.Add("ToggleHelmet", ToggleHelmet)
 
 function SuitSwitch( ply )
+	if ply.suit.helmet then
+		--ply:TakeOffSuit()
+		ply:TakeOffHelmet()
+		--ply.suit.worn = false
+		ply.suit.helmet = false
+		ply:ChatPrint("You took off your helmet.")
+	else
+		--ply:PutOnSuit()
+		ply:PutOnHelmet()
+		--ply.suit.worn = true
+		ply.suit.helmet = true
+		ply:ChatPrint("You put on your helmet.")
+	end
+end
+hook.Add("ShowTeam", "SuitToggle", SuitSwitch)
+
+/*function SuitSwitch( ply )
 	if ply.suit.worn then
 		ply:TakeOffSuit()
 		ply:TakeOffHelmet()
@@ -437,7 +477,7 @@ function SuitSwitch( ply )
 		ply:ChatPrint("You put on your spacesuit.")
 	end
 end
-hook.Add("ShowTeam", "SuitToggle", SuitSwitch)
+hook.Add("ShowTeam", "SuitToggle", SuitSwitch)*/
 
 
 --------------------------------------------------------
