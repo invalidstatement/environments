@@ -14,7 +14,7 @@ include("core/base.lua")
 function ENT:Initialize()
 	self.Entity:SetModel( "models/combine_helicopter/helicopter_bomb01" ) --setup stuff
 	self.Entity:SetMoveType( MOVETYPE_NONE )
-	self.Entity:SetSolid( SOLID_VPHYSICS )
+	self.Entity:SetSolid( SOLID_NONE )
 	self.Entity:PhysicsInitSphere(1)
 	self:SetCollisionBounds(Vector(-1,-1,-1),Vector(1,1,1))
 	self:SetTrigger( true )
@@ -136,10 +136,12 @@ function ENT:Think()
 end
 
 function ENT:Configure(rad, gravity, name, env)
-	self.Entity:PhysicsInitSphere(rad)
+	self:PhysicsInitSphere(rad)
 	self:SetCollisionBounds(Vector(-rad,-rad,-rad),Vector(rad,rad,rad))
 	self:SetTrigger( true )
     self:GetPhysicsObject():EnableMotion( false )
+	self:SetMoveType( MOVETYPE_NONE )
+	self:SetSolid( SOLID_NONE )
 	
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -183,4 +185,15 @@ function ENT:Configure(rad, gravity, name, env)
 	end*/
 end
 
+function ENT:CanTool()
+	return false
+end
+
+function ENT:GravGunPunt()
+	return false
+end
+
+function ENT:GravGunPickupAllowed()
+	return false
+end
 
