@@ -334,7 +334,12 @@ function RegisterSun()
 		TrueSun[1] = table.Random(stars).position
 		print("//   Sun Registered                //")
 	else
-		TrueSun[1] = ents.FindByClass("env_sun")[1]:GetPos()
+		local sun = ents.FindByClass("env_sun")
+		if sun then
+			TrueSun[1] = sun[1]:GetPos()
+		else
+			TrueSun[1] = Vector(0,0,0)
+		end
 		print("//   No Stars Found                //")
 		print("//   Registered Env_Sun            //")
 	end
