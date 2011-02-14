@@ -74,6 +74,7 @@ function ENT:Check()
 		ent.env = self
 	end
 	self.env.size = math.Round(size/100000)
+	self.maxair = self.env.size*100
 end
 
 function ENT:TurnOn()
@@ -117,7 +118,7 @@ end
 function ENT:Breathe()
 	if self.air.o2 >= 5 then
 		self.air.o2 = self.air.o2 - self:ConsumeResource("oxygen", 5)
-		self.air.o2per = (self.air.o2/self.env.size)*100
+		self.air.o2per = (self.air.o2/self.maxair)*100
 	else
 		self.air.o2 = 0
 		self.air.o2per = 0
@@ -143,9 +144,9 @@ function ENT:TriggerInput(iname, value)
 		end
 		self.gravity = gravity
 	elseif (iname == "Max O2 level") then
-		local level = 100
-		level = math.Clamp(math.Round(value), 0, 100)
-		self.mino2 = level
+		--local level = 100
+		--level = math.Clamp(math.Round(value), 0, 100)
+		--self.mino2 = level
 	end
 end
 
@@ -337,12 +338,12 @@ function ENT:Regulate()
 		end
 		
 		if self.air.o2per <= self.mino2 then
-			local needed = ((mino2 - self.air.o2per)*self.env.size)/100
+			local needed = ((mino2 - self.air.o2per)*self.maxair)/100
 			if needed > 1000 then
 				needed = 1000
 			end
 			self.air.o2 = self.air.o2 + self:ConsumeResource("oxygen", needed)
-			self.air.o2per = (self.air.o2/self.env.size)*100
+			self.air.o2per = (self.air.o2/self.maxair)*100
 		end
 		if not (WireAddon == nil) then
 			Wire_TriggerOutput(self.Entity, "Oxygen-Level", tonumber(self.air.o2per))
@@ -398,7 +399,5 @@ function ENT:Repair()
 end
 
 function ENT:Destruct()
-	if CAF and CAF.GetAddon("Life Support") then
-		CAF.GetAddon("Life Support").Destruct( self.Entity, true )
-	end
+
 end
