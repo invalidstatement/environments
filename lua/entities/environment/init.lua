@@ -141,7 +141,7 @@ function ENT:Configure(rad, gravity, name, env)
 	self:SetTrigger( true )
     self:GetPhysicsObject():EnableMotion( false )
 	self:SetMoveType( MOVETYPE_NONE )
-	self:SetSolid( SOLID_NONE )
+	--self:SetSolid( SOLID_NONE )
 	
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
