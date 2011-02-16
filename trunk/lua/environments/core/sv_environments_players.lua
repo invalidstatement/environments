@@ -8,98 +8,6 @@
 
 Devices = {}
 
-local function CreateLS(ply)--When a player joins
-	ply.suit = {}
-	ply.suit.params = {}
-	local hash = {}
-	hash.air = 200 --100
-	hash.energy = 200 --100
-	hash.coolant = 200 --100
-	hash.temperature = 288
-	hash.recover = 0
-	ply.suit = hash
-end
-
-//basic working LS
-
-//vars
-//ply.suit.temp = suit temperature
-//Does the environmental check for each player
-/*function LSCheck()
-	for _, ply in pairs(player.GetAll()) do
-		if not ply:Alive() or not ply:IsValid() then return end
-		local airused = true
-		local env = ply.environment
-		local suit = ply.suit
-		local temperature = env.temperature
-		if ply:GetNWBool("inspace") == true then
-			env = Space()
-		else
-			temperature = SunCheck(ply)
-		end
-		if ply.suit.worn then
-			if env == nil or env == {} then --is the env already prechecked to be ok or is it nil?
-				print("ERROR: Player "..ply:Nick().."'s Environment Is Set To Nil!")
-				return false
-			else
-				//Do air check
-				if env.air.o2per < 10 or ply:WaterLevel() > 2 then
-					if suit.air > 0 then
-						suit.air = suit.air - 10
-					else
-						airused = false
-					end
-				end
-				//Do temperature check
-				if temperature >= 300 then
-					local amt = math.ceil((temperature - 300)/16)
-					if temperature >= 1000 then
-						ply:TakeDamage(50)
-					end
-					if amt < 5 then
-						amt = 5
-					end
-					if suit.coolant > 0 then
-						suit.coolant = suit.coolant - amt
-					else
-						airused = false
-					end
-				elseif temperature <= 280 then
-					local amt = math.ceil((280 - temperature)/16)
-					if amt < 5 then
-						amt = 5
-					end
-					if suit.energy > 0 then
-						suit.energy = suit.energy - amt
-					else
-						airused = false
-					end
-				end
-				if airused then--player is all fine and dandy
-					
-				else --ply cant survive
-					ply:TakeDamage(10)
-				end
-				UpdateLS(ply, temperature)
-			end
-		else//player is not wearing suit
-			//you cant survive in a vacuum :P
-			--if ply:GetNWBool("inspace") == true then
-				--ply:TakeDamage(20)
-			--end
-			//do stuff differently :D
-		end
-	end
-end*/
-
- 
-/*local single = profiler.new 'single'
- 
-single:run( "LSCheck()", LSCheck )
- 
-single:print()*/
-
-//prototype suit environment ls
 local efficiency = 0.02 --the insulating efficiency of the suit, how fast the suit gains or loses temperature
 function LSCheck()
 	for k, ply in pairs(player.GetAll()) do
@@ -221,14 +129,13 @@ function LSCheck()
 				end
 			end
 		else --player is not wearing their suit or helmet
-			//Suit still needs to change temps, and stars still should kill you.
-			local tempchange = 0
+			local tempchange = 0 
 			if temperature < 1500 then
 				if suit.temperature > temperature then
-					tempchange = (suit.temperature - temperature) * efficiency
+					tempchange = (suit.temperature - temperature) * 0.05
 					suit.temperature = suit.temperature - tempchange
 				elseif suit.temperature < temperature then
-					tempchange = (temperature - suit.temperature) * efficiency
+					tempchange = (temperature - suit.temperature) * 0.05
 					suit.temperature = suit.temperature + tempchange
 				end
 			else
@@ -393,7 +300,7 @@ end
 local meta = FindMetaTable("Player")
 
 function meta:ResetSuit() --Resets a player's suit
-	local hash = self.suit
+	local hash = self.suit or {}
 	hash.air = 2000 --200
 	hash.energy = 2000 --200
 	hash.coolant = 2000 --200
@@ -402,6 +309,7 @@ function meta:ResetSuit() --Resets a player's suit
 	hash.helmet = true
 	hash.recover = 0
 	self.suit = hash
+	self:SetHealth(100)
 end
 
 function meta:FillSuit(air, energy, coolant)
@@ -413,11 +321,6 @@ end
 --------------------------------------------------------
 --              Life Support Concommands              --
 --------------------------------------------------------
-/*local function RefillLS(ply, cmd, args)
-	ply:ResetSuit()
-end
-concommand.Add("Refill", RefillLS)*/
-
 local function ToggleSuit(ply, cmd, args)
 	if ply.suit.worn then
 		ply:TakeOffSuit()
@@ -445,41 +348,6 @@ local function ToggleHelmet(ply, cmd, args)
 end
 concommand.Add("ToggleHelmet", ToggleHelmet)
 
-function SuitSwitch( ply )
-	if ply.suit.helmet then
-		--ply:TakeOffSuit()
-		ply:TakeOffHelmet()
-		--ply.suit.worn = false
-		ply.suit.helmet = false
-		ply:ChatPrint("You took off your helmet.")
-	else
-		--ply:PutOnSuit()
-		ply:PutOnHelmet()
-		--ply.suit.worn = true
-		ply.suit.helmet = true
-		ply:ChatPrint("You put on your helmet.")
-	end
-end
-hook.Add("ShowTeam", "SuitToggle", SuitSwitch)
-
-/*function SuitSwitch( ply )
-	if ply.suit.worn then
-		ply:TakeOffSuit()
-		ply:TakeOffHelmet()
-		ply.suit.worn = false
-		ply.suit.helmet = false
-		ply:ChatPrint("You took off your spacesuit.")
-	else
-		ply:PutOnSuit()
-		ply:PutOnHelmet()
-		ply.suit.worn = true
-		ply.suit.helmet = true
-		ply:ChatPrint("You put on your spacesuit.")
-	end
-end
-hook.Add("ShowTeam", "SuitToggle", SuitSwitch)*/
-
-
 --------------------------------------------------------
 --              Life Support Usermessages             --
 --------------------------------------------------------
@@ -497,19 +365,42 @@ end
 --------------------------------------------------------
 --                  Life Support Hooks                --
 --------------------------------------------------------
-function Spawn(ply)
-	CreateLS(ply)
+function lsInitSpawn(ply)
+	ply.suit = {}
+	ply.suit.params = {}
+	local hash = {}
+	hash.air = 200 --100
+	hash.energy = 200 --100
+	hash.coolant = 200 --100
+	hash.temperature = 288
+	hash.recover = 0
+	ply.suit = hash
+	
 	umsg.Start("Environments", ply)
+		umsg.Short(Environments.Version)
 	umsg.End()
 end
-hook.Add("PlayerInitialSpawn","CreateLS", Spawn)
 
-local function lsspawn(ply)
+function lsSpawn(ply)
 	if not ply.msged then
 		ply:ChatPrint("This server is running Environments, please report any bugs to CmdrMatthew")
 		ply.msged = true
 	end
 	timer.Create("ResetSuit"..ply:Nick(), 1, 1, function() ply:ResetSuit() end)
-	--ply:SetModel("models/SBEP Player Models/orangehevsuit.mdl")
 end
-hook.Add("PlayerSpawn", "SpawnLS", lsspawn)
+
+function HelmetSwitch( ply )
+	if ply.suit.helmet then
+		--ply:TakeOffSuit()
+		ply:TakeOffHelmet()
+		--ply.suit.worn = false
+		ply.suit.helmet = false
+		ply:ChatPrint("You took off your helmet.")
+	else
+		--ply:PutOnSuit()
+		ply:PutOnHelmet()
+		--ply.suit.worn = true
+		ply.suit.helmet = true
+		ply:ChatPrint("You put on your helmet.")
+	end
+end

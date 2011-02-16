@@ -22,7 +22,7 @@ function ENT:Initialize()
 	self:DrawShadow(false)
 	
 	self.gravity = 0
-	self.Debugging = false
+	self.Debugging = true
 	
 	local phys = self.Entity:GetPhysicsObject() --reset physics
 	if (phys:IsValid()) then
@@ -39,6 +39,8 @@ end
 function ENT:StartTouch(ent)
 	if not ent:GetPhysicsObject():IsValid() then return end
 	if ent:IsWorld() then return end
+	
+	if ent:GetClass() == "func_door" then return end
 	
 	if not self.Enabled then 
 		if self.Debugging then Msg("Entity ", ent, " tried to enter but ", self.name, " wasn't on.\n") end
@@ -82,6 +84,7 @@ function ENT:EndTouch(ent)
 end
 
 function ENT:Check()
+	local start = CurTime()
 	local radius = self.radius
 	for k,ent in pairs(self.Entities) do
 		if ent:GetPhysicsObject():IsValid() then
@@ -119,15 +122,15 @@ function ENT:Check()
 end
 
 function ENT:Think()
-	if self.Entities == {} or nil then return end
+	if self.Entities then
+		self:Check()
 	
-	self:Check()
-	
-	if self.unstable == "true" then
-		local rand = math.random(1,50)
-		if rand == 5 then
-			util.ScreenShake(self:GetPos(), 14, 255, 6, self.radius)
-			--self.Shaker:Fire("StartShake")
+		if self.unstable == "true" then
+			local rand = math.random(1,50)
+			if rand == 5 then
+				util.ScreenShake(self:GetPos(), 14, 255, 6, self.radius)
+				--self.Shaker:Fire("StartShake")
+			end
 		end
 	end
 	
@@ -141,7 +144,6 @@ function ENT:Configure(rad, gravity, name, env)
 	self:SetTrigger( true )
     self:GetPhysicsObject():EnableMotion( false )
 	self:SetMoveType( MOVETYPE_NONE )
-	--self:SetSolid( SOLID_NONE )
 	
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then

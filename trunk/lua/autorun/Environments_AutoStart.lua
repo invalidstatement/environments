@@ -2,11 +2,12 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
-local version = 42
+Environments = {}
+Environments.Version = 43
 local onlineversion
 
 if CLIENT then	
-	function Load()
+	function Load(msg)
 		include("vgui/lsinfo.lua")
 		include("vgui/HUD.lua")
 		include("environments/core/cl_core.lua")
@@ -18,6 +19,10 @@ if CLIENT then
 			LoadHud()
 		end
 		concommand.Add("env_reload_hud", Reload)
+		
+		if msg then
+			print("Environments Version: "..msg:ReadShort().." Running On Server")
+		end
 	end
 	usermessage.Hook("Environments", Load)
 	
@@ -46,10 +51,9 @@ else
 	resource.AddFile("resource/fonts/digital-7 (italic).ttf")
 	resource.AddFile( "materials/models/null.vmt" )
 	resource.AddFile( "materials/models/null.vtf" )
-
 end
 print("==============================================")
-print("== Environments ALPHA Revision "..version.." Installed ==")
+print("== Environments Beta Revision "..Environments.Version.." Installed  ==")
 print("==============================================")
 
 function GetOnlineVersion( callback, printChecking )
@@ -64,7 +68,7 @@ end
 
 local function VersionCheck(rev, contents, size, pc)
 	if not pc then
-		if version >= rev then
+		if Environments.Version >= rev then
 			print("   Environments Is Up To Date")
 		else
 			print("   A newer version of Environments is availible! Version: "..rev)
