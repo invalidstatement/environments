@@ -3,7 +3,8 @@
 //   CmdrMatthew   //
 ------------------------------------------
 Environments = {}
-Environments.Version = 43
+Environments.Version = 44
+Environments.FileVersion = 1
 local onlineversion
 
 if CLIENT then	
@@ -21,7 +22,7 @@ if CLIENT then
 		concommand.Add("env_reload_hud", Reload)
 		
 		if msg then
-			print("Environments Version: "..msg:ReadShort().." Running On Server")
+			print("Environments Version "..msg:ReadShort().." Running On Server")
 		end
 	end
 	usermessage.Hook("Environments", Load)

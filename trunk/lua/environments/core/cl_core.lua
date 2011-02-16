@@ -22,12 +22,10 @@ topbar:SetVisible( true )
 LoadHud()
 
 //Load it depending on the server setup
-if CAF and CAF.GetAddon("Spacebuild") then --installed
+if CAF and CAF.GetAddon("Spacebuild") then --sb installed
 	print("Spacebuild is active on the server")
 		
-else --Not installed
-	print("Environments is active on the server")
-		
+else --No sb installed
 	--Attempt to load the planets table from the file from the server.
 	local data = file.Read("environments/"..game.GetMap()..".txt")
 	if data then

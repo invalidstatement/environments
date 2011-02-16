@@ -92,21 +92,39 @@ function RegisterEnvironments()
 	local planets = {}
 	local i = 0
 	local map = game.GetMap()
-	print("//   Attempting to Load From File  //")
 	
 	if file.Exists( "environments/" .. map ..".txt" ) then
+		print("//   Attempting to Load From File  //")
 		local contents = file.Read( "environments/" .. map .. ".txt" )
 		local starscontents = file.Read( "environments/" .. map .. "_stars.txt")
 		if contents then
-			planets = table.DeSanitise(util.KeyValuesToTable(contents))
-			stars = table.DeSanitise(util.KeyValuesToTable(starscontents))
-			print("//     " .. table.Count(planets) .. " Planets Loaded From File  //")
-			print("//     " .. table.Count(stars) .. " Stars Loaded From File    //")
-		else
-			print("//    ERROR: File has no content        //")
+			local status, error = pcall(function()
+				planets = table.DeSanitise(util.KeyValuesToTable(contents))
+				stars = table.DeSanitise(util.KeyValuesToTable(starscontents))
+				if planets.version == Environments.FileVersion then
+					print("//     " .. table.Count(planets) - 1 .. " Planets Loaded From File  //")
+					print("//     " .. table.Count(stars) .. " Stars Loaded From File    //")
+				else --Incorrect File Version
+					print("//    Files Are Of An Old Version  //")
+					file.Delete("environments/"..map..".txt")
+					file.Delete("environments/"..map.."_stars.txt")
+					RegisterEnvironments()
+				end
+			end)
+			if error then --Read Error
+				print("//    A File Read Error Has Occured//")
+				file.Delete("environments/"..map..".txt")
+				file.Delete("environments/"..map.."_stars.txt")
+				RegisterEnvironments()
+			end
+		else --Empty File
+			print("//    The File Has No Content       //")
+			file.Delete("environments/"..map..".txt")
+			file.Delete("environments/"..map.."_stars.txt")
+			RegisterEnvironments()
 		end
-	else 
-		print("//	Warning: No File Found, Creating From Defaults")
+	else
+		print("//   Loading From Map              //")
 		local entities = ents.FindByClass( "logic_case" )
 		for k,ent in pairs(entities) do
 			local values = ent:GetKeyValues()
@@ -135,7 +153,7 @@ function RegisterEnvironments()
 						planet.name = i
 
 						table.insert(planets, planet)
-						print("//	  New Spacebuild Cube Planet Added")
+						print("//     Spacebuild Cube Added       //")
 					elseif value == "planet" then
 						planet.typeof = "sphere"
 						
@@ -163,7 +181,7 @@ function RegisterEnvironments()
 						
 						local planet = CreateSB2Environment(planet)
 						table.insert(planets, planet)
-						print("//	  Spacebuild 2 Planet Added //")
+						print("//     Spacebuild 2 Planet Added   //")
 					elseif value == "planet2" then
 						planet.typeof = "sphere"
 						
@@ -193,7 +211,7 @@ function RegisterEnvironments()
 						
 						i=i+1
 						table.insert(planets, planet)
-						print("//	  Spacebuild 3 Planet Added //")
+						print("//     Spacebuild 3 Planet Added   //")
 					elseif value == "star" then
 						planet.typeof = "sphere"
 						
@@ -210,7 +228,7 @@ function RegisterEnvironments()
 						
 						i=i+1	
 						table.insert(stars, planet)
-						print("//	  New Spacebuild 2 Star Added")
+						print("//     Spacebuild 2 Star Added     //")
 					elseif value == "star2" then
 						planet.typeof = "sphere"
 						
@@ -228,14 +246,16 @@ function RegisterEnvironments()
 
 						i=i+1
 						table.insert(stars, planet)
-						print("//	  New Spacebuild 3 Star Added")
+						print("//     Spacebuild 3 Star Added     //")
 					end
 				end 
 			end
 		end
+		planets.version = Environments.FileVersion
 		file.Write( "environments/" .. map .. "_stars.txt", util.TableToKeyValues( table.Sanitise(stars) ) )
 		file.Write( "environments/" .. map .. ".txt", util.TableToKeyValues( table.Sanitise(planets) ) )
 	end
+	planets.version = nil
 	
 	for k,v in pairs(planets) do
 		CreateEnvironment(v)
