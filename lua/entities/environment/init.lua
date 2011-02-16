@@ -22,7 +22,7 @@ function ENT:Initialize()
 	self:DrawShadow(false)
 	
 	self.gravity = 0
-	self.Debugging = true
+	self.Debugging = false
 	
 	local phys = self.Entity:GetPhysicsObject() --reset physics
 	if (phys:IsValid()) then
