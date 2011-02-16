@@ -2,16 +2,13 @@
 //   Environments  //
 //   CmdrMatthew   //
 ------------------------------------------
-
-SRP = {}
+SRP = {} --Backup Compatability from when this was gonna be a gamemode
 UseEnvironments = false
-PlayerGravity = true
-
 
 environments = {}
 stars = {}
 
---Remove and put in seperate file later
+//Planet Default Atmospheres
 default = {}
 default.atmosphere = {}
 default.atmosphere.oxygen = 30
@@ -20,14 +17,7 @@ default.atmosphere.methane = 0
 default.atmosphere.nitrogen = 40
 default.atmosphere.hydrogen = 22
 default.atmosphere.argon = 0
---default.atmosphere.helium = 1
---default.atmosphere.ammonia = 1
 
-//LS3 Compatability
-/*if not CAF then
-	CAF = {}
-	print("Caf not loaded yet")
-end*/
 timer.Create("registerCAFOverwrites", 5, 1, function()
 	local old = CAF.GetAddon
 	local SB = {}
@@ -58,7 +48,12 @@ local function LoadEnvironments()
 	--Get All Planets Loaded
 	RegisterEnvironments() 
 	if UseEnvironments then --It is a spacebuild map
+		//Add Hooks
 		hook.Add("PlayerNoClip","EnvNoClip", NoClip)
+		hook.Add("PlayerInitialSpawn","CreateLS", lsInitSpawn)
+		hook.Add("PlayerSpawn", "SpawnLS", lsSpawn)
+		hook.Add("ShowTeam", "HelmetToggle", HelmetSwitch)
+		
 		//Fixes spawning ents in space
 		local meta = FindMetaTable("Entity")
 		local olds = meta.Spawn
@@ -71,8 +66,8 @@ local function LoadEnvironments()
 			end
 			self.environment = Space()
 		end
+		
 		print("// Registering Sun..               //")
-		--Register all things related to the sun
 		local status, error = pcall(RegisterSun)
 		if error then
 			print("//   Registering Sun Failed :(     //")
@@ -80,12 +75,12 @@ local function LoadEnvironments()
 			TrueSun = {}
 			TrueSun[1] = Vector(0,0,0)
 		end
+		
 		print("// Starting Periodicals..          //")
-		--Start all things running on timers
-		timer.Create("LSCheck", 1, 0, LSCheck) --rename function later
+		timer.Create("LSCheck", 1, 0, LSCheck)
 		print("//   LifeSupport Checker Started   //")
 	else --Not a spacebuild map
-		print("//   This is not a valid SB map    //")
+		print("//   This is not a valid space map //")
 	end
 	print("/////////////////////////////////////")
 	print("//       Environments Loaded       //")
@@ -119,7 +114,7 @@ function RegisterEnvironments()
 				if key == "Case01" then
 					local planet = {}
 					planet.position = {}
-					if value == "cube" then
+					if value == "cube" then --need to fix in the future
 						planet.typeof = "cube"
 						for k2,v2 in pairs(values) do
 							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
@@ -347,10 +342,6 @@ function RegisterSun()
 end
 
 local function NoClip( ply, on )
-	// Don't allow if player is in vehicle
-	--if ( ply:InVehicle() ) then return false end
-	// Always allow in single player
-	--if ( SinglePlayer() ) then return true end
 	// Check based on the player's environment
 	if not ply.environment then return false end
 	if ply.environment.noclip == "1" or ply.environment.noclip == 1 then
@@ -377,47 +368,11 @@ local function SFXManager()
 		elseif class == "func_dustcloud" then
 			--v:Fire("TurnOff")
 		elseif class == "env_smokestack" then
-			v:SetKeyValue("BaseSpread", 300)
-			v:SetKeyValue("rendercolor", "0 0 0")
-			v:Fire("JetLength", 1000)
-			v:Fire("Rate", 400)
+			--v:SetKeyValue("BaseSpread", 300)
+			--v:SetKeyValue("rendercolor", "0 0 0")
+			--v:Fire("JetLength", 1000)
+			--v:Fire("Rate", 400)
 		end
 	end
 end
-timer.Create("SFXCHECKER", 10, 0, SFXManager)
-
-
-local function PrintPlanets()
-	local ent = ents.FindByClass( "logic_case" )
-	for k,v in pairs(ent) do
-		local values = v:GetKeyValues()
-		PrintTable(values)
-		print("/n")
-	end
-end
-concommand.Add("srp_print", PrintPlanets)
-
---------------------------------------------------------
---              Environments Usermessages             --
---------------------------------------------------------
-function SendPlanet(index, ply)
-	umsg.Start("AddPlanet", ply)
-		umsg.Short( index ) --env number
-		local position = Vector(planets[index].position.x, planets[index].position.y, planets[index].position.z)
-		umsg.Vector( position ) --env position
-		umsg.Float( planets[index].radius ) --env radius
-		umsg.String( planets[index].name ) --env name
-	umsg.End()
-	--print("umsg: Index:" .. tostring(index) .. " position: (" .. tostring(position) .. ") radius: " .. tostring(planets[index].radius) .. " name: " .. tostring(planets[index].name))
-end
-
-function SendStar(index, ply)
-	umsg.Start("AddStar", ply)
-		umsg.Short( index ) --env number
-		umsg.Vector( stars[index].position ) --env position
-		umsg.Float( stars[index].radius ) --env radius
-		--umsg.String( planets[index].name ) --env name
-	umsg.End()
-	--print("umsg: Index:" .. tostring(index) .. " position: (" .. tostring(position) .. ") radius: " .. tostring(planets[index].radius) .. " name: " .. tostring(planets[index].name))
-end
-
+--timer.Create("SFXCHECKER", 10, 0, SFXManager)
