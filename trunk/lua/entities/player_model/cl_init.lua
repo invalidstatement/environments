@@ -9,6 +9,10 @@ function ENT:Draw()
 	self:DrawShadow( false )
 end
 
+function ENT:DrawTranslucent()
+	self:Draw()
+end
+
 /*------------------------------------------------------------
 	Does the actual bone scaling work. This function is made
 	to work with copied bones too (realboneid).

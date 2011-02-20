@@ -49,7 +49,7 @@ local function EnvironmentCheck() --Whoah! What planet I am on?!
 	end
 	planet = "space"
 end
-timer.Create("EnvironmentCheck", 1, 0, EnvironmentCheck )
+--timer.Create("EnvironmentCheck", 1, 0, EnvironmentCheck )
 
 function Space()
 	local hash = {}
