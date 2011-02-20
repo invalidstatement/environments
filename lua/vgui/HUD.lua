@@ -1,9 +1,9 @@
 //MAKE IT LIKE GAUGES WITH DRAW.ROUNDED BOX :D :D :D and digital ones too!!!
 //move most of the stuff from the top bar into a box in the top left hand corner
-surface.CreateFont( "digital-7", 36, 2, true, false, "lcd2" )
+surface.CreateFont( "digital-7", 36, 2, true, true, "lcd2")
 function LoadHud()
 	function Draw()
-		local alpha = 255
+		/*local alpha = 255
 		local max = 4000
 		local speed = SRP.suit.energy
 		local per = speed/max
@@ -22,7 +22,216 @@ function LoadHud()
 		draw.NoTexture()
 		
 		surface.SetDrawColor(0,0,0,alpha)
-		/*surface.DrawPoly{
+		
+		local speedstr = ""
+
+		local Air = SRP.suit.air / 40
+		local Energy = SRP.suit.energy / 40
+		local Coolant = SRP.suit.coolant / 40
+		if Air >= 10 then
+			Air = math.Round(Air)
+		end
+		if Energy >= 10 then
+			Energy = math.Round(Energy)
+		end
+		if Coolant >= 10 then
+			Coolant = math.Round(Coolant)
+		end
+		--surface.DrawOutlinedRect(a.x+s*.5+55, a.y-33, 50,40)
+		draw.DrawText(tostring(Air),"lcd2",a.x+s*.5+55,a.y-33,Color(0,255,0,255),2)
+		draw.DrawText("Air %", nil,a.x+100,a.y-40, Color(0,255,0,255), 2)
+		
+		draw.DrawText(tostring(SRP.suit.temperature),"lcd2",a.x+s*.5+55,a.y-73,Color(255,0,0,255),2)
+		draw.DrawText("Temperature", nil,a.x+100,a.y-80, Color(255,0,0,255), 2)
+		
+		draw.DrawText(tostring(Energy),"lcd2",a.x+s*.5-30,a.y-73,Color(255,255,255,255),2)
+		draw.DrawText("Energy %", nil,a.x+15,a.y-80, Color(255,255,255,255), 2)
+		
+		draw.DrawText(tostring(Coolant),"lcd2",a.x+s*.5-30,a.y-33,color_black,2)
+		draw.DrawText("Coolant %", nil,a.x+15,a.y-40, color_black, 2)*/
+		
+		/*draw.DrawText("Pressure", nil,a.x+s*.5-30,a.y-40, color_black, 2)
+		draw.DrawText("atm", nil,a.x+s*.5-10,a.y-16, color_black, 2)
+		draw.DrawText("1.00", "lcd2",a.x+s*.5-30,a.y-33, color_black, 2)*/
+	end
+	hook.Add("HUDPaint", "LsDisplay", Draw)
+end
+
+//Spacebuild Compatibility :D
+local function LS_umsg_hook1( um )
+	SRP.suit.o2per = um:ReadFloat()
+	SRP.suit.air = um:ReadShort()
+	SRP.suit.temperature = um:ReadShort()
+	SRP.suit.coolant = um:ReadShort()
+	SRP.suit.energy = um:ReadShort()
+end
+usermessage.Hook("LS_umsg1", LS_umsg_hook1) 
+
+function LoadHud()
+DDD_HUD={}
+DDD_HUD.Convar=CreateConVar( "cl_dddhud", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
+DDD_HUD.CS_Model=nil
+DDD_HUD.Model="models/props_phx/construct/glass/glass_curve90x1.mdl"
+DDD_HUD.ModelScale=Vector(1,1,1.3)
+DDD_HUD.EyeVectorOffset=Vector(-2,55,-31)
+DDD_HUD.EyeAngleOffset=Angle(0,135,0)
+ 
+DDD_HUD.RT_W=ScrW()
+DDD_HUD.RT_H=ScrH()*1.3
+DDD_HUD.RenderTarget=GetRenderTarget( "DDD_HUD_15",DDD_HUD.RT_W,DDD_HUD.RT_H,false);
+DDD_HUD.RenderPos=nil;
+DDD_HUD.RenderAng=nil;
+DDD_HUD.ScreenMaterial=CreateMaterial(
+    "sprites/DDD_ScreenMat22",
+    "UnlitGeneric",
+    {
+        [ '$basetexture' ] =DDD_HUD.RenderTarget,
+		[ '$basetexturetransform' ] = "center .5 .5 scale -1 1 rotate 0 translate 0 0",
+		[ '$additive' ] = 1
+	}
+)
+DDD_HUD.TransparentMat=CreateMaterial(
+    "sprites/DDD_TransparentMat",
+    "Refract",
+    {
+        [ '$basetexturetransform' ] = "center .5 .5 scale -1 1 rotate 0 translate 0 0",
+        [ '$refractamount' ] = ".02",
+        [ '$nocull' ] = "1",
+        [ '$model' ] = "1",
+        [ '$bluramount' ] = "1",
+        [ '$nowritez' ] = "1",
+    }
+)
+
+function HideThings( name )
+	if (name == "CHudHealth" or name == "CHudBattery") then
+		return false
+	end
+        -- We don't return anything here otherwise it will overwrite all other 
+        -- HUDShouldDraw hooks.
+end
+hook.Add( "HUDShouldDraw", "HideThings", HideThings )
+
+--Think hook
+function DDD_HUD:Think()
+    --first,check if there's a DDD_HUD.CS_Model,if not,create it
+    if not IsValid(DDD_HUD.CS_Model) then
+        DDD_HUD.CS_Model=ClientsideModel(DDD_HUD.Model,RENDERGROUP_OPAQUE)
+        DDD_HUD.CS_Model:SetNoDraw(true)
+        DDD_HUD.CS_Model:SetModelScale(DDD_HUD.ModelScale or Vector(0,0,0))
+    end
+end
+local client = LocalPlayer()
+--HUDPaint like hook,but called after the screen gets rendered,not associated with HUDPaint however
+function DDD_HUD:DrawHUD()
+	local a = Vector(ScrW()-170,200,0)
+	local s = 90--math.ceil(ScrW()/12/8)*8
+	s = s
+	local client = LocalPlayer()
+	local Air = SRP.suit.air / 40
+	local Energy = SRP.suit.energy / 40
+	local Coolant = SRP.suit.coolant / 40
+	if Air >= 10 then
+		Air = math.Round(Air)
+	end
+	if Energy >= 10 then
+		Energy = math.Round(Energy)
+	end
+	if Coolant >= 10 then
+		Coolant = math.Round(Coolant)
+	end
+	surface.SetDrawColor(150,150,150,255)
+	surface.DrawRect(0,0,ScrW(),100)
+	draw.DrawText(tostring(SRP.suit.temperature),"lcd2",a.x+s*.5+55,a.y-33,Color(0,255,0,255),2)
+	draw.DrawText("Temperature", nil,a.x+100,a.y-40, Color(0,255,0,255), 2)
+		
+	draw.DrawText(tostring(Air),"lcd2",a.x+s*.5+55,a.y-73,Color(255,0,0,255),2)
+	draw.DrawText("Air %", nil,a.x+100,a.y-80, Color(255,0,0,255), 2)
+		
+	draw.DrawText(tostring(Energy),"lcd2",a.x+s*.5-30,a.y-73,Color(255,255,255,255),2)
+	draw.DrawText("Energy %", nil,a.x+15,a.y-80, Color(255,255,255), 2)
+		
+	draw.DrawText(tostring(Coolant),"lcd2",a.x+s*.5-30,a.y-33,Color(255,0,0,255),2)
+	draw.DrawText("Coolant %", nil,a.x+15,a.y-40, Color(255,0,0,255), 2)
+	
+	//health demo
+	draw.RoundedBox(0, 95, ScrH()-105, 200, 85, Color(100,100, 100, 255))
+    draw.SimpleText("Health: "..client:Health() .. "%", "ScoreboardText", 105, ScrH()-100, Color(250, 230, 10, 255), 0, 0)
+    draw.SimpleText("Armor: "..client:Armor().."%","ScoreboardText",105,ScrH()-65,Color(5,150,255,255),0,0)
+    draw.RoundedBox(0, 105, ScrH()-80, math.Clamp(client:Health(),0,100)*1.8,15, Color(255,170,0,250))
+    --draw.RoundedBox(0, 135, ScrH()-79, math.Clamp(client:Health(),0,100)*1.8,5, Color(255,210,120,200))
+    draw.RoundedBox(0, 105, ScrH()-45, math.Clamp(client:Armor(),0,100)*1.8,15, Color(0,120,255,250))
+    --draw.RoundedBox(135, ScrH()-44, math.Clamp(client:Armor(),0,100)*1.8,5, Color(0,190,255,200))
+    draw.RoundedBox(0, 95, ScrH()-130, 75, 20, Color(25,  25, 25, 255))
+    draw.RoundedBox(0, ScrW()-315, ScrH()-60, 200, 40, Color(100,100,100,255))
+    draw.SimpleText("Clock: "..tostring(os.date()),"ScoreboardText",ScrW()-300,ScrH()-50,Color(220,220,220,255),0,0)
+    draw.SimpleText("Ping: "..client:Ping(),"ScoreboardText",105,ScrH()-128,Color(250,230,0,255),0,0)
+    surface.SetDrawColor(255,0,0,255)
+    surface.DrawOutlinedRect( 95, ScrH()-130,75,20)
+    surface.DrawOutlinedRect( 95, ScrH()-105,200,85)
+    surface.DrawOutlinedRect( 105, ScrH()-80,180,15)
+    surface.DrawOutlinedRect( ScrW()-315, ScrH()-60,200,40)
+    surface.DrawOutlinedRect( 105, ScrH()-80,math.Clamp(client:Health(),0,100)*1.8,15)
+    surface.DrawOutlinedRect( 105, ScrH()-45,math.Clamp(client:Armor(),0,100)*1.8,15)
+    surface.DrawOutlinedRect( 105, ScrH()-45,180,15)
+	
+	//actual
+    draw.SimpleText("Air: "..Air .. "%", "ScoreboardText", 105, 125, Color(255,255,255,255), 0, 0)
+    draw.SimpleText("Energy: "..Energy.."%","ScoreboardText",105, 160,Color(250,230,10,255),0,0)
+    draw.SimpleText("Coolant: "..Coolant.."%","ScoreboardText",105, 195,Color(5,150,255,255),0,0)
+	draw.RoundedBox(0, 105, 140, math.Clamp(Air,0,100)*1.8,15, Color(0,120,255,255))
+	draw.RoundedBox(0, 105, 175, math.Clamp(Energy,0,100)*1.8,15, Color(0,120,255,255))
+    draw.RoundedBox(0, 105, 210, math.Clamp(Coolant,0,100)*1.8,15, Color(255,170,0,255))
+    draw.SimpleText("Clock: "..tostring(os.date()),"ScoreboardText",ScrW()-300,190,Color(220,220,220,255),0,0)
+    surface.SetDrawColor(255,0,0,255)
+    surface.DrawOutlinedRect(105,140,180,15)
+	surface.DrawOutlinedRect(105,175,180,15)
+	surface.DrawOutlinedRect(105,210,180,15)
+	surface.DrawOutlinedRect(105,140,math.Clamp(Air,0,100)*1.8,15)
+    surface.DrawOutlinedRect(105,175,math.Clamp(Energy,0,100)*1.8,15)
+	surface.DrawOutlinedRect(105,210,math.Clamp(Coolant,0,100)*1.8,15)
+end
+
+function DDD_HUD:CalcOffset(pos,ang,off)
+	return pos + ang:Right() * off.x + ang:Forward() * off.y + ang:Up() * off.z;
+end
+
+--RenderScreenspaceEffects hook
+function DDD_HUD:DrawHUDScreen()
+    if not IsValid(DDD_HUD.CS_Model) || not DDD_HUD.Convar:GetBool() then return end
+
+    cam.Start3D( EyePos(), EyeAngles() )
+        cam.IgnoreZ( true )
+            --draw the screen in 3D,then
+            RenderPos = EyePos()
+            RenderAng = EyeAngles()
+            RenderPos=DDD_HUD:CalcOffset(RenderPos,RenderAng,DDD_HUD.EyeVectorOffset)
+            RenderAng:RotateAroundAxis(RenderAng:Forward(),DDD_HUD.EyeAngleOffset.p)
+            RenderAng:RotateAroundAxis(RenderAng:Up(),DDD_HUD.EyeAngleOffset.y)
+            RenderAng:RotateAroundAxis(RenderAng:Right(),DDD_HUD.EyeAngleOffset.r)
+            DDD_HUD.CS_Model:SetRenderAngles(RenderAng)
+            DDD_HUD.CS_Model:SetRenderOrigin(RenderPos)
+            SetMaterialOverride(DDD_HUD.ScreenMaterial)
+                DDD_HUD.CS_Model:DrawModel()
+            SetMaterialOverride(0)
+        cam.IgnoreZ( false )
+    cam.End3D()
+	
+    local oldRT = render.GetRenderTarget()
+    render.SetRenderTarget(DDD_HUD.RenderTarget)
+	render.Clear(0,0,0,0)
+	render.SetViewPort(0,0,DDD_HUD.RT_W,DDD_HUD.RT_H)
+	--i can't understand this right now,we are just in a HUDPaint kinda hook here,call the DrawHUD then
+	DDD_HUD:DrawHUD()
+	render.SetRenderTarget(oldRT)
+	render.SetViewPort(0,0,ScrW(),ScrH())
+	DDD_HUD.ScreenMaterial:SetMaterialTexture( "$basetexture", DDD_HUD.RenderTarget )
+end
+
+hook.Add("Think","DDD_HUD:Think",DDD_HUD.Think)
+hook.Add("RenderScreenspaceEffects","DDD_HUD:DrawHUDScreen",DDD_HUD.DrawHUDScreen)
+end
+/*surface.DrawPoly{
 		{
 			x = a.x - s*.5,
 			y = a.y - s*.125,
@@ -92,46 +301,3 @@ function LoadHud()
 					},
 				}
 		end*/
-		local speedstr = ""
-
-		local Air = SRP.suit.air / 40
-		local Energy = SRP.suit.energy / 40
-		local Coolant = SRP.suit.coolant / 40
-		if Air >= 10 then
-			Air = math.Round(Air)
-		end
-		if Energy >= 10 then
-			Energy = math.Round(Energy)
-		end
-		if Coolant >= 10 then
-			Coolant = math.Round(Coolant)
-		end
-		--surface.DrawOutlinedRect(a.x+s*.5+55, a.y-33, 50,40)
-		draw.DrawText(tostring(Air),"lcd2",a.x+s*.5+55,a.y-33,color_black,2)
-		draw.DrawText("Air %", nil,a.x+100,a.y-40, color_black, 2)
-		
-		draw.DrawText(tostring(SRP.suit.temperature),"lcd2",a.x+s*.5+55,a.y-73,color_black,2)
-		draw.DrawText("Temperature", nil,a.x+100,a.y-80, color_black, 2)
-		
-		draw.DrawText(tostring(Energy),"lcd2",a.x+s*.5-30,a.y-73,color_black,2)
-		draw.DrawText("Energy %", nil,a.x+15,a.y-80, color_black, 2)
-		
-		draw.DrawText(tostring(Coolant),"lcd2",a.x+s*.5-30,a.y-33,color_black,2)
-		draw.DrawText("Coolant %", nil,a.x+15,a.y-40, color_black, 2)
-		
-		/*draw.DrawText("Pressure", nil,a.x+s*.5-30,a.y-40, color_black, 2)
-		draw.DrawText("atm", nil,a.x+s*.5-10,a.y-16, color_black, 2)
-		draw.DrawText("1.00", "lcd2",a.x+s*.5-30,a.y-33, color_black, 2)*/
-	end
-	hook.Add("HUDPaint", "LsDisplay", Draw)
-end
-
-//Spacebuild Compatibility :D
-local function LS_umsg_hook1( um )
-	SRP.suit.o2per = um:ReadFloat()
-	SRP.suit.air = um:ReadShort()
-	SRP.suit.temperature = um:ReadShort()
-	SRP.suit.coolant = um:ReadShort()
-	SRP.suit.energy = um:ReadShort()
-end
-usermessage.Hook("LS_umsg1", LS_umsg_hook1) 

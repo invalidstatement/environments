@@ -84,7 +84,7 @@ function ENT:EndTouch(ent)
 end
 
 function ENT:Check()
-	local start = CurTime()
+	--local start = SysTime()
 	local radius = self.radius
 	for k,ent in pairs(self.Entities) do
 		if ent:GetPhysicsObject():IsValid() then
@@ -119,9 +119,14 @@ function ENT:Check()
 			end
 		end
 	end
+	--print(self.name, SysTime()-start, table.Count(self.Entities))
 end
 
 function ENT:Think()
+	if not self:GetPos() == self.position then
+		self:SetPos() == self.position
+	end
+	
 	if self.Entities then
 		self:Check()
 	

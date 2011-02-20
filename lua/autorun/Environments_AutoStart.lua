@@ -2,12 +2,15 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
+//TO DO
+//1. Work on 3D HUD
+//2. Fix player models and suits, charred not working, and fingers on HL2 chars
 Environments = {}
-Environments.Version = 44
+Environments.Version = 45
 Environments.FileVersion = 1
 local onlineversion
 
-if CLIENT then	
+if CLIENT then
 	function Load(msg)
 		include("vgui/lsinfo.lua")
 		include("vgui/HUD.lua")
@@ -32,6 +35,11 @@ if CLIENT then
 			Load()
 		end
 	end)
+	
+	local override = true
+	if override then
+		Load()
+	end
 	
 	concommand.Add("env_update_check", function(ply, cmd, args)
 		GetOnlineVersion(VersionCheck, true)
