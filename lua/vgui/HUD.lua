@@ -72,7 +72,7 @@ DDD_HUD={}
 DDD_HUD.Convar=CreateConVar( "cl_dddhud", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
 DDD_HUD.CS_Model=nil
 DDD_HUD.Model="models/props_phx/construct/glass/glass_curve90x1.mdl"
-DDD_HUD.ModelScale=Vector(1,ScrW()/1024,1.3)
+DDD_HUD.ModelScale=Vector(ScrW()/1024,ScrW()/1024,1.3)
 DDD_HUD.EyeVectorOffset=Vector(-2,55,-31)
 DDD_HUD.EyeAngleOffset=Angle(0,135,0)
  
@@ -94,7 +94,7 @@ DDD_HUD.TransparentMat=CreateMaterial(
     "sprites/DDD_TransparentMat",
     "Refract",
     {
-        [ '$basetexturetransform' ] = "center .5 .5 scale -1 1 rotate 0 translate 0 0",
+        [ '$basetexturetransform' ] = "center 0.5 .5 scale -1 1 rotate 0 translate 0 0",
         [ '$refractamount' ] = ".02",
         [ '$nocull' ] = "1",
         [ '$model' ] = "1",
