@@ -232,7 +232,8 @@ end
 --RenderScreenspaceEffects hook
 function DDD_HUD:DrawHUDScreen()
     if not IsValid(DDD_HUD.CS_Model) || not DDD_HUD.Convar:GetBool() then return end
-
+	if not LocalPlayer():GetNWBool("helmet") then return end
+	
     cam.Start3D( EyePos(), EyeAngles() )
         cam.IgnoreZ( true )
             --draw the screen in 3D,then
