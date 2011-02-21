@@ -152,12 +152,12 @@ function DDD_HUD:DrawHUD()
     draw.RoundedBox(0, 105*ratio, 210, math.Clamp(Coolant,0,100)*1.8,15, Color(255,170,0,255))
     draw.SimpleText("Clock: "..tostring(os.date()),"ScoreboardText",ScrW()-300,140,Color(220,220,220,255),0,0)
     surface.SetDrawColor(255,0,0,255)
-    surface.DrawOutlinedRect(105,140*ratio,180,15)
-	surface.DrawOutlinedRect(105,175*ratio,180,15)
-	surface.DrawOutlinedRect(105,210*ratio,180,15)
-	surface.DrawOutlinedRect(105,140*ratio,math.Clamp(Air,0,100)*1.8,15)
-    surface.DrawOutlinedRect(105,175*ratio,math.Clamp(Energy,0,100)*1.8,15)
-	surface.DrawOutlinedRect(105,210*ratio,math.Clamp(Coolant,0,100)*1.8,15)
+    surface.DrawOutlinedRect(105*ratio,140,180,15)
+	surface.DrawOutlinedRect(105*ratio,175,180,15)
+	surface.DrawOutlinedRect(105*ratio,210,180,15)
+	surface.DrawOutlinedRect(105*ratio,140,math.Clamp(Air,0,100)*1.8,15)
+    surface.DrawOutlinedRect(105*ratio,175,math.Clamp(Energy,0,100)*1.8,15)
+	surface.DrawOutlinedRect(105*ratio,210,math.Clamp(Coolant,0,100)*1.8,15)
 	local air = SRP.suit.air
 	local coolant = SRP.suit.coolant
 	local energy = SRP.suit.energy
