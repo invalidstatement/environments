@@ -72,8 +72,8 @@ DDD_HUD={}
 DDD_HUD.Convar=CreateConVar( "cl_dddhud", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
 DDD_HUD.CS_Model=nil
 DDD_HUD.Model="models/props_phx/construct/glass/glass_curve90x1.mdl"
-DDD_HUD.ModelScale=Vector(ScrW()/1152,ScrW()/1152,1.3)
-DDD_HUD.EyeVectorOffset=Vector(-2,55,-31)
+DDD_HUD.ModelScale=Vector(ScrW()/1152,ScrW()/1152,1.8)
+DDD_HUD.EyeVectorOffset=Vector(-2,55,-35)
 DDD_HUD.EyeAngleOffset=Angle(0,135,0)
 local ratio = ScrW()/1152
 if ScrW() == 1920 then
@@ -120,12 +120,18 @@ end
 --Think hook
 function DDD_HUD:Think()
     --first,check if there's a DDD_HUD.CS_Model,if not,create it
+	if LocalPlayer():InVehicle() then
+		DDD_HUD.EyeVectorOffset = Vector(-2,44,-31)
+	else
+		DDD_HUD.EyeVectorOffset = Vector(-2,55,-53)
+	end
     if not IsValid(DDD_HUD.CS_Model) then
         DDD_HUD.CS_Model=ClientsideModel(DDD_HUD.Model,RENDERGROUP_OPAQUE)
         DDD_HUD.CS_Model:SetNoDraw(true)
         DDD_HUD.CS_Model:SetModelScale(DDD_HUD.ModelScale or Vector(0,0,0))
     end
 end
+
 local client = LocalPlayer()
 --HUDPaint like hook,but called after the screen gets rendered,not associated with HUDPaint however
 function DDD_HUD:DrawHUD()
@@ -145,8 +151,12 @@ function DDD_HUD:DrawHUD()
 	if Coolant >= 10 then
 		Coolant = math.Round(Coolant)
 	end
+	//upper bar
 	surface.SetDrawColor(150,150,150,255)
 	surface.DrawRect(0,0,ScrW(),100)
+	
+	//lower bar
+	surface.DrawRect(0,ScrH()-350,ScrW(),100)
 
 	//actual
     draw.SimpleText("Air: "..Air .. "%", "ScoreboardText", 105*ratio, 125, Color(255,255,255,255), 0, 0)
@@ -163,6 +173,7 @@ function DDD_HUD:DrawHUD()
 	surface.DrawOutlinedRect(105*ratio,140,math.Clamp(Air,0,100)*1.8,15)
     surface.DrawOutlinedRect(105*ratio,175,math.Clamp(Energy,0,100)*1.8,15)
 	surface.DrawOutlinedRect(105*ratio,210,math.Clamp(Coolant,0,100)*1.8,15)
+	
 	local air = SRP.suit.air
 	local coolant = SRP.suit.coolant
 	local energy = SRP.suit.energy
