@@ -142,39 +142,7 @@ function DDD_HUD:DrawHUD()
 	end
 	surface.SetDrawColor(150,150,150,255)
 	surface.DrawRect(0,0,ScrW(),100)
-	draw.DrawText(tostring(SRP.suit.temperature),"lcd2",a.x+s*.5+55,a.y-33,Color(0,255,0,255),2)
-	draw.DrawText("Temperature", nil,a.x+100,a.y-40, Color(0,255,0,255), 2)
-		
-	draw.DrawText(tostring(Air),"lcd2",a.x+s*.5+55,a.y-73,Color(255,0,0,255),2)
-	draw.DrawText("Air %", nil,a.x+100,a.y-80, Color(255,0,0,255), 2)
-		
-	draw.DrawText(tostring(Energy),"lcd2",a.x+s*.5-30,a.y-73,Color(255,255,255,255),2)
-	draw.DrawText("Energy %", nil,a.x+15,a.y-80, Color(255,255,255), 2)
-		
-	draw.DrawText(tostring(Coolant),"lcd2",a.x+s*.5-30,a.y-33,Color(255,0,0,255),2)
-	draw.DrawText("Coolant %", nil,a.x+15,a.y-40, Color(255,0,0,255), 2)
-	
-	//health demo
-	draw.RoundedBox(0, 95, ScrH()-105, 200, 85, Color(100,100, 100, 255))
-    draw.SimpleText("Health: "..client:Health() .. "%", "ScoreboardText", 105, ScrH()-100, Color(250, 230, 10, 255), 0, 0)
-    draw.SimpleText("Armor: "..client:Armor().."%","ScoreboardText",105,ScrH()-65,Color(5,150,255,255),0,0)
-    draw.RoundedBox(0, 105, ScrH()-80, math.Clamp(client:Health(),0,100)*1.8,15, Color(255,170,0,250))
-    --draw.RoundedBox(0, 135, ScrH()-79, math.Clamp(client:Health(),0,100)*1.8,5, Color(255,210,120,200))
-    draw.RoundedBox(0, 105, ScrH()-45, math.Clamp(client:Armor(),0,100)*1.8,15, Color(0,120,255,250))
-    --draw.RoundedBox(135, ScrH()-44, math.Clamp(client:Armor(),0,100)*1.8,5, Color(0,190,255,200))
-    draw.RoundedBox(0, 95, ScrH()-130, 75, 20, Color(25,  25, 25, 255))
-    draw.RoundedBox(0, ScrW()-315, ScrH()-60, 200, 40, Color(100,100,100,255))
-    draw.SimpleText("Clock: "..tostring(os.date()),"ScoreboardText",ScrW()-300,ScrH()-50,Color(220,220,220,255),0,0)
-    draw.SimpleText("Ping: "..client:Ping(),"ScoreboardText",105,ScrH()-128,Color(250,230,0,255),0,0)
-    surface.SetDrawColor(255,0,0,255)
-    surface.DrawOutlinedRect( 95, ScrH()-130,75,20)
-    surface.DrawOutlinedRect( 95, ScrH()-105,200,85)
-    surface.DrawOutlinedRect( 105, ScrH()-80,180,15)
-    surface.DrawOutlinedRect( ScrW()-315, ScrH()-60,200,40)
-    surface.DrawOutlinedRect( 105, ScrH()-80,math.Clamp(client:Health(),0,100)*1.8,15)
-    surface.DrawOutlinedRect( 105, ScrH()-45,math.Clamp(client:Armor(),0,100)*1.8,15)
-    surface.DrawOutlinedRect( 105, ScrH()-45,180,15)
-	
+
 	//actual
     draw.SimpleText("Air: "..Air .. "%", "ScoreboardText", 105, 125, Color(255,255,255,255), 0, 0)
     draw.SimpleText("Energy: "..Energy.."%","ScoreboardText",105, 160,Color(250,230,10,255),0,0)
@@ -182,7 +150,7 @@ function DDD_HUD:DrawHUD()
 	draw.RoundedBox(0, 105, 140, math.Clamp(Air,0,100)*1.8,15, Color(0,120,255,255))
 	draw.RoundedBox(0, 105, 175, math.Clamp(Energy,0,100)*1.8,15, Color(0,120,255,255))
     draw.RoundedBox(0, 105, 210, math.Clamp(Coolant,0,100)*1.8,15, Color(255,170,0,255))
-    draw.SimpleText("Clock: "..tostring(os.date()),"ScoreboardText",ScrW()-300,190,Color(220,220,220,255),0,0)
+    draw.SimpleText("Clock: "..tostring(os.date()),"ScoreboardText",ScrW()-300,140,Color(220,220,220,255),0,0)
     surface.SetDrawColor(255,0,0,255)
     surface.DrawOutlinedRect(105,140,180,15)
 	surface.DrawOutlinedRect(105,175,180,15)
@@ -190,6 +158,55 @@ function DDD_HUD:DrawHUD()
 	surface.DrawOutlinedRect(105,140,math.Clamp(Air,0,100)*1.8,15)
     surface.DrawOutlinedRect(105,175,math.Clamp(Energy,0,100)*1.8,15)
 	surface.DrawOutlinedRect(105,210,math.Clamp(Coolant,0,100)*1.8,15)
+	local air = SRP.suit.air
+	local coolant = SRP.suit.coolant
+	local energy = SRP.suit.energy
+	local temperature = SRP.suit.temperature
+	local o2 = SRP.suit.o2per
+	
+	local length     = ScrW()/4 -45 --should make 5 w/ spacer
+	local spacer     = 40
+	
+	surface.SetFont( "Default" )
+	
+	surface.SetTextColor( 255, 255, 255, 255 )
+	draw.RoundedBox(0, 0, 100, ScrW(), 24, Color(0, 0, 0, 150))
+	draw.RoundedBox(0, 0, 124, ScrW(), 2, Color(255, 255, 255, 255))
+
+	surface.SetTextPos( length + spacer, 105 )
+		surface.DrawText( "Air: " ..tostring(air) )
+		local x, y = surface.GetTextSize( "Air: " ..tostring(air) )
+		length = length + x + spacer
+	
+	surface.SetTextPos( length + spacer, 105 )
+		surface.DrawText( "Coolant: " ..coolant )
+		local x, y = surface.GetTextSize( "Coolant: " ..tostring(coolant) )
+		length = length + x + spacer
+	
+	surface.SetTextPos( length + spacer, 105 )
+		surface.DrawText( "Energy: " .. tostring(energy) )
+		local x, y = surface.GetTextSize( "Energy: " .. tostring(energy) )
+		length = length + x + spacer
+		
+	surface.SetTextPos( length + spacer, 105 )
+		surface.DrawText( "Suit Temp: " .. tostring(SRP.suit.temp) )
+		local x, y = surface.GetTextSize( "Suit Temp: " .. tostring(SRP.suit.temp) )
+		length = length + x + spacer
+		
+	surface.SetTextPos( length + spacer, 105 )
+		surface.DrawText( "Planet: " .. tostring(planet) )
+		local x, y = surface.GetTextSize( "Planet: " .. tostring(planet) )
+		length = length + x + spacer
+
+	surface.SetTextPos( length + spacer, 105 )
+		surface.DrawText( "Temperature: " .. tostring(temperature) )
+		local x, y = surface.GetTextSize( "Temperature: " .. tostring(temperature) )
+		length = length + x + spacer
+		
+	surface.SetTextPos( length + spacer, 105 )
+		surface.DrawText( "O2 Percent: " .. tostring(o2) )
+		local x, y = surface.GetTextSize( "O2 Percent: " .. tostring(o2) )
+		length = length + x + spacer
 end
 
 function DDD_HUD:CalcOffset(pos,ang,off)
