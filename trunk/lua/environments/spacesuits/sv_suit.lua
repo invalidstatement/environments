@@ -8,10 +8,12 @@ function meta:PutOnSuit()
 	else
 		self.m_hClothing:SetModel("models/player/combine_super_soldier.mdl")
 	end
+	self:SetNWBool("helmet", true)
 end
 
 function meta:TakeOffSuit()
 	if self:GetParent() and self:GetParent():IsValid() then
+		self:SetNWBool("helmet", false)
 		self.m_hClothing:SetModel(player_manager.TranslatePlayerModel(self.m_hClothing:GetParent():GetInfo( "cl_playermodel" )))
 	end
 end
@@ -22,9 +24,11 @@ function meta:PutOnHelmet()
 	--else
 		self.m_hModel:SetModel("models/player/combine_super_soldier.mdl")
 	--end
+	self:SetNWBool("helmet", true)
 end
 
 function meta:TakeOffHelmet()
+	self:SetNWBool("helmet", false)
 	self.m_hModel:SetModel(player_manager.TranslatePlayerModel(self.m_hModel:GetParent():GetInfo( "cl_playermodel" )))
 end
 
@@ -63,6 +67,7 @@ local function PlayerInitialSpawn( pl )
 	timer.Simple( 0.1, function()
 		hook.Call( "PlayerSetClothing", GM, pl )
 	end)
+	pl:SetNWBool("helmet", true)
 end
 hook.Add( "PlayerInitialSpawn", "PlayerSetClothing", PlayerInitialSpawn )
 
@@ -83,7 +88,7 @@ hook.Add( "PlayerSpawn", "PlayerSetClothing", PlayerSpawn )
 nofingers = {"barney", "mossman", "alyx", "breen", "gman", "kleiner"}
 function GM:PlayerSetClothing( pl )
 	RemovePlayerClothing( pl )
-	
+	pl:SetNWBool("helmet", true)
 	pl.m_hModel = ents.Create( "player_model" )
 	pl.m_hModel:SetParent( pl )
 	pl.m_hModel:SetPos( pl:GetPos() )
