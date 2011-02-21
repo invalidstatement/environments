@@ -77,7 +77,9 @@ DDD_HUD.EyeVectorOffset=Vector(-2,55,-31)
 DDD_HUD.EyeAngleOffset=Angle(0,135,0)
 local ratio = ScrW()/1152
 if ScrW() == 1920 then
-	ratio = 2
+	ratio = 3
+	DDD_HUD.ModelScale=Vector(ScrW()/1252,ScrW()/1252,1.5)
+	DDD_HUD.EyeVectorOffset=Vector(-2,55,-35)
 end	
 DDD_HUD.RT_W=ScrW()
 DDD_HUD.RT_H=ScrH()*1.3
@@ -150,9 +152,9 @@ function DDD_HUD:DrawHUD()
     draw.SimpleText("Air: "..Air .. "%", "ScoreboardText", 105*ratio, 125, Color(255,255,255,255), 0, 0)
     draw.SimpleText("Energy: "..Energy.."%","ScoreboardText",105*ratio, 160,Color(250,230,10,255),0,0)
     draw.SimpleText("Coolant: "..Coolant.."%","ScoreboardText",105*ratio, 195,Color(5,150,255,255),0,0)
-	draw.RoundedBox(0, 105*ratio, 140, math.Clamp(Air,0,100)*1.8,15, Color(0,120,255,255))
-	draw.RoundedBox(0, 105*ratio, 175, math.Clamp(Energy,0,100)*1.8,15, Color(0,120,255,255))
-    draw.RoundedBox(0, 105*ratio, 210, math.Clamp(Coolant,0,100)*1.8,15, Color(255,170,0,255))
+	draw.RoundedBox(0, 105*ratio, 140, math.Clamp(Air,0,100)*1.8,15, Color(255,255,255,255))
+	draw.RoundedBox(0, 105*ratio, 175, math.Clamp(Energy,0,100)*1.8,15, Color(255,170,0,255))
+    draw.RoundedBox(0, 105*ratio, 210, math.Clamp(Coolant,0,100)*1.8,15, Color(0,120,255,255))
     draw.SimpleText("Clock: "..tostring(os.date()),"ScoreboardText",ScrW()-(300*ratio),140,Color(220,220,220,255),0,0)
     surface.SetDrawColor(255,0,0,255)
     surface.DrawOutlinedRect(105*ratio,140,180,15)
