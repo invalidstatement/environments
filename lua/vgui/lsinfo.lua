@@ -18,7 +18,7 @@ function DEBUGBAR:ApplySchemeSettings()
 end
 
 function DEBUGBAR:Paint()
-	local air = SRP.suit.air
+	/*local air = SRP.suit.air
 	local coolant = SRP.suit.coolant
 	local energy = SRP.suit.energy
 	local temperature = SRP.suit.temperature
@@ -66,7 +66,7 @@ function DEBUGBAR:Paint()
 	surface.SetTextPos( length + spacer, 5 )
 		surface.DrawText( "O2 Percent: " .. tostring(o2) )
 		local x, y = surface.GetTextSize( "O2 Percent: " .. tostring(o2) )
-		length = length + x + spacer
+		length = length + x + spacer*/
 end
 
 vgui.Register("LS Debug Bar", DEBUGBAR, "Panel")
