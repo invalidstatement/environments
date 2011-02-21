@@ -6,7 +6,7 @@
 //1. Work on 3D HUD
 //2. Fix player models and suits, charred not working, and fingers on HL2 chars
 Environments = {}
-Environments.Version = 53
+Environments.Version = 54
 Environments.FileVersion = 1
 local onlineversion
 
@@ -36,7 +36,7 @@ if CLIENT then
 		end
 	end)
 	
-	local override = true
+	local override = false
 	if override then
 		Load()
 	end
