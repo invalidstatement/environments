@@ -124,7 +124,7 @@ end
 
 function ENT:Think()
 	if not self:GetPos() == self.position then
-		self:SetPos() == self.position
+		self:SetPos(self.position)
 	end
 	
 	if self.Entities then
