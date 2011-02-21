@@ -72,7 +72,7 @@ DDD_HUD={}
 DDD_HUD.Convar=CreateConVar( "cl_dddhud", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
 DDD_HUD.CS_Model=nil
 DDD_HUD.Model="models/props_phx/construct/glass/glass_curve90x1.mdl"
-DDD_HUD.ModelScale=Vector(1,1,1.3)
+DDD_HUD.ModelScale=Vector(1,ScrW()/1024,1.3)
 DDD_HUD.EyeVectorOffset=Vector(-2,55,-31)
 DDD_HUD.EyeAngleOffset=Angle(0,135,0)
  
@@ -110,7 +110,7 @@ function HideThings( name )
         -- We don't return anything here otherwise it will overwrite all other 
         -- HUDShouldDraw hooks.
 end
-hook.Add( "HUDShouldDraw", "HideThings", HideThings )
+--hook.Add( "HUDShouldDraw", "HideThings", HideThings )
 
 --Think hook
 function DDD_HUD:Think()
