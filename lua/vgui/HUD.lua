@@ -72,10 +72,10 @@ DDD_HUD={}
 DDD_HUD.Convar=CreateConVar( "cl_dddhud", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
 DDD_HUD.CS_Model=nil
 DDD_HUD.Model="models/props_phx/construct/glass/glass_curve90x1.mdl"
-DDD_HUD.ModelScale=Vector(ScrW()/1024,ScrW()/1024,1.3)
+DDD_HUD.ModelScale=Vector(ScrW()/1152,ScrW()/1152,1.3)
 DDD_HUD.EyeVectorOffset=Vector(-2,55,-31)
 DDD_HUD.EyeAngleOffset=Angle(0,135,0)
- 
+local ratio = ScrW()/1152
 DDD_HUD.RT_W=ScrW()
 DDD_HUD.RT_H=ScrH()*1.3
 DDD_HUD.RenderTarget=GetRenderTarget( "DDD_HUD_15",DDD_HUD.RT_W,DDD_HUD.RT_H,false);
@@ -144,20 +144,20 @@ function DDD_HUD:DrawHUD()
 	surface.DrawRect(0,0,ScrW(),100)
 
 	//actual
-    draw.SimpleText("Air: "..Air .. "%", "ScoreboardText", 105, 125, Color(255,255,255,255), 0, 0)
-    draw.SimpleText("Energy: "..Energy.."%","ScoreboardText",105, 160,Color(250,230,10,255),0,0)
-    draw.SimpleText("Coolant: "..Coolant.."%","ScoreboardText",105, 195,Color(5,150,255,255),0,0)
-	draw.RoundedBox(0, 105, 140, math.Clamp(Air,0,100)*1.8,15, Color(0,120,255,255))
-	draw.RoundedBox(0, 105, 175, math.Clamp(Energy,0,100)*1.8,15, Color(0,120,255,255))
-    draw.RoundedBox(0, 105, 210, math.Clamp(Coolant,0,100)*1.8,15, Color(255,170,0,255))
+    draw.SimpleText("Air: "..Air .. "%", "ScoreboardText", 105*ratio, 125, Color(255,255,255,255), 0, 0)
+    draw.SimpleText("Energy: "..Energy.."%","ScoreboardText",105*ratio, 160,Color(250,230,10,255),0,0)
+    draw.SimpleText("Coolant: "..Coolant.."%","ScoreboardText",105*ratio, 195,Color(5,150,255,255),0,0)
+	draw.RoundedBox(0, 105*ratio, 140, math.Clamp(Air,0,100)*1.8,15, Color(0,120,255,255))
+	draw.RoundedBox(0, 105*ratio, 175, math.Clamp(Energy,0,100)*1.8,15, Color(0,120,255,255))
+    draw.RoundedBox(0, 105*ratio, 210, math.Clamp(Coolant,0,100)*1.8,15, Color(255,170,0,255))
     draw.SimpleText("Clock: "..tostring(os.date()),"ScoreboardText",ScrW()-300,140,Color(220,220,220,255),0,0)
     surface.SetDrawColor(255,0,0,255)
-    surface.DrawOutlinedRect(105,140,180,15)
-	surface.DrawOutlinedRect(105,175,180,15)
-	surface.DrawOutlinedRect(105,210,180,15)
-	surface.DrawOutlinedRect(105,140,math.Clamp(Air,0,100)*1.8,15)
-    surface.DrawOutlinedRect(105,175,math.Clamp(Energy,0,100)*1.8,15)
-	surface.DrawOutlinedRect(105,210,math.Clamp(Coolant,0,100)*1.8,15)
+    surface.DrawOutlinedRect(105,140*ratio,180,15)
+	surface.DrawOutlinedRect(105,175*ratio,180,15)
+	surface.DrawOutlinedRect(105,210*ratio,180,15)
+	surface.DrawOutlinedRect(105,140*ratio,math.Clamp(Air,0,100)*1.8,15)
+    surface.DrawOutlinedRect(105,175*ratio,math.Clamp(Energy,0,100)*1.8,15)
+	surface.DrawOutlinedRect(105,210*ratio,math.Clamp(Coolant,0,100)*1.8,15)
 	local air = SRP.suit.air
 	local coolant = SRP.suit.coolant
 	local energy = SRP.suit.energy
