@@ -76,6 +76,9 @@ DDD_HUD.ModelScale=Vector(ScrW()/1152,ScrW()/1152,1.3)
 DDD_HUD.EyeVectorOffset=Vector(-2,55,-31)
 DDD_HUD.EyeAngleOffset=Angle(0,135,0)
 local ratio = ScrW()/1152
+if ScrW() == 1920 then
+	ratio = 2
+end	
 DDD_HUD.RT_W=ScrW()
 DDD_HUD.RT_H=ScrH()*1.3
 DDD_HUD.RenderTarget=GetRenderTarget( "DDD_HUD_15",DDD_HUD.RT_W,DDD_HUD.RT_H,false);
@@ -150,7 +153,7 @@ function DDD_HUD:DrawHUD()
 	draw.RoundedBox(0, 105*ratio, 140, math.Clamp(Air,0,100)*1.8,15, Color(0,120,255,255))
 	draw.RoundedBox(0, 105*ratio, 175, math.Clamp(Energy,0,100)*1.8,15, Color(0,120,255,255))
     draw.RoundedBox(0, 105*ratio, 210, math.Clamp(Coolant,0,100)*1.8,15, Color(255,170,0,255))
-    draw.SimpleText("Clock: "..tostring(os.date()),"ScoreboardText",ScrW()-300,140,Color(220,220,220,255),0,0)
+    draw.SimpleText("Clock: "..tostring(os.date()),"ScoreboardText",ScrW()-(300*ratio),140,Color(220,220,220,255),0,0)
     surface.SetDrawColor(255,0,0,255)
     surface.DrawOutlinedRect(105*ratio,140,180,15)
 	surface.DrawOutlinedRect(105*ratio,175,180,15)
