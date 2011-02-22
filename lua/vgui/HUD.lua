@@ -120,10 +120,18 @@ end
 --Think hook
 function DDD_HUD:Think()
     --first,check if there's a DDD_HUD.CS_Model,if not,create it
-	if LocalPlayer():InVehicle() then
-		DDD_HUD.EyeVectorOffset = Vector(-2,44,-53)
+	if ScrW() = 1920 then
+		if LocalPlayer():InVehicle() then
+			DDD_HUD.EyeVectorOffset = Vector(-2,44,-41)
+		else
+			DDD_HUD.EyeVectorOffset = Vector(-2,55,-41)
+		end
 	else
-		DDD_HUD.EyeVectorOffset = Vector(-2,55,-53)
+		if LocalPlayer():InVehicle() then
+			DDD_HUD.EyeVectorOffset = Vector(-2,44,-53)
+		else
+			DDD_HUD.EyeVectorOffset = Vector(-2,55,-53)
+		end
 	end
     if not IsValid(DDD_HUD.CS_Model) then
         DDD_HUD.CS_Model=ClientsideModel(DDD_HUD.Model,RENDERGROUP_OPAQUE)
@@ -135,10 +143,6 @@ end
 local client = LocalPlayer()
 --HUDPaint like hook,but called after the screen gets rendered,not associated with HUDPaint however
 function DDD_HUD:DrawHUD()
-	local a = Vector(ScrW()-170,200,0)
-	local s = 90--math.ceil(ScrW()/12/8)*8
-	s = s
-	local client = LocalPlayer()
 	local Air = SRP.suit.air / 40
 	local Energy = SRP.suit.energy / 40
 	local Coolant = SRP.suit.coolant / 40
