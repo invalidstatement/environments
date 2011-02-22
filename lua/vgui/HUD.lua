@@ -120,7 +120,7 @@ end
 --Think hook
 function DDD_HUD:Think()
     --first,check if there's a DDD_HUD.CS_Model,if not,create it
-	if ScrW() = 1920 then
+	if ScrW() == 1920 then
 		if LocalPlayer():InVehicle() then
 			DDD_HUD.EyeVectorOffset = Vector(-2,44,-41)
 		else
