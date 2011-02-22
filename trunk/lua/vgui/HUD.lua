@@ -73,13 +73,13 @@ DDD_HUD.Convar=CreateConVar( "cl_dddhud", "1", { FCVAR_ARCHIVE, }, "Enable/Disab
 DDD_HUD.CS_Model=nil
 DDD_HUD.Model="models/props_phx/construct/glass/glass_curve90x1.mdl"
 DDD_HUD.ModelScale=Vector(ScrW()/1152,ScrW()/1152,1.8)
-DDD_HUD.EyeVectorOffset=Vector(-2,55,-35)
+DDD_HUD.EyeVectorOffset=Vector(-2,55,-53)
 DDD_HUD.EyeAngleOffset=Angle(0,135,0)
 local ratio = ScrW()/1152
 if ScrW() == 1920 then
 	ratio = 3
 	DDD_HUD.ModelScale=Vector(ScrW()/1252,ScrW()/1252,1.5)
-	DDD_HUD.EyeVectorOffset=Vector(-2,55,-35)
+	DDD_HUD.EyeVectorOffset=Vector(-2,55,-53)
 end	
 DDD_HUD.RT_W=ScrW()
 DDD_HUD.RT_H=ScrH()*1.3
@@ -121,7 +121,7 @@ end
 function DDD_HUD:Think()
     --first,check if there's a DDD_HUD.CS_Model,if not,create it
 	if LocalPlayer():InVehicle() then
-		DDD_HUD.EyeVectorOffset = Vector(-2,44,-31)
+		DDD_HUD.EyeVectorOffset = Vector(-2,44,-53)
 	else
 		DDD_HUD.EyeVectorOffset = Vector(-2,55,-53)
 	end
