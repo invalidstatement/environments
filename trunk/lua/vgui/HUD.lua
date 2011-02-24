@@ -69,18 +69,25 @@ usermessage.Hook("LS_umsg1", LS_umsg_hook1)
 
 function LoadHud()
 DDD_HUD={}
-DDD_HUD.Convar=CreateConVar( "cl_dddhud", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
+DDD_HUD.Convar=CreateConVar( "env_hud_enabled", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
 DDD_HUD.CS_Model=nil
 DDD_HUD.Model="models/props_phx/construct/glass/glass_curve90x1.mdl"
 DDD_HUD.ModelScale=Vector(ScrW()/1152,ScrW()/1152,1.8)
 DDD_HUD.EyeVectorOffset=Vector(-2,55,-53)
 DDD_HUD.EyeAngleOffset=Angle(0,135,0)
+
+//Set it up for different resolutions
 local ratio = ScrW()/1152
 if ScrW() == 1920 then
 	ratio = 3
-	DDD_HUD.ModelScale=Vector(ScrW()/1252,ScrW()/1252,1.5)
+	DDD_HUD.ModelScale=Vector(ScrW()/1252,ScrW()/1252,1.5) --1920x1024
 	DDD_HUD.EyeVectorOffset=Vector(-2,55,-53)
-end	
+elseif ScrW() == 1024 and ScrH() == 768 then --1024x768
+	ratio = 1
+	DDD_HUD.ModelScale=Vector(1,1,1.8)
+	DDD_HUD.EyeVectorOffset=Vector(-2,55,-53)
+end
+
 DDD_HUD.RT_W=ScrW()
 DDD_HUD.RT_H=ScrH()*1.3
 DDD_HUD.RenderTarget=GetRenderTarget( "DDD_HUD_15",DDD_HUD.RT_W,DDD_HUD.RT_H,false);
@@ -119,20 +126,21 @@ end
 
 --Think hook
 function DDD_HUD:Think()
-    --first,check if there's a DDD_HUD.CS_Model,if not,create it
-	if ScrW() == 1920 then
+    --first, check if the player is in a vehicle
+	if ScrW() == 1920 then --1920x1024
 		if LocalPlayer():InVehicle() then
 			DDD_HUD.EyeVectorOffset = Vector(-2,44,-41)
 		else
 			DDD_HUD.EyeVectorOffset = Vector(-2,55,-41)
 		end
-	else
+	else --everyone else
 		if LocalPlayer():InVehicle() then
 			DDD_HUD.EyeVectorOffset = Vector(-2,44,-53)
 		else
 			DDD_HUD.EyeVectorOffset = Vector(-2,55,-53)
 		end
 	end
+	
     if not IsValid(DDD_HUD.CS_Model) then
         DDD_HUD.CS_Model=ClientsideModel(DDD_HUD.Model,RENDERGROUP_OPAQUE)
         DDD_HUD.CS_Model:SetNoDraw(true)
@@ -194,39 +202,37 @@ function DDD_HUD:DrawHUD()
 	draw.RoundedBox(0, 0, 124, ScrW(), 2, Color(255, 255, 255, 255))
 
 	surface.SetTextPos( length + spacer, 105 )
-		surface.DrawText( "Air: " ..tostring(air) )
-		local x, y = surface.GetTextSize( "Air: " ..tostring(air) )
-		length = length + x + spacer
+	surface.DrawText( "Air: " ..tostring(air) )
+	local x = surface.GetTextSize( "Air: " ..tostring(air) )
+	length = length + x + spacer
 	
 	surface.SetTextPos( length + spacer, 105 )
-		surface.DrawText( "Coolant: " ..coolant )
-		local x, y = surface.GetTextSize( "Coolant: " ..tostring(coolant) )
-		length = length + x + spacer
+	surface.DrawText( "Coolant: " ..coolant )
+	x = surface.GetTextSize( "Coolant: " ..tostring(coolant) )
+	length = length + x + spacer
 	
 	surface.SetTextPos( length + spacer, 105 )
-		surface.DrawText( "Energy: " .. tostring(energy) )
-		local x, y = surface.GetTextSize( "Energy: " .. tostring(energy) )
-		length = length + x + spacer
+	surface.DrawText( "Energy: " .. tostring(energy) )
+	x = surface.GetTextSize( "Energy: " .. tostring(energy) )
+	length = length + x + spacer
 		
 	surface.SetTextPos( length + spacer, 105 )
-		surface.DrawText( "Suit Temp: " .. tostring(SRP.suit.temp) )
-		local x, y = surface.GetTextSize( "Suit Temp: " .. tostring(SRP.suit.temp) )
-		length = length + x + spacer
+	surface.DrawText( "Suit Temp: " .. tostring(SRP.suit.temp) )
+	x = surface.GetTextSize( "Suit Temp: " .. tostring(SRP.suit.temp) )
+	length = length + x + spacer
 		
 	surface.SetTextPos( length + spacer, 105 )
-		surface.DrawText( "Planet: " .. tostring(planet) )
-		local x, y = surface.GetTextSize( "Planet: " .. tostring(planet) )
-		length = length + x + spacer
+	surface.DrawText( "Planet: " .. tostring(planet) )
+	x = surface.GetTextSize( "Planet: " .. tostring(planet) )
+	length = length + x + spacer
 
 	surface.SetTextPos( length + spacer, 105 )
-		surface.DrawText( "Temperature: " .. tostring(temperature) )
-		local x, y = surface.GetTextSize( "Temperature: " .. tostring(temperature) )
-		length = length + x + spacer
+	surface.DrawText( "Temperature: " .. tostring(temperature) )
+	x = surface.GetTextSize( "Temperature: " .. tostring(temperature) )
+	length = length + x + spacer
 		
 	surface.SetTextPos( length + spacer, 105 )
-		surface.DrawText( "O2 Percent: " .. tostring(o2) )
-		local x, y = surface.GetTextSize( "O2 Percent: " .. tostring(o2) )
-		length = length + x + spacer
+	surface.DrawText( "O2 Percent: " .. tostring(o2) )
 end
 
 function DDD_HUD:CalcOffset(pos,ang,off)
