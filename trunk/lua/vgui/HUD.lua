@@ -192,7 +192,7 @@ function LoadHud()
 		local temperature = environments.suit.temperature
 		local o2 = environments.suit.o2per
 		
-		local length     = ScrW()/4 -45 --should make 5 w/ spacer
+		local length     = ScrW()/2 - 410 --should make 5 w/ spacer
 		local spacer     = 40
 		
 		surface.SetFont( "Default" )
