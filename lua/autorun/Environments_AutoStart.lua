@@ -5,8 +5,9 @@
 //TO DO
 //1. Work on 3D HUD
 //2. Fix player models and suits, charred not working, and fingers on HL2 chars
+//3. Make it so you can refill your suit without LS3
 Environments = {}
-Environments.Version = 62
+Environments.Version = 63
 Environments.FileVersion = 1
 local onlineversion
 
@@ -75,7 +76,7 @@ function GetOnlineVersion( callback, printChecking )
 	end)
 end
 
-local function VersionCheck(rev, contents, size, pc)
+function VersionCheck(rev, contents, size, pc)
 	if not pc then
 		if Environments.Version >= rev then
 			print("   Environments Is Up To Date")
