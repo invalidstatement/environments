@@ -7,7 +7,7 @@
 //2. Fix player models and suits, charred not working, and fingers on HL2 chars
 //3. Make it so you can refill your suit without LS3
 Environments = {}
-Environments.Version = 63
+Environments.Version = 64
 Environments.FileVersion = 1
 local onlineversion
 
@@ -43,7 +43,7 @@ if CLIENT then
 	end
 	
 	concommand.Add("env_update_check", function(ply, cmd, args)
-		GetOnlineVersion(VersionCheck, true)
+		GetOnlineVersion(true)
 	end)
 else
 	include("environments/core/sv_environments.lua")
@@ -66,25 +66,23 @@ print("==============================================")
 print("== Environments Beta Revision "..Environments.Version.." Installed  ==")
 print("==============================================")
 
-function GetOnlineVersion( callback, printChecking )
+function GetOnlineVersion( printChecking )
 	if printChecking then
 		print("Checking for updates....")
 	end
 	http.Get("http://environments.googlecode.com/svn/trunk/","",function(contents,size)
 		local rev = tonumber(string.match( contents, "Revision ([0-9]+)" ))
-		VersionCheck(rev,contents,size,printChecking)
+		VersionCheck(rev,contents,size)
 	end)
 end
 
-function VersionCheck(rev, contents, size, pc)
-	if not pc then
-		if Environments.Version >= rev then
-			print("   Environments Is Up To Date")
-		else
-			print("   A newer version of Environments is availible! Version: "..rev)
-			print("   Please update!")
-		end
+function VersionCheck(rev, contents, size)
+	if Environments.Version >= rev then
+		print("Environments Is Up To Date")
+	else
+		print("A newer version of Environments is availible! Version: "..rev)
+		print("Please update!")
 	end
 	onlineversion = rev
 end
-GetOnlineVersion(VersionCheck)
+GetOnlineVersion()
