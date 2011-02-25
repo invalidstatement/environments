@@ -6,9 +6,9 @@
 local meta = FindMetaTable("Player")
 function meta:PutOnSuit()
 	if table.HasValue(nofingers, self.m_hSuit:GetParent():GetInfo( "cl_playermodel" )) then
-		self.m_hHelmet:SetModel("models/player/barney.mdl")
+		self.m_hSuit:SetModel("models/player/barney.mdl")
 	else
-		self.m_hHelmet:SetModel("models/player/combine_super_soldier.mdl")
+		self.m_hSuit:SetModel("models/player/combine_super_soldier.mdl")
 	end
 	self:SetNWBool("helmet", true)
 end
@@ -21,11 +21,7 @@ function meta:TakeOffSuit()
 end
 
 function meta:PutOnHelmet()
-	--if table.HasValue(nofingers, self.m_hSuit:GetParent():GetInfo( "cl_playermodel" )) then
-		--self.m_hHelmet:SetModel("models/player/barney.mdl")
-	--else
-		self.m_hHelmet:SetModel("models/player/combine_super_soldier.mdl")
-	--end
+	self.m_hHelmet:SetModel("models/player/combine_super_soldier.mdl")
 	self:SetNWBool("helmet", true)
 end
 
@@ -77,7 +73,7 @@ hook.Add( "PlayerInitialSpawn", "PlayerSetClothing", PlayerInitialSpawn )
 ---------------------------------------------------------*/
 local function PlayerSpawn( pl )
 	// Set player clothing
-	PlayerSetClothing()
+	PlayerSetClothing(pl)
 end
 hook.Add( "PlayerSpawn", "PlayerSetClothing", PlayerSpawn )
 
