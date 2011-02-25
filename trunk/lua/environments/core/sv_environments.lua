@@ -396,3 +396,18 @@ local function SFXManager()
 	end
 end
 --timer.Create("SFXCHECKER", 10, 0, SFXManager)
+
+local function Reload(ply,cmd,args)
+	if not ply:IsSuperAdmin() then return end
+	for k,v in pairs(environments) do
+		if v and v:IsValid() then
+			v:Remove()
+			v = nil
+		else
+			v = nil
+		end
+	end
+	RegisterEnvironments()
+	ply:ChatPrint("Environments Has Been Reset!")
+end
+concommand.Add("env_server_reload", Reload)
