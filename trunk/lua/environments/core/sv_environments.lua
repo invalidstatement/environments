@@ -398,7 +398,7 @@ end
 --timer.Create("SFXCHECKER", 10, 0, SFXManager)
 
 local function Reload(ply,cmd,args)
-	if not ply:IsSuperAdmin() then return end
+	if not ply:IsAdmin() then return end
 	for k,v in pairs(environments) do
 		if v and v:IsValid() then
 			v:Remove()
