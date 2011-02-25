@@ -5,16 +5,16 @@
 planets = {} --Planetary Data Table :D updated from server usermessages
 stars = {} --Star data table updated from server usmg
 
-SRP = {}
+environments = {}
 
 //This is the planet the client is currently on, used for effects and such
 planet = 0
 
-SRP.suit = {}
-SRP.suit.air = 0
-SRP.suit.coolant = 0
-SRP.suit.energy = 0
-SRP.suit.o2per = 0
+environments.suit = {}
+environments.suit.air = 0
+environments.suit.coolant = 0
+environments.suit.energy = 0
+environments.suit.o2per = 0
 
 //Create the VGUI
 topbar = vgui.Create( "LS Debug Bar" )
@@ -69,10 +69,10 @@ local function LSUpdate(msg) --recieves life support update packet
 	hash.air = msg:ReadShort() --Get air left in suit
 	hash.coolant = msg:ReadShort() --Get coolant left in suit
 	hash.energy = msg:ReadShort() --Get energy left in suit
-	SRP.suit = hash
-	SRP.suit.temperature = msg:ReadShort() --Get energy left in suit
-	SRP.suit.o2per = msg:ReadFloat()
-	SRP.suit.temp = msg:ReadShort()
+	environments.suit = hash
+	environments.suit.temperature = msg:ReadShort() --Get energy left in suit
+	environments.suit.o2per = msg:ReadFloat()
+	environments.suit.temp = msg:ReadShort()
 end
 usermessage.Hook( "LSUpdate", LSUpdate )
 

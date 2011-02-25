@@ -1,12 +1,14 @@
-
-local GM = {}
+------------------------------------------
+//  Environments   //
+//   CmdrMatthew   //
+------------------------------------------
 
 local meta = FindMetaTable("Player")
 function meta:PutOnSuit()
-	if table.HasValue(nofingers, self.m_hClothing:GetParent():GetInfo( "cl_playermodel" )) then
-		self.m_hClothing:SetModel("models/player/barney.mdl")
+	if table.HasValue(nofingers, self.m_hSuit:GetParent():GetInfo( "cl_playermodel" )) then
+		self.m_hHelmet:SetModel("models/player/barney.mdl")
 	else
-		self.m_hClothing:SetModel("models/player/combine_super_soldier.mdl")
+		self.m_hHelmet:SetModel("models/player/combine_super_soldier.mdl")
 	end
 	self:SetNWBool("helmet", true)
 end
@@ -14,22 +16,22 @@ end
 function meta:TakeOffSuit()
 	if self:GetParent() and self:GetParent():IsValid() then
 		self:SetNWBool("helmet", false)
-		self.m_hClothing:SetModel(player_manager.TranslatePlayerModel(self.m_hClothing:GetParent():GetInfo( "cl_playermodel" )))
+		self.m_hSuit:SetModel(player_manager.TranslatePlayerModel(self.m_hSuit:GetParent():GetInfo( "cl_playermodel" )))
 	end
 end
 
 function meta:PutOnHelmet()
-	--if table.HasValue(nofingers, self.m_hClothing:GetParent():GetInfo( "cl_playermodel" )) then
-		--self.m_hModel:SetModel("models/player/barney.mdl")
+	--if table.HasValue(nofingers, self.m_hSuit:GetParent():GetInfo( "cl_playermodel" )) then
+		--self.m_hHelmet:SetModel("models/player/barney.mdl")
 	--else
-		self.m_hModel:SetModel("models/player/combine_super_soldier.mdl")
+		self.m_hHelmet:SetModel("models/player/combine_super_soldier.mdl")
 	--end
 	self:SetNWBool("helmet", true)
 end
 
 function meta:TakeOffHelmet()
 	self:SetNWBool("helmet", false)
-	self.m_hModel:SetModel(player_manager.TranslatePlayerModel(self.m_hModel:GetParent():GetInfo( "cl_playermodel" )))
+	self.m_hHelmet:SetModel(player_manager.TranslatePlayerModel(self.m_hHelmet:GetParent():GetInfo( "cl_playermodel" )))
 end
 
 /*---------------------------------------------------------
@@ -37,23 +39,21 @@ end
    Desc: Called when a player dies.
 ---------------------------------------------------------*/
 local function PlayerDeath( Victim, Inflictor, Attacker )
-	if ( ValidEntity( Victim.m_hClothing ) ) then
-		Victim.m_hModel:SetParent( Victim:GetRagdollEntity() )
-		Victim.m_hModel:Initialize()
-		Victim.m_hClothing:SetParent( Victim:GetRagdollEntity() )
-		Victim.m_hClothing:Initialize()
+	if ( ValidEntity( Victim.m_hSuit ) ) then
+		Victim.m_hHelmet:SetParent( Victim:GetRagdollEntity() )
+		Victim.m_hHelmet:Initialize()
+		Victim.m_hSuit:SetParent( Victim:GetRagdollEntity() )
+		Victim.m_hSuit:Initialize()
 	end
 end
 hook.Add( "PlayerDeath", "PlayerRemoveClothing", PlayerDeath )
 
 local function RemovePlayerClothing( ply )
-	if ( ply.m_hClothing && ply.m_hClothing:IsValid() ) then
-
-		ply.m_hModel:Remove()
-		ply.m_hModel = nil
-		ply.m_hClothing:Remove()
-		ply.m_hClothing = nil
-
+	if ( ply.m_hSuit && ply.m_hSuit:IsValid() ) then
+		ply.m_hHelmet:Remove()
+		ply.m_hHelmet = nil
+		ply.m_hSuit:Remove()
+		ply.m_hSuit = nil
 	end
 	ply:SetRenderMode(RENDERMODE_NONE)
 end
@@ -77,33 +77,29 @@ hook.Add( "PlayerInitialSpawn", "PlayerSetClothing", PlayerInitialSpawn )
 ---------------------------------------------------------*/
 local function PlayerSpawn( pl )
 	// Set player clothing
-	hook.Call( "PlayerSetClothing", GM, pl )
+	PlayerSetClothing()
 end
 hook.Add( "PlayerSpawn", "PlayerSetClothing", PlayerSpawn )
 
-/*---------------------------------------------------------
-   Name: gamemode:PlayerSetClothing( )
-   Desc: Set the player's clothing
----------------------------------------------------------*/
 nofingers = {"barney", "mossman", "alyx", "breen", "gman", "kleiner"}
-function GM:PlayerSetClothing( pl )
+function PlayerSetClothing( pl )
 	RemovePlayerClothing( pl )
 	pl:SetNWBool("helmet", true)
-	pl.m_hModel = ents.Create( "player_model" )
-	pl.m_hModel:SetParent( pl )
-	pl.m_hModel:SetPos( pl:GetPos() )
-	pl.m_hModel:SetAngles( pl:GetAngles() )
-	pl.m_hModel:Spawn()
-	pl.m_hModel:SetModel("models/player/combine_super_soldier.mdl")
+	pl.m_hHelmet = ents.Create( "player_helmet" )
+	pl.m_hHelmet:SetParent( pl )
+	pl.m_hHelmet:SetPos( pl:GetPos() )
+	pl.m_hHelmet:SetAngles( pl:GetAngles() )
+	pl.m_hHelmet:Spawn()
+	pl.m_hHelmet:SetModel("models/player/combine_super_soldier.mdl")
 	
-	pl.m_hClothing = ents.Create( "player_clothing" )
-	pl.m_hClothing:SetParent( pl )
-	if table.HasValue(nofingers, pl.m_hClothing:GetParent():GetInfo( "cl_playermodel" )) then
-		pl.m_hClothing:SetModel("models/player/barney.mdl")
+	pl.m_hSuit = ents.Create( "player_suit" )
+	pl.m_hSuit:SetParent( pl )
+	if table.HasValue(nofingers, pl.m_hSuit:GetParent():GetInfo( "cl_playermodel" )) then
+		pl.m_hSuit:SetModel("models/player/barney.mdl")
 	else
-		pl.m_hClothing:SetModel("models/player/combine_super_soldier.mdl")
+		pl.m_hSuit:SetModel("models/player/combine_super_soldier.mdl")
 	end
-	pl.m_hClothing:SetPos( pl:GetPos() )
-	pl.m_hClothing:SetAngles( pl:GetAngles() )
-	pl.m_hClothing:Spawn()
+	pl.m_hSuit:SetPos( pl:GetPos() )
+	pl.m_hSuit:SetAngles( pl:GetAngles() )
+	pl.m_hSuit:Spawn()
 end
