@@ -15,9 +15,7 @@ end
 ------------------------------------------------------------*/
 local function BoneScale( self, realboneid )
 	local matBone = self:GetBoneMatrix( realboneid )
-
 	matBone:Scale( Vector( 0, 0, 0 ) )
-
 	self:SetBoneMatrix( realboneid, matBone )
 end
 
@@ -27,7 +25,6 @@ end
 ---------------------------------------------------------*/
 function ENT:BuildBonePositions( NumBones, NumPhysBones )
 	local realboneid = self:LookupBone( "ValveBiped.Bip01_Head1" )
-
 	BoneScale( self, realboneid )
 end
 

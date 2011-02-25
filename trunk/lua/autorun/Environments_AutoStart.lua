@@ -6,7 +6,7 @@
 //1. Work on 3D HUD
 //2. Fix player models and suits, charred not working, and fingers on HL2 chars
 Environments = {}
-Environments.Version = 59
+Environments.Version = 60
 Environments.FileVersion = 1
 local onlineversion
 
@@ -71,7 +71,7 @@ function GetOnlineVersion( callback, printChecking )
 	end
 	http.Get("http://environments.googlecode.com/svn/trunk/","",function(contents,size)
 		local rev = tonumber(string.match( contents, "Revision ([0-9]+)" ))
-		callback(rev,contents,size,printChecking)
+		VersionCheck(rev,contents,size,printChecking)
 	end)
 end
 
