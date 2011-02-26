@@ -4,7 +4,6 @@
 ------------------------------------------
 --BUGS
 --1. ply.suit.air , coolant, energy, ect is all used by LS too, try and fix the variable clash
---require("profiler")
 
 Devices = {}
 

@@ -6,8 +6,9 @@
 //1. Work on 3D HUD
 //2. Fix player models and suits, charred not working, and fingers on HL2 chars
 //3. Make it so you can refill your suit without LS3
+//4. HUD customizations
 Environments = {}
-Environments.Version = 64
+Environments.Version = 65
 Environments.FileVersion = 1
 local onlineversion
 
@@ -50,6 +51,7 @@ else
 	include("environments/core/sv_environments_planets.lua")
 	include("environments/core/sv_environments_players.lua")
 	include("environments/spacesuits/sv_suit.lua")
+	include("environments/events/sv_events.lua")
 	
 	AddCSLuaFile("autorun/Environments_AutoStart.lua")
 	AddCSLuaFile("environments/core/cl_core.lua")
