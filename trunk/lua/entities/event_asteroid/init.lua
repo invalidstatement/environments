@@ -3,9 +3,6 @@ AddCSLuaFile( "shared.lua" )
 include( 'shared.lua' )
 
 local rockmodels = {
-	"models/props_canal/rock_riverbed01d.mdl",
-	"models/props_canal/rock_riverbed02a.mdl",
-	"models/props_canal/rock_riverbed02b.mdl",
 	"models/props_canal/rock_riverbed02c.mdl",
 	"models//props_debris/concrete_spawnchunk001a.mdl",
 	"models//props_debris/concrete_spawnchunk001b.mdl",
@@ -24,14 +21,12 @@ local rockmodels = {
 	"models/props_wasteland/rockcliff01c.mdl",
 	"models/props_wasteland/rockcliff01j.mdl",
 	"models/props_wasteland/rockgranite02a.mdl",
-	"models/props_wasteland/rockgranite04c.mdl",
 	"models/props_wasteland/rockcliff01e.mdl",
 	"models/props_wasteland/rockgranite01a.mdl",
 	"models/props_wasteland/rockgranite03c.mdl",
 	"models/props_wasteland/rockcliff01b.mdl",
 	"models/props_wasteland/rockcliff01f.mdl",
 	"models/props_wasteland/rockgranite01b.mdl",
-	"models/props_wasteland/rockgranite04a.mdl",
 	"models/props_wasteland/rockcliff01g.mdl",
 	}
 

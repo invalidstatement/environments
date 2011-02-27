@@ -22,6 +22,23 @@ events["asteroidstorm"] = function()
 		roids:Start(planet.radius)
 	end
 end
+events["meteor"] = function()
+	local planet = table.Random(environments)
+	if planet.spawn == "1" then
+		planet = table.Random(environments)
+		if planet.spawn == "0" then
+			local roid = ents.Create("event_meteor")
+			roid:SetPos(planet.position + Vector(0, 2000, planet.radius + 2000))
+			roid:Spawn()
+			roid:Start(planet.radius)
+		end
+	else
+		local roid = ents.Create("event_meteor")
+		roid:SetPos(planet.position + Vector(0, 2000, planet.radius + 2000))
+		roid:Spawn()
+		roid:Start(planet)
+	end
+end
 
 local function FireEvent(ply,cmd,args)
 	if not ply:IsAdmin() then return end
