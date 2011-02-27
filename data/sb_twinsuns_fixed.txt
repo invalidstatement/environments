@@ -1,0 +1,213 @@
+"Out"
+{
+	"1"
+	{
+		"radius"		"1280"
+		"atm"		"0"
+		"suntemperature"		"150"
+		"gravity"		"0.25"
+		"pressure"		"0"
+		"position"
+		{
+			"Y"		"-4898"
+			"__type"		"Vector"
+			"x"		"-3423"
+			"z"		"5363"
+		}
+		"temperature"		"150"
+		"name"		"Moon of Serenity"
+		"typeof"		"sphere"
+		"atmosphere"
+		{
+			"oxygen"		"0"
+			"methane"		"0"
+			"hydrogen"		"0"
+			"carbondioxide"		"0"
+			"argon"		"0"
+			"nitrogen"		"0"
+		}
+		"NoClip"		"0"
+		"unstable"		"false"
+		"spawn"		"0"
+	}
+	"2"
+	{
+		"radius"		"1280"
+		"atm"		"0"
+		"suntemperature"		"150"
+		"gravity"		"0.25"
+		"pressure"		"0"
+		"position"
+		{
+			"Y"		"12687"
+			"__type"		"Vector"
+			"x"		"-10738"
+			"z"		"125"
+		}
+		"temperature"		"150"
+		"name"		"Outpost 47"
+		"typeof"		"sphere"
+		"atmosphere"
+		{
+			"oxygen"		"0"
+			"methane"		"0"
+			"hydrogen"		"0"
+			"carbondioxide"		"0"
+			"argon"		"0"
+			"nitrogen"		"0"
+		}
+		"NoClip"		"0"
+		"unstable"		"false"
+		"spawn"		"0"
+	}
+	"3"
+	{
+		"radius"		"3072"
+		"atm"		"1"
+		"suntemperature"		"0"
+		"gravity"		"1"
+		"pressure"		"1"
+		"position"
+		{
+			"Y"		"11075"
+			"__type"		"Vector"
+			"x"		"-7726"
+			"z"		"-8163"
+		}
+		"temperature"		"0"
+		"name"		"Frostmourne"
+		"typeof"		"sphere"
+		"atmosphere"
+		{
+			"oxygen"		"0"
+			"methane"		"0"
+			"hydrogen"		"0"
+			"carbondioxide"		"0"
+			"argon"		"0"
+			"nitrogen"		"100"
+		}
+		"NoClip"		"0"
+		"unstable"		"false"
+		"spawn"		"0"
+	}
+	"4"
+	{
+		"radius"		"4096"
+		"atm"		"1"
+		"suntemperature"		"180"
+		"gravity"		"0.5"
+		"pressure"		"1"
+		"position"
+		{
+			"Y"		"-9293"
+			"__type"		"Vector"
+			"x"		"9385"
+			"z"		"-8385"
+		}
+		"temperature"		"180"
+		"name"		"Kaepora"
+		"typeof"		"sphere"
+		"atmosphere"
+		{
+			"oxygen"		"0"
+			"methane"		"0"
+			"hydrogen"		"10"
+			"carbondioxide"		"90"
+			"argon"		"0"
+			"nitrogen"		"0"
+		}
+		"NoClip"		"0"
+		"unstable"		"false"
+		"spawn"		"0"
+	}
+	"5"
+	{
+		"radius"		"4096"
+		"atm"		"1"
+		"suntemperature"		"288"
+		"gravity"		"1"
+		"pressure"		"1"
+		"position"
+		{
+			"Y"		"-9383"
+			"__type"		"Vector"
+			"x"		"-8917"
+		}
+		"temperature"		"288"
+		"name"		"Serenity"
+		"typeof"		"sphere"
+		"atmosphere"
+		{
+			"oxygen"		"60"
+			"methane"		"0"
+			"hydrogen"		"15"
+			"carbondioxide"		"10"
+			"argon"		"0"
+			"nitrogen"		"15"
+		}
+		"NoClip"		"0"
+		"unstable"		"false"
+		"spawn"		"1"
+	}
+	"6"
+	{
+		"radius"		"2560"
+		"atm"		"1"
+		"suntemperature"		"800"
+		"gravity"		"1"
+		"pressure"		"1"
+		"position"
+		{
+			"Y"		"-9823"
+			"__type"		"Vector"
+			"x"		"9843"
+			"z"		"3609"
+		}
+		"temperature"		"600"
+		"name"		"Necronis"
+		"typeof"		"sphere"
+		"atmosphere"
+		{
+			"oxygen"		"0"
+			"methane"		"0"
+			"hydrogen"		"20"
+			"carbondioxide"		"70"
+			"argon"		"0"
+			"nitrogen"		"10"
+		}
+		"NoClip"		"0"
+		"unstable"		"false"
+		"spawn"		"0"
+	}
+	"7"
+	{
+		"radius"		"3072"
+		"atm"		"1"
+		"suntemperature"		"600"
+		"gravity"		"1"
+		"pressure"		"1"
+		"position"
+		{
+			"Y"		"5673"
+			"__type"		"Vector"
+			"x"		"8253"
+			"z"		"1576"
+		}
+		"temperature"		"600"
+		"name"		"Deschain"
+		"typeof"		"sphere"
+		"atmosphere"
+		{
+			"oxygen"		"0"
+			"methane"		"0"
+			"hydrogen"		"0"
+			"carbondioxide"		"75"
+			"argon"		"0"
+			"nitrogen"		"25"
+		}
+		"NoClip"		"0"
+		"unstable"		"false"
+		"spawn"		"0"
+	}
+	"version"		"2"
+}
