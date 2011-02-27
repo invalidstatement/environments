@@ -38,11 +38,6 @@ if CLIENT then
 		end
 	end)
 	
-	local override = false
-	if override then
-		Load()
-	end
-	
 	concommand.Add("env_update_check", function(ply, cmd, args)
 		GetOnlineVersion(true)
 	end)
