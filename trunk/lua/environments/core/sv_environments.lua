@@ -148,6 +148,7 @@ function RegisterEnvironments()
 						planet.temperature = 288
 						planet.pressure = 1
 						planet.noclip = 0
+						planet.spawn = 0
 						
 						i=i+1
 						planet.name = i
@@ -164,6 +165,7 @@ function RegisterEnvironments()
 						planet.temperature = 288
 						planet.pressure = 1
 						planet.noclip = 0
+						planet.spawn = 0
 						
 						for k2,v2 in pairs(values) do
 							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
@@ -192,6 +194,7 @@ function RegisterEnvironments()
 						planet.temperature = 288
 						planet.pressure = 1
 						planet.noclip = 0
+						planet.spawn = 0
 						
 						for k2,v2 in pairs(values) do
 							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius

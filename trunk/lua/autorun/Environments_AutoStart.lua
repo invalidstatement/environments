@@ -8,8 +8,8 @@
 //3. Make it so you can refill your suit without LS3
 //4. HUD customizations
 Environments = {}
-Environments.Version = 66
-Environments.FileVersion = 1
+Environments.Version = 67
+Environments.FileVersion = 2
 local onlineversion
 
 if CLIENT then
