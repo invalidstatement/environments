@@ -21,6 +21,14 @@ default.atmosphere.argon = 0
 timer.Create("registerCAFOverwrites", 5, 1, function()
 	local old = CAF.GetAddon
 	local SB = {}
+	function SB.GetStatus()
+		return true
+	end
+
+	function LS.GetStatus()
+		return true
+	end
+	
 	function CAF.GetAddon(name)
 		if name == "Spacebuild" then
 			return SB
@@ -28,14 +36,6 @@ timer.Create("registerCAFOverwrites", 5, 1, function()
 			return LS
 		end
 		return old(name)
-	end
-	function SB.GetStatus()
-		return true
-	end
-
-	local LS = {}
-	function LS.GetStatus()
-		return true
 	end
 end)
 //End LS3

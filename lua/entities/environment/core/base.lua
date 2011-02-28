@@ -198,6 +198,10 @@ function ENT:GetAtmosphere()
 	return self.atmosphere
 end
 
+function ENT:GetSize()
+	return self.radius
+end
+
 function ENT:IsSpace()
 	return false
 end

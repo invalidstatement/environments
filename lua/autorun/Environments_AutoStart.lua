@@ -8,7 +8,7 @@
 //3. Make it so you can refill your suit without LS3
 //4. HUD customizations
 Environments = {}
-Environments.Version = 69
+Environments.Version = 70
 Environments.FileVersion = 2
 local onlineversion
 
@@ -47,6 +47,7 @@ else
 	include("environments/core/sv_environments_players.lua")
 	include("environments/spacesuits/sv_suit.lua")
 	include("environments/events/sv_events.lua")
+	include("environments/core/sv_ls_support.lua")
 	
 	AddCSLuaFile("autorun/Environments_AutoStart.lua")
 	AddCSLuaFile("environments/core/cl_core.lua")
@@ -83,3 +84,12 @@ function VersionCheck(rev, contents, size)
 	onlineversion = rev
 end
 GetOnlineVersion()
+
+//Add The Server Tag
+local servertags = GetConVarString("sv_tags")
+if servertags == nil then
+	RunConsoleCommand("sv_tags", "Environments")
+elseif not string.find(servertags, "Environments") then
+	servertags = servertags .. ",".."Environments"
+	RunConsoleCommand("sv_tags", servertags)	
+end
