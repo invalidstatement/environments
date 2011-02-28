@@ -123,18 +123,18 @@ function LoadHud()
 			-- HUDShouldDraw hooks.
 	end
 	--hook.Add( "HUDShouldDraw", "HideThings", HideThings )
-
+	local client = LocalPlayer()
 	--Think hook
 	function HUD:Think()
 		--first, check if the player is in a vehicle
 		if ScrW() == 1920 then --1920x1024
-			if LocalPlayer():InVehicle() then
+			if client:InVehicle() then
 				HUD.EyeVectorOffset = Vector(-2,44,-41)
 			else
 				HUD.EyeVectorOffset = Vector(-2,55,-41)
 			end
 		else --everyone else
-			if LocalPlayer():InVehicle() then
+			if client:InVehicle() then
 				HUD.EyeVectorOffset = Vector(-2,44,-53)
 			else
 				HUD.EyeVectorOffset = Vector(-2,55,-53)
@@ -148,7 +148,7 @@ function LoadHud()
 		end
 	end
 
-	local client = LocalPlayer()
+	
 	--HUDPaint like hook,but called after the screen gets rendered,not associated with HUDPaint however
 	function HUD:DrawHUD()
 		local Air = environments.suit.air / 40
@@ -242,7 +242,7 @@ function LoadHud()
 	--RenderScreenspaceEffects hook
 	function HUD:DrawHUDScreen()
 		if not IsValid(HUD.CS_Model) || not HUD.Convar:GetBool() then return end
-		if not LocalPlayer():GetNWBool("helmet") then return end
+		if not client:GetNWBool("helmet") then return end
 		
 		cam.Start3D( EyePos(), EyeAngles() )
 			cam.IgnoreZ( true )
