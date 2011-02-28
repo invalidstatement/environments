@@ -128,13 +128,13 @@ function LoadHud()
 	function HUD:Think()
 		--first, check if the player is in a vehicle
 		if ScrW() == 1920 then --1920x1024
-			if client:InVehicle() then
+			if LocalPlayer():InVehicle() then
 				HUD.EyeVectorOffset = Vector(-2,44,-41)
 			else
 				HUD.EyeVectorOffset = Vector(-2,55,-41)
 			end
 		else --everyone else
-			if client:InVehicle() then
+			if LocalPlayer():InVehicle() then
 				HUD.EyeVectorOffset = Vector(-2,44,-53)
 			else
 				HUD.EyeVectorOffset = Vector(-2,55,-53)
@@ -242,7 +242,7 @@ function LoadHud()
 	--RenderScreenspaceEffects hook
 	function HUD:DrawHUDScreen()
 		if not IsValid(HUD.CS_Model) || not HUD.Convar:GetBool() then return end
-		if not client:GetNWBool("helmet") then return end
+		if not LocalPlayer():GetNWBool("helmet") then return end
 		
 		cam.Start3D( EyePos(), EyeAngles() )
 			cam.IgnoreZ( true )
