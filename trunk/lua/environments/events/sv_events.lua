@@ -5,53 +5,42 @@
 
 //prototype events system
 local events = {}
-events["asteroidstorm"] = function()
-	local planet = table.Random(environments)
-	if planet.spawn == "1" then
-		planet = table.Random(environments)
-		if planet.spawn == "0" then
-			local roids = ents.Create("event_asteroid_storm")
-			roids:SetPos(planet.position + Vector(0, 0, planet.radius + 2000))
-			roids:Spawn()
-			roids:Start(planet.radius)
-		end
-	else
-		local roids = ents.Create("event_asteroid_storm")
-		roids:SetPos(planet.position + Vector(0, 0, planet.radius + 2000))
-		roids:Spawn()
-		roids:Start(planet.radius)
-	end
+events["asteroidstorm"] = function(planet)
+	local roids = ents.Create("event_asteroid_storm")
+	roids:SetPos(planet.position + Vector(0, 0, planet.radius + 2000))
+	roids:Spawn()
+	roids:Start(planet.radius)
 end
-events["meteor"] = function()
-	local planet = table.Random(environments)
-	if planet.spawn == "1" then
-		planet = table.Random(environments)
-		if planet.spawn == "0" then
-			local roid = ents.Create("event_meteor")
-			roid:SetPos(planet.position + Vector(0, 2000, planet.radius + 2000))
-			roid:Spawn()
-			roid:Start(planet.radius)
-		end
-	else
-		local roid = ents.Create("event_meteor")
-		roid:SetPos(planet.position + Vector(0, 2000, planet.radius + 2000))
-		roid:Spawn()
-		roid:Start(planet)
-	end
+events["meteor"] = function(planet)
+	local roid = ents.Create("event_meteor")
+	roid:SetPos(planet.position + Vector(0, 2000, planet.radius + 2000))
+	roid:Spawn()
+	roid:Start(planet)
 end
 
 local function FireEvent(ply,cmd,args)
 	if not ply:IsAdmin() then return end
-	events[args[1]]()
+	if ply.environment.name != "space" then
+		events[args[1]](ply.environment)
+	else
+		ply:ChatPrint("You can't call in a "..args[1].." in space!")
+	end
 end
 concommand.Add("env_fire_event", FireEvent)
 
 local function EventChecker()
-	
 	if math.random(1,5) == 3 then
 		print("Event Running")
 		//call the function to run the event
-		table.Random(events)()
+		local planet = table.Random(environments)
+		if not planet.spawn == "1" then
+			table.Random(events)(planet)
+		else
+			planet = table.Random(environments)
+			if not planet.spawn == "1" then
+				table.Random(events)(planet)
+			end
+		end	
 	end
 end
 timer.Create("EnvEvents", 10, 1, EventChecker)

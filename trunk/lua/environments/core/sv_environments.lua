@@ -285,6 +285,7 @@ space.pressure = 0
 space.temperature = 3
 space.air.o2per = 0
 space.noclip = 0
+space.name = "space"
 
 function space.IsOnPlanet()
 	return false

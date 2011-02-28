@@ -6,6 +6,14 @@
 LS = {}
 
 //Thank you guy who wrote LS3, this fixes stuff not exploding
+CreateConVar( "LS_AllowNukeEffect", "1" ) //Update to something changeable later on 
+
+local function LS_Reg_Veh(ply, ent)
+	local RD = CAF.GetAddon("Resource Distribution")
+	RD.RegisterNonStorageDevice(ent)
+end
+hook.Add( "PlayerSpawnedVehicle", "LS_vehicle_spawn", LS_Reg_Veh )
+
 local function RemoveEntity( ent )
 	if (ent:IsValid()) then
 		ent:Remove()
