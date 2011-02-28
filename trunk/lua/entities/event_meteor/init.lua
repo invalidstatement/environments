@@ -12,6 +12,7 @@ function ENT:Initialize()
 		phys:EnableGravity(false)
 		phys:SetMass(50000)
 	end
+	self:SetHealth(math.Clamp((self:GetPhysicsObject():GetVolume()/900)-100,50,10000))
 	self:SetColor(150,150,150,255)
 	self.firstthink = true
 end
@@ -19,28 +20,38 @@ end
 function ENT:PhysicsCollide(ent)
 	if not self.Burn then return end
 	local expl = ents.Create("env_explosion")
-	expl:SetPos(self.Entity:GetPos())
-	expl:SetParent(self.Entity)
-	expl:SetOwner(self.Entity:GetOwner())
+	expl:SetPos(self:GetPos())
+	expl:SetParent(self)
+	expl:SetOwner(self:GetOwner())
 	expl:SetKeyValue("iMagnitude","1000");
 	expl:SetKeyValue("iRadiusOverride", 2000)
 	expl:Spawn()
 	expl:Activate()
+	
+	/*local eftdata = EffectData()
+	eftdata:SetStart(self:GetPos())
+	eftdata:SetOrigin(self:GetPos())
+	eftdata:SetMagnitude(1)
+	util.Effect("HelicopterMegaBomb",eftdata)*/
+	
 	util.ScreenShake(self:GetPos(), 14, 255, 6, 5000)
+	
 	expl:Fire("explode", "", 0)	
 	expl:Fire("kill", "", .5)
-	for k,v in pairs(ents.FindInSphere(self.Entity:GetPos(),500)) do
+	
+	for k,v in pairs(ents.FindInSphere(self:GetPos(),500)) do
 		if v:IsValid() then
 			constraint.RemoveAll(v)
 		end
 	end
-	local tr = util.QuickTrace(self.Entity:GetPos(), self.Entity:GetPos()+(self.Entity:GetVelocity()*100), self.Entity)
+	
+	local tr = util.QuickTrace(self:GetPos(), self:GetPos()+(self:GetVelocity()*100), self)
 	if tr.Entity then
 		if tr.Entity:IsValid() then
 			constraint.RemoveAll(tr.Entity)
 		end
 	end
-	self.Entity:Remove()
+	self:Remove()
 end
 
 function ENT:Start(planet)
@@ -48,21 +59,42 @@ function ENT:Start(planet)
 	self:GetPhysicsObject():SetVelocity( (self.target - self:GetPos() ):Normalize() * 700 ) 
 end
 
+function ENT:OnTakeDamage(dmg)
+	self:SetHealth(self:Health() - dmg:GetDamage())
+	if self:Health() < 1 then
+		self:EmitSound("Weapon_Mortar.Impact")
+		self:Remove()
+	end
+end
+
 function ENT:Think()
 	if not self.firstthink then
 		if self.Burn ~= true then
 			self.Burn = true
-			self:Ignite(20,100)
+			self:Ignite(100,100)
 			self.flame = ents.Create("env_fire_trail")
-			self.flame:SetAngles(self.Entity:GetAngles())
-			self.flame:SetPos(self.Entity:GetPos())
-			self.flame:SetParent(self.Entity)
+			self.flame:SetAngles(self:GetAngles())
+			self.flame:SetPos(self:GetPos())
+			self.flame:SetParent(self)
 			self.flame:Spawn()
 			self.flame:Activate()
 		end
+		self:GetPhysicsObject():SetVelocity( (self.target - self:GetPos() ):Normalize() * 700 ) 
 	else
 		self.firstthink = false
 	end
-	self.Entity:NextThink(CurTime()+1)
+	self:NextThink(CurTime()+1)
 	return true
+end
+
+function ENT:CanTool()
+	return false
+end
+
+function ENT:GravGunPunt()
+	return false
+end
+
+function ENT:GravGunPickupAllowed()
+	return false
 end
