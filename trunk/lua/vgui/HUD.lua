@@ -78,9 +78,9 @@ function LoadHud()
 
 	//Set it up for different resolutions
 	local ratio = ScrW()/1152
-	if ScrW() == 1920 then
+	if ScrW() == 1920 then --1920x1024
 		ratio = 3
-		HUD.ModelScale=Vector(ScrW()/1252,ScrW()/1252,1.5) --1920x1024
+		HUD.ModelScale=Vector(ScrW()/1252,ScrW()/1252,1.5) 
 		HUD.EyeVectorOffset=Vector(-2,55,-53)
 	elseif ScrW() == 1024 and ScrH() == 768 then --1024x768
 		ratio = 1

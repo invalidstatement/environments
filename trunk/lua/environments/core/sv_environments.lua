@@ -178,6 +178,9 @@ function RegisterEnvironments()
 						
 						planet.position = ent:GetPos()
 						
+						if planet.atm == 0 then
+							planet.atm == 1
+						end
 						i=i+1
 						planet.name = i
 						
@@ -208,6 +211,10 @@ function RegisterEnvironments()
 							elseif (k2 == "Case11") then planet.atmosphere.nitrogen = tonumber(v2)
 							elseif (k2 == "Case12") then planet.atmosphere.hydrogen = tonumber(v2)
 							elseif (k2 == "Case13") then planet.name = tostring(v2) end --Get Name
+						end
+						
+						if planet.atm == 0 then
+							planet.atm == 1
 						end
 						
 						planet.position = ent:GetPos()
