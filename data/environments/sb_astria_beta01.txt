@@ -183,7 +183,7 @@
 	"7"
 	{
 		"radius"		"1536"
-		"atm"		"0"
+		"atm"		"1"
 		"suntemperature"		"191"
 		"gravity"		"0.4"
 		"pressure"		"0"

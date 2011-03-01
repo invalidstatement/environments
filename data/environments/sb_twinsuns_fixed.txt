@@ -3,7 +3,7 @@
 	"1"
 	{
 		"radius"		"1280"
-		"atm"		"0"
+		"atm"		"1"
 		"suntemperature"		"150"
 		"gravity"		"0.25"
 		"pressure"		"0"
@@ -33,7 +33,7 @@
 	"2"
 	{
 		"radius"		"1280"
-		"atm"		"0"
+		"atm"		"1"
 		"suntemperature"		"150"
 		"gravity"		"0.25"
 		"pressure"		"0"
