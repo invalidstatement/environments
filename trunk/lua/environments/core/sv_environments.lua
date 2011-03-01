@@ -213,7 +213,7 @@ function RegisterEnvironments()
 						end
 						
 						if planet.atm == 0 then
-							planet.atm == 1
+							planet.atm = 1
 						end
 						
 						planet.position = ent:GetPos()
