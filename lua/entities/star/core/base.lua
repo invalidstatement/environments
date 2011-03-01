@@ -15,6 +15,7 @@ function GetVolume(radius)
 end
 
 function ENT:Convert(air1, air2, value)
+	
 	--if not air1 or not air2 or not value then return 0 end
 	--if type(air1) != "number" or type(air2) != "number" or type(value) != "number" then return 0 end 
 	air1 = math.Round(air1)
@@ -28,7 +29,7 @@ function ENT:Convert(air1, air2, value)
 		return value;
 		//Don't do anything else anymore
 	end*/
-	if air1 == -1 then
+	/*if air1 == -1 then
 		if self.air.empty < value then
 			value = self.air.empty
 		end
@@ -158,7 +159,7 @@ function ENT:Convert(air1, air2, value)
 	for k,v in pairs(self.air) do
 		self.air[k.."per"] = self:GetResourcePercentage(k)
 	end
-	/*if air1 or air2 == 1 then
+	if air1 or air2 == 1 then
 		self.temperature = self.temperature + (( self.temperature * ((self.air.co2per - self.original.air.co2per)/100))/2)
 	end
 	if air1 or air2 == 4 then
