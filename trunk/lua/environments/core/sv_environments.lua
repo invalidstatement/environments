@@ -70,8 +70,7 @@ local function LoadEnvironments()
 		print("// Registering Sun..               //")
 		local status, error = pcall(RegisterSun)
 		if error then
-			print("//   Registering Sun Failed :(     //")
-			print("ERROR: "..error)
+			print("//   No Sun Found, Defaulting      //")
 			TrueSun = {}
 			TrueSun[1] = Vector(0,0,0)
 		end
@@ -179,7 +178,7 @@ function RegisterEnvironments()
 						planet.position = ent:GetPos()
 						
 						if planet.atm == 0 then
-							planet.atm == 1
+							planet.atm = 1
 						end
 						i=i+1
 						planet.name = i
