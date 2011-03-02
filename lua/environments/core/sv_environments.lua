@@ -17,7 +17,7 @@ default.atmosphere.methane = 0
 default.atmosphere.nitrogen = 40
 default.atmosphere.hydrogen = 22
 default.atmosphere.argon = 0
-
+	
 timer.Create("registerCAFOverwrites", 5, 1, function()
 	local old = CAF.GetAddon
 	local SB = {}
@@ -53,6 +53,9 @@ local function LoadEnvironments()
 		hook.Add("PlayerInitialSpawn","CreateLS", lsInitSpawn)
 		hook.Add("PlayerSpawn", "SpawnLS", lsSpawn)
 		hook.Add("ShowTeam", "HelmetToggle", HelmetSwitch)
+		hook.Add("PlayerInitialSpawn", "PlayerSetClothing", PlayerSuitInitialSpawn)
+		hook.Add("PlayerDeath", "PlayerRemoveClothing", PlayerSuitDeath)
+		hook.Add("PlayerSpawn", "PlayerSetClothing", PlayerSuitSpawn)
 		
 		//Fixes spawning ents in space
 		local meta = FindMetaTable("Entity")

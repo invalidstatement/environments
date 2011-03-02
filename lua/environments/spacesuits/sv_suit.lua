@@ -34,7 +34,7 @@ end
    Name: gamemode:PlayerDeath( )
    Desc: Called when a player dies.
 ---------------------------------------------------------*/
-local function PlayerDeath( Victim, Inflictor, Attacker )
+function PlayerSuitDeath( Victim, Inflictor, Attacker )
 	if ( ValidEntity( Victim.m_hSuit ) ) then
 		Victim.m_hHelmet:SetParent( Victim:GetRagdollEntity() )
 		Victim.m_hHelmet:Initialize()
@@ -42,7 +42,6 @@ local function PlayerDeath( Victim, Inflictor, Attacker )
 		Victim.m_hSuit:Initialize()
 	end
 end
-hook.Add( "PlayerDeath", "PlayerRemoveClothing", PlayerDeath )
 
 local function RemovePlayerClothing( ply )
 	if ( ply.m_hSuit && ply.m_hSuit:IsValid() ) then
@@ -58,24 +57,22 @@ end
    Name: gamemode:PlayerInitialSpawn( )
    Desc: Called just before the player's first spawn
 ---------------------------------------------------------*/
-local function PlayerInitialSpawn( pl )
+function PlayerSuitInitialSpawn( pl )
 	// Delay set player clothing
 	timer.Simple( 0.1, function()
 		hook.Call( "PlayerSetClothing", GM, pl )
 	end)
 	pl:SetNWBool("helmet", true)
 end
-hook.Add( "PlayerInitialSpawn", "PlayerSetClothing", PlayerInitialSpawn )
 
 /*---------------------------------------------------------
    Name: gamemode:PlayerSpawn( )
    Desc: Called when a player spawns
 ---------------------------------------------------------*/
-local function PlayerSpawn( pl )
+function PlayerSuitSpawn( pl )
 	// Set player clothing
 	PlayerSetClothing(pl)
 end
-hook.Add( "PlayerSpawn", "PlayerSetClothing", PlayerSpawn )
 
 nofingers = {"barney", "mossman", "alyx", "breen", "gman", "kleiner"}
 function PlayerSetClothing( pl )

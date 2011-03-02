@@ -69,20 +69,59 @@ usermessage.Hook("LS_umsg1", LS_umsg_hook1)
 
 function LoadHud()
 	HUD={}
+	HUD.mode = 0
 	HUD.Convar=CreateConVar( "env_hud_enabled", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
 	HUD.CS_Model=nil
 	HUD.Model="models/props_phx/construct/glass/glass_curve90x1.mdl"
-	HUD.ModelScale=Vector(ScrW()/1152,ScrW()/1152,1.8)
-	HUD.EyeVectorOffset=Vector(-2,55,-53)
 	HUD.EyeAngleOffset=Angle(0,135,0)
+	
+	//1024x768
+	--HUD.ModelScale=Vector(1,1,1.8)
+	--HUD.EyeVectorOffset=Vector(-2,55,-53)
+	--HUD.EyeAngleOffset=Angle(0,135,0)
+	
+	//1280x960
+	--HUD.ModelScale=Vector(1,1,1.7)
+	--HUD.EyeVectorOffset=Vector(-2,55,-50)
+	--HUD.EyeAngleOffset=Angle(0,135,0)
+	
+	//1280x1024
+	--HUD.ModelScale=Vector(1,1,1.7)
+	--HUD.EyeVectorOffset=Vector(-2,55,-48)
+	--HUD.EyeAngleOffset=Angle(0,135,0)
 
 	//Set it up for different resolutions
 	local ratio = ScrW()/1152
-	if ScrW() == 1920 then --1920x1024
+	if ScrW() == 1920 then --1920x1024 MOSTLY WORKING
 		ratio = 3
-		HUD.ModelScale=Vector(ScrW()/1252,ScrW()/1252,1.5) 
+		HUD.ModelScale=Vector(1.53,1.53,1.5) 
+		HUD.EyeVectorOffset=Vector(-2,55,-41)
+		HUD.mode = 1
+	elseif ScrW() == 1920 and ScrH() >= 1200 then --1920x1200 UNTESTED
+		ratio = 3
+		HUD.ModelScale=Vector(1.53,1.53,1.5) 
+		HUD.EyeVectorOffset=Vector(-2,55,-41)
+		HUD.mode = 1
+	elseif ScrW() == 1024 and ScrH() == 768 then --1024x768 WORKING
+		ratio = 1
+		HUD.ModelScale=Vector(1,1,1.8)
 		HUD.EyeVectorOffset=Vector(-2,55,-53)
-	elseif ScrW() == 1024 and ScrH() == 768 then --1024x768
+		HUD.mode = 2
+	elseif ScrW() == 1280 and ScrH() == 720 then --1280x720 WORKING
+		ratio = 1
+		HUD.ModelScale=Vector(1.25,1.25,1.8)
+		HUD.EyeVectorOffset=Vector(-2,55,-53)
+	elseif ScrW() == 1280 and ScrH() == 800 then --1280x800 WORKING
+		ratio = 1
+		HUD.ModelScale=Vector(1.25,1.25,1.8)
+		HUD.EyeVectorOffset=Vector(-2,55,-53)
+	elseif ScrW() == 1280 and ScrH() == 1024 then --1280x1024 WORKING
+		ratio = 1
+		HUD.ModelScale=Vector(1,1,1.8)
+		HUD.EyeVectorOffset=Vector(-2,55,-53)
+		print("1280x1024")
+		HUD.mode = 2
+	else
 		ratio = 1
 		HUD.ModelScale=Vector(1,1,1.8)
 		HUD.EyeVectorOffset=Vector(-2,55,-53)
@@ -127,7 +166,7 @@ function LoadHud()
 	--Think hook
 	function HUD:Think()
 		--first, check if the player is in a vehicle
-		if ScrW() == 1920 then --1920x1024
+		if HUD.mode == 1 then --1920x1024 and such
 			if LocalPlayer():InVehicle() then
 				HUD.EyeVectorOffset = Vector(-2,44,-41)
 			else
@@ -168,7 +207,11 @@ function LoadHud()
 		surface.DrawRect(0,0,ScrW(),100)
 		
 		//lower bar
-		surface.DrawRect(0,ScrH()-350,ScrW(),100)
+		if HUD.mode == 2 then
+			surface.DrawRect(0,ScrH()-450,ScrW(),100)
+		else
+			surface.DrawRect(0,ScrH()-350,ScrW(),100)
+		end
 
 		//actual
 		draw.SimpleText("Air: "..Air .. "%", "ScoreboardText", 105*ratio, 125, Color(255,255,255,255), 0, 0)
