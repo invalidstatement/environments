@@ -17,28 +17,6 @@ default.atmosphere.methane = 0
 default.atmosphere.nitrogen = 40
 default.atmosphere.hydrogen = 22
 default.atmosphere.argon = 0
-	
-timer.Create("registerCAFOverwrites", 5, 1, function()
-	local old = CAF.GetAddon
-	local SB = {}
-	function SB.GetStatus()
-		return true
-	end
-
-	function LS.GetStatus()
-		return true
-	end
-	
-	function CAF.GetAddon(name)
-		if name == "Spacebuild" then
-			return SB
-		elseif name == "Life Support" then
-			return LS
-		end
-		return old(name)
-	end
-end)
-//End LS3
 
 local function LoadEnvironments()
 	print("/////////////////////////////////////")
