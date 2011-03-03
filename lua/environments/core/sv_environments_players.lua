@@ -5,17 +5,15 @@
 --BUGS
 --1. ply.suit.air , coolant, energy, ect is all used by LS too, try and fix the variable clash
 
-Devices = {}
-
 local efficiency = 0.02 --the insulating efficiency of the suit, how fast the suit gains or loses temperature
-function LSCheck()
+function Environments.LSCheck()
 	for k, ply in pairs(player.GetAll()) do
 		if not ply:Alive() or not ply:IsValid() then return end
 		
 		if ply:GetNWBool("inspace") == true then
 			ply.environment = Space()	
 		end
-		PlayerCheck(ply)
+		Environments.PlayerCheck(ply)
 		
 		local env = ply.environment
 		
@@ -26,7 +24,7 @@ function LSCheck()
 		local temperature = env.temperature
 		
 		if ply:GetNWBool("inspace") == false then
-			temperature = SunCheck(ply)
+			temperature = Environments.SunCheck(ply)
 		end
 		
 		if ply.suit.worn and ply.suit.helmet then
@@ -180,11 +178,11 @@ function LSCheck()
 			end
 		end
 		
-		UpdateLS(ply, temperature)
+		Environments.UpdateLS(ply, temperature)
 	end
 end
 
-function SunCheck(ent)
+function Environments.SunCheck(ent)
 	local lit = false
 	if table.Count(stars) > 0 then
 		for k,v in pairs(stars) do
@@ -228,7 +226,7 @@ function SunCheck(ent)
 	end
 end
 
-function PlayerCheck(ent)
+function Environments.PlayerCheck(ent)
 	--if not ent:GetNWBool("inspace") then return end
 	local phys = ent:GetPhysicsObject()
 	if not phys:IsValid() then return end
@@ -350,7 +348,7 @@ concommand.Add("ToggleHelmet", ToggleHelmet)
 --------------------------------------------------------
 --              Life Support Usermessages             --
 --------------------------------------------------------
-function UpdateLS(ply, temp)
+function Environments.UpdateLS(ply, temp)
 	umsg.Start("LSUpdate", ply)
 		umsg.Short(ply.suit.air)
 		umsg.Short(ply.suit.coolant)
@@ -364,7 +362,7 @@ end
 --------------------------------------------------------
 --                  Life Support Hooks                --
 --------------------------------------------------------
-function lsInitSpawn(ply)
+function Environments.Hooks.LSInitSpawn(ply)
 	ply.suit = {}
 	ply.suit.params = {}
 	local hash = {}
@@ -380,7 +378,7 @@ function lsInitSpawn(ply)
 	umsg.End()
 end
 
-function lsSpawn(ply)
+function Environments.Hooks.LSSpawn(ply)
 	if not ply.msged then
 		ply:ChatPrint("This server is running Environments, please report any bugs to CmdrMatthew")
 		ply.msged = true
@@ -388,7 +386,7 @@ function lsSpawn(ply)
 	timer.Create("ResetSuit"..ply:Nick(), 1, 1, function() ply:ResetSuit() end)
 end
 
-function HelmetSwitch( ply )
+function Environments.Hooks.HelmetSwitch( ply )
 	if ply.suit.helmet then
 		--ply:TakeOffSuit()
 		ply:TakeOffHelmet()

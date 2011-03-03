@@ -39,7 +39,7 @@ function GetFlags(flags)
 	return habitat, unstable, sunburn
 end
 
-function CreateEnvironment(planet)
+function Environments.CreateEnvironment(planet)
 	local compounds = {}
 	compounds["o2"] = planet.atmosphere.oxygen
 	compounds["co2"] = planet.atmosphere.carbondioxide
@@ -169,7 +169,7 @@ function CreateEnvironment(planet)
 end
 
 //Borrowed from SB3
-function CreateSB2Environment(planet)
+function Environments.CreateSB2Environment(planet)
 	local habitat, unstable, sunburn = GetFlags(planet.flags)
 	local o2 = 0
 	local co2 = 0
@@ -198,7 +198,7 @@ function CreateSB2Environment(planet)
 end
 //End Borrowed code
 
-function CreateStarEnv(planet)
+function Environments.CreateStarEnv(planet)
 	local self = {}
 	self.radius = planet.radius
 	self.position = planet.position
