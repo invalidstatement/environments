@@ -9,7 +9,7 @@
 //4. HUD customizations
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 80
+Environments.Version = 81
 Environments.FileVersion = 2
 local onlineversion
 
@@ -95,28 +95,4 @@ elseif not string.find(servertags, "Environments") then
 	RunConsoleCommand("sv_tags", servertags)	
 end
 
-//Overwrite CAF to fix issues with tools
-timer.Create("registerCAFOverwrites", 5, 1, function()
-	local old = CAF.GetAddon
-	local SB = {}
-	if CLIENT then
-		local LS = {}
-	end
-	
-	function SB.GetStatus()
-		return true
-	end
 
-	function LS.GetStatus()
-		return true
-	end
-	
-	function CAF.GetAddon(name)
-		if name == "Spacebuild" then
-			return SB
-		elseif name == "Life Support" then
-			return LS
-		end
-		return old(name)
-	end
-end)

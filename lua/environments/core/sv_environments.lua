@@ -18,6 +18,29 @@ default.atmosphere.nitrogen = 40
 default.atmosphere.hydrogen = 22
 default.atmosphere.argon = 0
 
+//Overwrite CAF to fix issues with tools
+timer.Create("registerCAFOverwrites", 5, 1, function()
+	local old = CAF.GetAddon
+	local SB = {}
+		
+	function SB.GetStatus()
+		return true
+	end
+
+	function LS.GetStatus()
+		return true
+	end
+		
+	function CAF.GetAddon(name)
+		if name == "Spacebuild" then
+			return SB
+		elseif name == "Life Support" then
+			return LS
+		end
+		return old(name)
+	end
+end)
+
 local function LoadEnvironments()
 	print("/////////////////////////////////////")
 	print("//       Loading Environments      //")
