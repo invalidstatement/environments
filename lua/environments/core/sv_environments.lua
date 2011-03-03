@@ -5,6 +5,8 @@
 SRP = {} --Backup Compatability from when this was gonna be a gamemode
 UseEnvironments = false
 
+local AllowNoClip = CreateConVar( "env_allow_noclip", "1", FCVAR_NOTIFY )
+
 environments = {}
 stars = {}
 
@@ -376,14 +378,22 @@ function Environments.RegisterSun()
 end
 
 function Environments.Hooks.NoClip( ply, on )
-	// Check based on the player's environment
-	if not ply.environment then return false end
-	if ply.environment.noclip == "1" or ply.environment.noclip == 1 then
+	// Always allow them to get out of noclip
+	if ply:GetMoveType() == MOVETYPE_NOCLIP then return true end
+	
+	// Always allow admins
+	if ply:IsAdmin() then return true end
+	
+	// Allow others based on environment (if they can breathe or not)
+	if not ply.environment then return false end --double check
+	if ply:GetNWBool("inspace", false) then return false end --never allow in space
+	
+	if AllowNoClip:GetBool() then return true end --check if user wants to block noclip
+	
+	if ply.environment.air.o2per >= 10 and ply.environment.temperature > 280 and ply.environment.temperature < 310 then --if can breathe
 		return true
 	else
-		if not ply:IsAdmin() then
-			return false
-		end
+		return false
 	end
 end
 
