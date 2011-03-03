@@ -46,16 +46,16 @@ local function LoadEnvironments()
 	print("/////////////////////////////////////")
 	print("// Adding Environments..           //")
 	--Get All Planets Loaded
-	RegisterEnvironments() 
+	Environments.RegisterEnvironments() 
 	if UseEnvironments then --It is a spacebuild map
 		//Add Hooks
-		hook.Add("PlayerNoClip","EnvNoClip", NoClip)
-		hook.Add("PlayerInitialSpawn","CreateLS", lsInitSpawn)
-		hook.Add("PlayerSpawn", "SpawnLS", lsSpawn)
-		hook.Add("ShowTeam", "HelmetToggle", HelmetSwitch)
-		hook.Add("PlayerInitialSpawn", "PlayerSetClothing", PlayerSuitInitialSpawn)
-		hook.Add("PlayerDeath", "PlayerRemoveClothing", PlayerSuitDeath)
-		hook.Add("PlayerSpawn", "PlayerSetClothing", PlayerSuitSpawn)
+		hook.Add("PlayerNoClip","EnvNoClip", Environments.Hooks.NoClip)
+		hook.Add("PlayerInitialSpawn","CreateLS", Environments.Hooks.LSInitSpawn)
+		hook.Add("PlayerSpawn", "SpawnLS", Environments.Hooks.LSSpawn)
+		hook.Add("ShowTeam", "HelmetToggle", Environments.Hooks.HelmetSwitch)
+		hook.Add("PlayerInitialSpawn", "PlayerSetSuit", Environments.Hooks.SuitInitialSpawn)
+		hook.Add("PlayerDeath", "PlayerRemoveSuit", Environments.Hooks.SuitPlayerDeath)
+		hook.Add("PlayerSpawn", "PlayerSetSuit", Environments.Hooks.SuitPlayerSpawn)
 		
 		//Fixes spawning ents in space
 		local meta = FindMetaTable("Entity")
@@ -71,7 +71,7 @@ local function LoadEnvironments()
 		end
 		
 		print("// Registering Sun..               //")
-		local status, error = pcall(RegisterSun)
+		local status, error = pcall(Environments.RegisterSun)
 		if error then
 			print("//   No Sun Found, Defaulting      //")
 			TrueSun = {}
@@ -79,7 +79,7 @@ local function LoadEnvironments()
 		end
 		
 		print("// Starting Periodicals..          //")
-		timer.Create("LSCheck", 1, 0, LSCheck)
+		timer.Create("LSCheck", 1, 0, Environments.LSCheck)
 		print("//   LifeSupport Checker Started   //")
 	else --Not a spacebuild map
 		print("//   This is not a valid space map //")
@@ -90,7 +90,7 @@ local function LoadEnvironments()
 end
 hook.Add("InitPostEntity","EnvLoad", LoadEnvironments)
 
-function RegisterEnvironments()
+function Environments.RegisterEnvironments()
 	local planets = {}
 	local i = 0
 	local map = game.GetMap()
@@ -110,20 +110,20 @@ function RegisterEnvironments()
 					print("//    Files Are Of An Old Version  //")
 					file.Delete("environments/"..map..".txt")
 					file.Delete("environments/"..map.."_stars.txt")
-					RegisterEnvironments()
+					Environments.RegisterEnvironments()
 				end
 			end)
 			if error then --Read Error
 				print("//    A File Read Error Has Occured//")
 				file.Delete("environments/"..map..".txt")
 				file.Delete("environments/"..map.."_stars.txt")
-				RegisterEnvironments()
+				Environments.RegisterEnvironments()
 			end
 		else --Empty File
 			print("//    The File Has No Content       //")
 			file.Delete("environments/"..map..".txt")
 			file.Delete("environments/"..map.."_stars.txt")
-			RegisterEnvironments()
+			Environments.RegisterEnvironments()
 		end
 	else
 		print("//   Loading From Map              //")
@@ -186,7 +186,7 @@ function RegisterEnvironments()
 						i=i+1
 						planet.name = i
 						
-						local planet = CreateSB2Environment(planet)
+						local planet = Environments.CreateSB2Environment(planet)
 						table.insert(planets, planet)
 						print("//     Spacebuild 2 Planet Added   //")
 					elseif value == "planet2" then
@@ -270,10 +270,10 @@ function RegisterEnvironments()
 	planets.version = nil
 	
 	for k,v in pairs(planets) do
-		CreateEnvironment(v)
+		Environments.CreateEnvironment(v)
 	end
 	for k,v in pairs(stars) do
-		CreateStarEnv(v)
+		Environments.CreateStarEnv(v)
 	end
 	
 	local numberofplanets = table.Count( environments ) or 0
@@ -361,7 +361,7 @@ function Space()
 end
 //End Space Definition
 
-function RegisterSun()
+function Environments.RegisterSun()
 	TrueSun = {}
 	if table.Count(stars) > 0 then
 		--set as core radiation source, and sun angle(needed for solar planels) and other sun effects
@@ -374,7 +374,7 @@ function RegisterSun()
 	end
 end
 
-local function NoClip( ply, on )
+function Environments.Hooks.NoClip( ply, on )
 	// Check based on the player's environment
 	if not ply.environment then return false end
 	if ply.environment.noclip == "1" or ply.environment.noclip == 1 then
@@ -420,7 +420,7 @@ local function Reload(ply,cmd,args)
 			v = nil
 		end
 	end
-	RegisterEnvironments()
+	Environments.RegisterEnvironments()
 	ply:ChatPrint("Environments Has Been Reset!")
 end
 concommand.Add("env_server_reload", Reload)

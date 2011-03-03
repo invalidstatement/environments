@@ -34,7 +34,7 @@ end
    Name: gamemode:PlayerDeath( )
    Desc: Called when a player dies.
 ---------------------------------------------------------*/
-function PlayerSuitDeath( Victim, Inflictor, Attacker )
+function Environments.Hooks.SuitPlayerDeath( Victim, Inflictor, Attacker )
 	if ( ValidEntity( Victim.m_hSuit ) ) then
 		Victim.m_hHelmet:SetParent( Victim:GetRagdollEntity() )
 		Victim.m_hHelmet:Initialize()
@@ -57,7 +57,7 @@ end
    Name: gamemode:PlayerInitialSpawn( )
    Desc: Called just before the player's first spawn
 ---------------------------------------------------------*/
-function PlayerSuitInitialSpawn( pl )
+function Environments.Hooks.SuitInitialSpawn( pl )
 	// Delay set player clothing
 	timer.Simple( 0.1, function()
 		hook.Call( "PlayerSetClothing", GM, pl )
@@ -69,7 +69,7 @@ end
    Name: gamemode:PlayerSpawn( )
    Desc: Called when a player spawns
 ---------------------------------------------------------*/
-function PlayerSuitSpawn( pl )
+function Environments.Hooks.SuitPlayerSpawn( pl )
 	// Set player clothing
 	PlayerSetClothing(pl)
 end
