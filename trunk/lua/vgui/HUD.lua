@@ -1,9 +1,9 @@
 //MAKE IT LIKE GAUGES WITH DRAW.ROUNDED BOX :D :D :D and digital ones too!!!
 //move most of the stuff from the top bar into a box in the top left hand corner
 surface.CreateFont( "digital-7", 36, 2, true, true, "lcd2")
-function LoadHud()
+function LoadHudSB()
 	function Draw()
-		/*local alpha = 255
+		local alpha = 255
 		local max = 4000
 		local speed = SRP.suit.energy
 		local per = speed/max
@@ -48,7 +48,7 @@ function LoadHud()
 		draw.DrawText("Energy %", nil,a.x+15,a.y-80, Color(255,255,255,255), 2)
 		
 		draw.DrawText(tostring(Coolant),"lcd2",a.x+s*.5-30,a.y-33,color_black,2)
-		draw.DrawText("Coolant %", nil,a.x+15,a.y-40, color_black, 2)*/
+		draw.DrawText("Coolant %", nil,a.x+15,a.y-40, color_black, 2)
 		
 		/*draw.DrawText("Pressure", nil,a.x+s*.5-30,a.y-40, color_black, 2)
 		draw.DrawText("atm", nil,a.x+s*.5-10,a.y-16, color_black, 2)
@@ -56,16 +56,6 @@ function LoadHud()
 	end
 	hook.Add("HUDPaint", "LsDisplay", Draw)
 end
-
-//Spacebuild Compatibility :D
-local function LS_umsg_hook1( um )
-	environments.suit.o2per = um:ReadFloat()
-	environments.suit.air = um:ReadShort()
-	environments.suit.temperature = um:ReadShort()
-	environments.suit.coolant = um:ReadShort()
-	environments.suit.energy = um:ReadShort()
-end
-usermessage.Hook("LS_umsg1", LS_umsg_hook1) 
 
 function LoadHud()
 	HUD={}

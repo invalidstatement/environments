@@ -297,6 +297,7 @@ space.pressure = 0
 space.temperature = 3
 space.air.o2per = 0
 space.noclip = 0
+space.gravity = 0
 space.name = "space"
 
 function space.IsOnPlanet()
@@ -378,22 +379,27 @@ function Environments.RegisterSun()
 end
 
 function Environments.Hooks.NoClip( ply, on )
+	if ply:GetMoveType() == MOVETYPE_FLY then ply:SetMoveType(MOVETYPE_WALK) return false end --allow them to get out of jetpack
 	// Always allow them to get out of noclip
 	if ply:GetMoveType() == MOVETYPE_NOCLIP then return true end
-	
 	// Always allow admins
 	if ply:IsAdmin() then return true end
 	
-	// Allow others based on environment (if they can breathe or not)
-	if not ply.environment then return false end --double check
-	if ply:GetNWBool("inspace", false) then return false end --never allow in space
-	
-	if AllowNoClip:GetBool() then return true end --check if user wants to block noclip
-	
-	if ply.environment.air.o2per >= 10 and ply.environment.temperature > 280 and ply.environment.temperature < 310 then --if can breathe
-		return true
-	else
+	if ply:GetNWBool("inspace", false) and ply.environment.gravity == 0 then --jetpack in space :D
+		ply:SetMoveType(MOVETYPE_FLY)
+		
 		return false
+	else
+		// Allow others based on environment (if they can breathe or not)
+		if not ply.environment then return false end --double check	
+		if ply:GetNWBool("inspace", false) then return end --not in space you don't
+		if AllowNoClip:GetBool() then return true end --check if user wants to block noclip
+		
+		if ply.environment.air.o2per >= 10 and ply.environment.temperature > 280 and ply.environment.temperature < 310 then --if can breathe
+			return true
+		else
+			return false
+		end
 	end
 end
 

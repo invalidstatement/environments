@@ -7,9 +7,11 @@
 //2. Fix player models and suits, charred not working, and fingers on HL2 chars
 //3. Make it so you can refill your suit without LS3
 //4. HUD customizations
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//MAKE A TAB!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 81
+Environments.Version = 83
 Environments.FileVersion = 2
 local onlineversion
 
@@ -87,12 +89,16 @@ end
 GetOnlineVersion()
 
 //Add The Server Tag
-local servertags = GetConVarString("sv_tags")
-if servertags == nil then
-	RunConsoleCommand("sv_tags", "Environments")
-elseif not string.find(servertags, "Environments") then
-	servertags = servertags .. ",".."Environments"
-	RunConsoleCommand("sv_tags", servertags)	
+if SERVER then
+	timer.Create("SetTagsEnvironments", 5, 1, function()
+		local servertags = GetConVarString("sv_tags")
+		if servertags == nil then
+			RunConsoleCommand("sv_tags", "Environments")
+		else
+			servertags = servertags .. ",".."Environments"
+			RunConsoleCommand("sv_tags", servertags)	
+		end
+	end)
 end
 
 
