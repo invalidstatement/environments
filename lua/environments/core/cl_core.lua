@@ -16,23 +16,6 @@ environments.suit.coolant = 0
 environments.suit.energy = 0
 environments.suit.o2per = 0
 
-//Create the VGUI
-topbar = vgui.Create( "LS Debug Bar" )
-topbar:SetVisible( true )
-LoadHud()
-
-//Load it depending on the server setup
-if CAF and CAF.GetAddon("Spacebuild") then --sb installed
-	print("Spacebuild is active on the server")
-		
-else --No sb installed
-	--Attempt to load the planets table from the file from the server.
-	local data = file.Read("environments/"..game.GetMap()..".txt")
-	if data then
-		planets = table.DeSanitise(util.KeyValuesToTable(data))
-	end
-end
-
 local function EnvironmentCheck() --Whoah! What planet I am on?!
 	local location -- this goes with the if statement
 	local ply = LocalPlayer()
@@ -76,6 +59,15 @@ local function LSUpdate(msg) --recieves life support update packet
 end
 usermessage.Hook( "LSUpdate", LSUpdate )
 
+//Spacebuild Compatibility :D
+function LS_umsg_hook1( um )
+	environments.suit.o2per = um:ReadFloat()
+	environments.suit.air = um:ReadShort()
+	environments.suit.temperature = um:ReadShort()
+	environments.suit.coolant = um:ReadShort()
+	environments.suit.energy = um:ReadShort()
+end
+
 //Borrowed from SB, gotta have reverse compatibility
 local function PlanetUmsg( msg )
 	local ent = msg:ReadShort()
@@ -114,7 +106,7 @@ local function PlanetUmsg( msg )
 	end
 	planets[ent] = hash
 end
-usermessage.Hook( "AddPlanet", PlanetUmsg )
+--usermessage.Hook( "AddPlanet", PlanetUmsg )
 	
 local function StarUmsg( msg )
 	local ent = msg:ReadShort()
@@ -129,5 +121,17 @@ local function StarUmsg( msg )
 		BeamRadius = radius * 1.5, //*3
 	}
 end
-usermessage.Hook( "AddStar", StarUmsg )
+--usermessage.Hook( "AddStar", StarUmsg )
+
+//Load it depending on the server setup
+if CAF and CAF.GetAddon("Spacebuild") then --sb installed
+	print("Spacebuild is active on the server")	
+else --No sb installed
+	--Attempt to load the planets table from the file from the server.
+	local data = file.Read("environments/"..game.GetMap()..".txt")
+	if data then
+		planets = table.DeSanitise(util.KeyValuesToTable(data))
+	end
+	LoadHud()
+end
 
