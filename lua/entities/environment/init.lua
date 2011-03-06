@@ -23,6 +23,7 @@ function ENT:Initialize()
 	
 	self.gravity = 0
 	self.Debugging = false
+	self.IgnoreTouch = true --fixes stargate guns
 	
 	local phys = self.Entity:GetPhysicsObject() --reset physics
 	if (phys:IsValid()) then

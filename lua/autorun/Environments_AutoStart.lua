@@ -11,7 +11,7 @@
 //MAKE A TAB!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 83
+Environments.Version = 84
 Environments.FileVersion = 2
 local onlineversion
 
@@ -44,6 +44,13 @@ if CLIENT then
 	concommand.Add("env_update_check", function(ply, cmd, args)
 		GetOnlineVersion(true)
 	end)
+	
+	local usetab = CreateClientConVar( "CAF_UseTab", "1", true, false )
+
+	/*local function ENVTab()
+		spawnmenu.AddToolTab( "Environments", "Environments" )
+	end
+	hook.Add( "AddToolMenuTabs", "EnvTab", ENVTab)*/
 else
 	include("environments/core/sv_environments.lua")
 	include("environments/core/sv_environments_planets.lua")
