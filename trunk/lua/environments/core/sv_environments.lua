@@ -56,9 +56,11 @@ local function LoadEnvironments()
 		hook.Add("PlayerInitialSpawn","CreateLS", Environments.Hooks.LSInitSpawn)
 		hook.Add("PlayerSpawn", "SpawnLS", Environments.Hooks.LSSpawn)
 		hook.Add("ShowTeam", "HelmetToggle", Environments.Hooks.HelmetSwitch)
-		hook.Add("PlayerInitialSpawn", "PlayerSetSuit", Environments.Hooks.SuitInitialSpawn)
-		hook.Add("PlayerDeath", "PlayerRemoveSuit", Environments.Hooks.SuitPlayerDeath)
-		hook.Add("PlayerSpawn", "PlayerSetSuit", Environments.Hooks.SuitPlayerSpawn)
+		if Environments.UseSuit then
+			hook.Add("PlayerInitialSpawn", "PlayerSetSuit", Environments.Hooks.SuitInitialSpawn)
+			hook.Add("PlayerDeath", "PlayerRemoveSuit", Environments.Hooks.SuitPlayerDeath)
+			hook.Add("PlayerSpawn", "PlayerSetSuit", Environments.Hooks.SuitPlayerSpawn)
+		end
 		
 		//Fixes spawning ents in space
 		local meta = FindMetaTable("Entity")

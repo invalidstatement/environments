@@ -10,7 +10,9 @@ CompatibleEntities = {"func_precipitation", "env_smokestack", "func_dustcloud"}
 
 include("shared.lua")
 include("core/base.lua")
-	
+
+ENT.IgnoreTouch = true --fixes stargate guns
+
 function ENT:Initialize()
 	self.Entity:SetModel( "models/combine_helicopter/helicopter_bomb01" ) --setup stuff
 	self.Entity:SetMoveType( MOVETYPE_NONE )

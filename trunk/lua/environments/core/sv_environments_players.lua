@@ -386,18 +386,33 @@ function Environments.Hooks.LSSpawn(ply)
 	timer.Create("ResetSuit"..ply:Nick(), 1, 1, function() ply:ResetSuit() end)
 end
 
+
 function Environments.Hooks.HelmetSwitch( ply )
-	if ply.suit.helmet then
-		--ply:TakeOffSuit()
-		ply:TakeOffHelmet()
-		--ply.suit.worn = false
-		ply.suit.helmet = false
-		ply:ChatPrint("You took off your helmet.")
+	if Environments.UseSuit then
+		if not ply:Alive() then return end
+		if ply.suit.helmet then
+			--ply:TakeOffSuit()
+			ply:TakeOffHelmet()
+			--ply.suit.worn = false
+			ply.suit.helmet = false
+			ply:ChatPrint("You took off your helmet.")
+		else
+			--ply:PutOnSuit()
+			ply:PutOnHelmet()
+			--ply.suit.worn = true
+			ply.suit.helmet = true
+			ply:ChatPrint("You put on your helmet.")
+		end
 	else
-		--ply:PutOnSuit()
-		ply:PutOnHelmet()
-		--ply.suit.worn = true
-		ply.suit.helmet = true
-		ply:ChatPrint("You put on your helmet.")
+		if not ply:Alive() then return end
+		if ply.suit.helmet then
+			ply:SetNWBool("helmet", false)
+			ply.suit.helmet = false
+			ply:ChatPrint("You took off your helmet.")
+		else
+			ply:SetNWBool("helmet", true)
+			ply.suit.helmet = true
+			ply:ChatPrint("You put on your helmet.")
+		end
 	end
 end
