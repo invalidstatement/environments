@@ -2,25 +2,20 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
-//TO DO
-//1. Work on 3D HUD
-//2. Fix player models and suits, charred not working, and fingers on HL2 chars
-//3. Make it so you can refill your suit without LS3
-//4. HUD customizations
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//MAKE A TAB!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 84
+Environments.Version = 85
 Environments.FileVersion = 2
-local onlineversion
+Environments.UseSuit = true
 
 if CLIENT then
 	function Load(msg)
 		include("vgui/lsinfo.lua")
 		include("vgui/HUD.lua")
 		include("environments/core/cl_core.lua")
-		include("environments/spacesuits/cl_suit.lua")
+		if Environments.UseSuit then
+			include("environments/spacesuits/cl_suit.lua")
+		end
 	
 		local function Reload()
 			include("vgui/HUD.lua")
@@ -44,8 +39,6 @@ if CLIENT then
 	concommand.Add("env_update_check", function(ply, cmd, args)
 		GetOnlineVersion(true)
 	end)
-	
-	local usetab = CreateClientConVar( "CAF_UseTab", "1", true, false )
 
 	/*local function ENVTab()
 		spawnmenu.AddToolTab( "Environments", "Environments" )
@@ -55,7 +48,9 @@ else
 	include("environments/core/sv_environments.lua")
 	include("environments/core/sv_environments_planets.lua")
 	include("environments/core/sv_environments_players.lua")
-	include("environments/spacesuits/sv_suit.lua")
+	if Environments.UseSuit then
+		include("environments/spacesuits/sv_suit.lua")
+	end
 	include("environments/events/sv_events.lua")
 	include("environments/core/sv_ls_support.lua")
 	
@@ -74,6 +69,7 @@ print("==============================================")
 print("==    Environments Revision "..Environments.Version.." Installed    ==")
 print("==============================================")
 
+local onlineversion
 function GetOnlineVersion( printChecking )
 	if printChecking then
 		print("Checking for updates....")
