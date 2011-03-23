@@ -18,33 +18,48 @@ events["meteor"] = function(planet)
 	roid:Spawn()
 	roid:Start(planet)
 end
+events["earthquake"] = function(planet)
+	util.ScreenShake(planet:GetPos(), 14, 255, 6, planet.radius)
+end
 
 local function FireEvent(ply,cmd,args)
 	if not ply:IsAdmin() then return end
 	if ply.environment.name != "space" then
-		events[args[1]](ply.environment)
+		if events[args[1]] then
+			events[args[1]](ply.environment)
+			Environments.Log(ply:Nick().." Called in a "..args[1].." Event")
+		else
+			ply:ChatPrint("You tried to call in an invalid event!")
+		end
 	else
 		ply:ChatPrint("You can't call in a "..args[1].." in space!")
 	end
 end
 concommand.Add("env_fire_event", FireEvent)
 
-local function EventChecker()
-	if math.random(1,5) == 3 then
+function Environments.EventChecker()
+	if math.random(1,50) <= 10 then
 		print("Event Running")
 		//call the function to run the event
 		local planet = table.Random(environments)
+		local event = table.Random(events)
 		if not planet.spawn == "1" then
-			table.Random(events)(planet)
+			local status, error = pcall(event(planet))
+			if error then
+				Environments.Log("Event Error: "..error)
+			end
 		else
 			planet = table.Random(environments)
 			if not planet.spawn == "1" then
-				table.Random(events)(planet)
+				local status, error = pcall(event(planet))
+				if error then
+					Environments.Log("Event Error: "..error)
+				end
 			end
 		end	
+		Environments.Log("An Event Occured")
 	end
 end
-timer.Create("EnvEvents", 10, 1, EventChecker)
 
 function GetBestPath(ent, planet) --try for the best, most spectacular asteroid path
 	--for now, lets just go with the top of the map

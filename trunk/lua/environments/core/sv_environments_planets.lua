@@ -3,6 +3,13 @@
 //   CmdrMatthew   //
 ------------------------------------------
 
+--localize
+local math = math
+local table = table
+local ents = ents
+local pairs = pairs
+local type = type
+
 local SB_AIR_EMPTY = -1
 local SB_AIR_O2 = 0
 local SB_AIR_CO2 = 1
@@ -164,6 +171,12 @@ function Environments.CreateEnvironment(planet)
 	planet:SetPos(self.position)
 	--planet.environment = self
 	planet:Configure(self.radius, self.gravity, self.name, self)
+	
+	//stop it from getting removed
+	planet.Delete = planet.Remove
+	planet.Remove = function() 
+		Environments.Log("Something Attempted to Remove Planet "..self.name)
+	end
 	
 	table.insert(environments, planet)
 end

@@ -20,10 +20,11 @@ function ENT:Initialize()
 	if (!self.m_hParent:IsValid()) then return end
 
 	self.m_hParent:SetMaterial( "models/null" )
-
-	local modelname = player_manager.TranslatePlayerModel( self.m_iszModelName )
-	util.PrecacheModel( modelname )
-	self:SetModel( modelname )
+	if self:GetParent():IsPlayer() then --makes sure the helmet stays on when parenting to the death ragdoll.
+		local modelname = player_manager.TranslatePlayerModel( self.m_iszModelName )
+		util.PrecacheModel( modelname )
+		self:SetModel( modelname )
+	end
 
 	self:AddEffects( EF_BONEMERGE | EF_BONEMERGE_FASTCULL | EF_PARENT_ANIMATES )
 end

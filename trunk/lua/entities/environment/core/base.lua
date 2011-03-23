@@ -10,12 +10,17 @@ local SB_AIR_AR = 5
 //       Meta Table Stuff For Planets        //
 ///////////////////////////////////////////////
 
+--localize
+local math = math
+local print = print
+local pairs = pairs
+
 function GetVolume(radius)
 	return (4/3) * math.pi * radius * radius
 end
 
 function ENT:Convert(air1, air2, value)
-	print(air1,air2,value)
+	--print(air1,air2,value)
 	--if not air1 or not air2 or not value then return 0 end
 	--if type(air1) != "number" or type(air2) != "number" or type(value) != "number" then return 0 end 
 	air1 = math.Round(air1)
@@ -30,7 +35,7 @@ function ENT:Convert(air1, air2, value)
 		//Don't do anything else anymore
 	end*/
 	if air1 == -1 then
-		print("empty")
+		--print("empty")
 		if self.air.empty < value then
 			value = self.air.empty
 		end
@@ -49,7 +54,7 @@ function ENT:Convert(air1, air2, value)
 			self.air.o2 = self.air.o2 + value
 		end
 	elseif air1 == SB_AIR_O2 then
-		print("o2")
+		--print("o2")
 		if self.air.o2 < value then
 			value = self.air.o2
 		end
@@ -68,7 +73,7 @@ function ENT:Convert(air1, air2, value)
 			self.air.empty = self.air.empty + value
 		end
 	elseif air1 == SB_AIR_CO2 then
-		print("co2")
+		--print("co2")
 		if self.air.co2 < value then
 			value = self.air.co2
 		end
@@ -87,7 +92,7 @@ function ENT:Convert(air1, air2, value)
 			self.air.empty = self.air.empty + value
 		end
 	elseif air1 == SB_AIR_N then
-		print("n")
+		--print("n")
 		if self.air.n < value then
 			value = self.air.n
 		end
@@ -106,7 +111,7 @@ function ENT:Convert(air1, air2, value)
 			self.air.empty = self.air.empty + value
 		end
 	elseif air1 == SB_AIR_CH4 then
-		print("Ch4")
+		--print("Ch4")
 		if self.air.ch4 < value then
 			value = self.air.ch4
 		end
@@ -125,7 +130,7 @@ function ENT:Convert(air1, air2, value)
 			self.air.empty = self.air.empty + value
 		end
 	elseif air1 == SB_AIR_AR then
-		print("AR")
+		--print("AR")
 		if self.air.ar < value then
 			value = self.air.ar
 		end
@@ -144,7 +149,7 @@ function ENT:Convert(air1, air2, value)
 			self.air.empty = self.air.empty + value
 		end
 	else
-		print("else")
+		--print("else")
 		if self.air.h < value then
 			value = self.air.h
 		end
@@ -178,7 +183,7 @@ function ENT:Convert(air1, air2, value)
 		--self.temperature = self.temperature + (( self.temperature * ((self.air.ch4per - self.original.air.ch4per)/100))/2)
 	end*/
 	--self:GetBreathable()
-	print(value)
+	--print(value)
 	return value
 end
 
