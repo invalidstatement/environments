@@ -6,6 +6,12 @@ util.PrecacheSound( "apc_engine_start" )
 util.PrecacheSound( "apc_engine_stop" )
 util.PrecacheSound( "common/warning.wav" )
 
+--localize
+local math = math
+local ents = ents
+local constraint = constraint
+local CurTime = CurTime
+
 include("shared.lua")
 AddCSLuaFile("shared.lua")
 	

@@ -1,66 +1,33 @@
-//MAKE IT LIKE GAUGES WITH DRAW.ROUNDED BOX :D :D :D and digital ones too!!!
-//move most of the stuff from the top bar into a box in the top left hand corner
+------------------------------------------
+//  Environments   //
+//   CmdrMatthew   //
+------------------------------------------
+
+//localize stuff
+local surface = surface
+local cam = cam
+local render = render
+local math = math
+local string = string
+local os = os
+local ScrW = ScrW
+local ScrH = ScrH
+local EyePos = EyePos
+local EyeAngles = EyeAngles
+local SetMaterialOverride = SetMaterialOverride
+local Color = Color
+local tostring = tostring
+local Vector = Vector
+local IsValid = IsValid
+
 surface.CreateFont( "digital-7", 36, 2, true, true, "lcd2")
-function LoadHudSB()
-	function Draw()
-		local alpha = 255
-		local max = 4000
-		local speed = SRP.suit.energy
-		local per = speed/max
-		local a = Vector(ScrW()-120,100,0)
-		local s = 90--math.ceil(ScrW()/12/8)*8
-		s = s
-		
-		draw.NoTexture()
-		--surface.SetMaterial(Material("phoenix_storms/black_chrome"))
-		--surface.SetDrawColor(100,100,100,alpha)
-		draw.RoundedBox(16,a.x-58,a.y-92,168,100, Color(50,50,255,alpha))
-		--surface.DrawTexturedRect(a.x-58,a.y-43,166,43)
-		--surface.SetDrawColor(220,220,220,alpha)
-		--surface.DrawTexturedRect(a.x-55,a.y-40,160,40)
-		draw.RoundedBox(16,a.x-54,a.y-88,160,92,Color(220,220,220,alpha))--16 first
-		draw.NoTexture()
-		
-		surface.SetDrawColor(0,0,0,alpha)
-		
-		local speedstr = ""
 
-		local Air = SRP.suit.air / 40
-		local Energy = SRP.suit.energy / 40
-		local Coolant = SRP.suit.coolant / 40
-		if Air >= 10 then
-			Air = math.Round(Air)
-		end
-		if Energy >= 10 then
-			Energy = math.Round(Energy)
-		end
-		if Coolant >= 10 then
-			Coolant = math.Round(Coolant)
-		end
-		--surface.DrawOutlinedRect(a.x+s*.5+55, a.y-33, 50,40)
-		draw.DrawText(tostring(Air),"lcd2",a.x+s*.5+55,a.y-33,Color(0,255,0,255),2)
-		draw.DrawText("Air %", nil,a.x+100,a.y-40, Color(0,255,0,255), 2)
-		
-		draw.DrawText(tostring(SRP.suit.temperature),"lcd2",a.x+s*.5+55,a.y-73,Color(255,0,0,255),2)
-		draw.DrawText("Temperature", nil,a.x+100,a.y-80, Color(255,0,0,255), 2)
-		
-		draw.DrawText(tostring(Energy),"lcd2",a.x+s*.5-30,a.y-73,Color(255,255,255,255),2)
-		draw.DrawText("Energy %", nil,a.x+15,a.y-80, Color(255,255,255,255), 2)
-		
-		draw.DrawText(tostring(Coolant),"lcd2",a.x+s*.5-30,a.y-33,color_black,2)
-		draw.DrawText("Coolant %", nil,a.x+15,a.y-40, color_black, 2)
-		
-		/*draw.DrawText("Pressure", nil,a.x+s*.5-30,a.y-40, color_black, 2)
-		draw.DrawText("atm", nil,a.x+s*.5-10,a.y-16, color_black, 2)
-		draw.DrawText("1.00", "lcd2",a.x+s*.5-30,a.y-33, color_black, 2)*/
-	end
-	hook.Add("HUDPaint", "LsDisplay", Draw)
-end
-
+temp_unit = "F"
 function LoadHud()
 	HUD={}
 	HUD.mode = 0
 	HUD.Convar=CreateConVar( "env_hud_enabled", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
+	HUD.Unit=CreateConVar( "env_hud_unit", "F", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
 	HUD.CS_Model=nil
 	HUD.Model="models/props_phx/construct/glass/glass_curve90x1.mdl"
 	HUD.EyeAngleOffset=Angle(0,135,0)
@@ -224,6 +191,15 @@ function LoadHud()
 		local energy = environments.suit.energy
 		local temperature = environments.suit.temperature
 		local o2 = environments.suit.o2per
+		if temperature then
+			if string.upper(HUD.Unit:GetString()) == "C" then
+				temperature = temperature - 273
+				temp_unit = "C"
+			elseif string.upper(HUD.Unit:GetString()) == "F" then
+				temperature = (temperature * (9/5)) - 459.67
+				temp_unit = "F"
+			end
+		end
 		
 		local length     = ScrW()/2 - 410 --should make 5 w/ spacer
 		local spacer     = 40
@@ -260,8 +236,8 @@ function LoadHud()
 		length = length + x + spacer
 
 		surface.SetTextPos( length + spacer, 105 )
-		surface.DrawText( "Temperature: " .. tostring(temperature) )
-		x = surface.GetTextSize( "Temperature: " .. tostring(temperature) )
+		surface.DrawText( "Temperature: " .. tostring(temperature) .. temp_unit )
+		x = surface.GetTextSize( "Temperature: " .. tostring(temperature) .. temp_unit )
 		length = length + x + spacer
 			
 		surface.SetTextPos( length + spacer, 105 )
@@ -308,6 +284,63 @@ function LoadHud()
 	hook.Add("Think","Environments HUD Think", HUD.Think)
 	hook.Add("RenderScreenspaceEffects","Environments Draw HUD", HUD.DrawHUDScreen)
 end
+//old hud
+/*function LoadHud()
+	function Draw()
+		local alpha = 255
+		local max = 4000
+		local speed = SRP.suit.energy
+		local per = speed/max
+		local a = Vector(ScrW()-120,100,0)
+		local s = 90--math.ceil(ScrW()/12/8)*8
+		s = s
+		
+		draw.NoTexture()
+		--surface.SetMaterial(Material("phoenix_storms/black_chrome"))
+		--surface.SetDrawColor(100,100,100,alpha)
+		draw.RoundedBox(16,a.x-58,a.y-92,168,100, Color(50,50,255,alpha))
+		--surface.DrawTexturedRect(a.x-58,a.y-43,166,43)
+		--surface.SetDrawColor(220,220,220,alpha)
+		--surface.DrawTexturedRect(a.x-55,a.y-40,160,40)
+		draw.RoundedBox(16,a.x-54,a.y-88,160,92,Color(220,220,220,alpha))--16 first
+		draw.NoTexture()
+		
+		surface.SetDrawColor(0,0,0,alpha)
+		
+		local speedstr = ""
+
+		local Air = SRP.suit.air / 40
+		local Energy = SRP.suit.energy / 40
+		local Coolant = SRP.suit.coolant / 40
+		if Air >= 10 then
+			Air = math.Round(Air)
+		end
+		if Energy >= 10 then
+			Energy = math.Round(Energy)
+		end
+		if Coolant >= 10 then
+			Coolant = math.Round(Coolant)
+		end
+		--surface.DrawOutlinedRect(a.x+s*.5+55, a.y-33, 50,40)
+		draw.DrawText(tostring(Air),"lcd2",a.x+s*.5+55,a.y-33,Color(0,255,0,255),2)
+		draw.DrawText("Air %", nil,a.x+100,a.y-40, Color(0,255,0,255), 2)
+		
+		draw.DrawText(tostring(SRP.suit.temperature),"lcd2",a.x+s*.5+55,a.y-73,Color(255,0,0,255),2)
+		draw.DrawText("Temperature", nil,a.x+100,a.y-80, Color(255,0,0,255), 2)
+		
+		draw.DrawText(tostring(Energy),"lcd2",a.x+s*.5-30,a.y-73,Color(255,255,255,255),2)
+		draw.DrawText("Energy %", nil,a.x+15,a.y-80, Color(255,255,255,255), 2)
+		
+		draw.DrawText(tostring(Coolant),"lcd2",a.x+s*.5-30,a.y-33,color_black,2)
+		draw.DrawText("Coolant %", nil,a.x+15,a.y-40, color_black, 2)
+		
+		--draw.DrawText("Pressure", nil,a.x+s*.5-30,a.y-40, color_black, 2)
+		--draw.DrawText("atm", nil,a.x+s*.5-10,a.y-16, color_black, 2)
+		--draw.DrawText("1.00", "lcd2",a.x+s*.5-30,a.y-33, color_black, 2)
+	end
+	hook.Add("HUDPaint", "LsDisplay", Draw)
+end*/
+
 //old cool draw code
 /*surface.DrawPoly{
 		{

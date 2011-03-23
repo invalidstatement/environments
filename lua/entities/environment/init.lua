@@ -3,6 +3,9 @@
 //   CmdrMatthew   //
 ------------------------------------------
 local Space = Space
+local math = math
+local table = table
+local pairs = pairs
 
 PlayerGravity = true
 
@@ -10,9 +13,7 @@ CompatibleEntities = {"func_precipitation", "env_smokestack", "func_dustcloud"}
 
 include("shared.lua")
 include("core/base.lua")
-
-ENT.IgnoreTouch = true --fixes stargate guns
-
+	
 function ENT:Initialize()
 	self.Entity:SetModel( "models/combine_helicopter/helicopter_bomb01" ) --setup stuff
 	self.Entity:SetMoveType( MOVETYPE_NONE )
@@ -25,7 +26,6 @@ function ENT:Initialize()
 	
 	self.gravity = 0
 	self.Debugging = false
-	self.IgnoreTouch = true --fixes stargate guns
 	
 	local phys = self.Entity:GetPhysicsObject() --reset physics
 	if (phys:IsValid()) then
@@ -194,6 +194,19 @@ function ENT:Configure(rad, gravity, name, env)
 		self.Shaker:Fire("Frequency", 255)
 	end*/
 end
+
+//Debugging
+/*function ENT:OnRemove()
+	--print(debug.traceback( 1, "", 2 ))
+	--local callpath = debug.getinfo(2)['short_src']
+	local callpath = debug.traceback( 2 )
+	local old = file.Read("env_debug.txt")
+	if old then
+		file.Write("env_debug.txt", old.."\n"..os.time()..": ENVIRONMENT REMOVED! Caller:"..callpath)
+	else
+		file.Write("env_debug.txt", os.time()..": ENVIRONMENT REMOVED! Caller:"..callpath)
+	end
+end*/
 
 function ENT:CanTool()
 	return false

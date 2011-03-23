@@ -2,8 +2,13 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
---BUGS
---1. ply.suit.air , coolant, energy, ect is all used by LS too, try and fix the variable clash
+
+--localize
+local math = math
+local player = player
+local util = util
+local umsg = umsg
+local timer = timer
 
 local efficiency = 0.02 --the insulating efficiency of the suit, how fast the suit gains or loses temperature
 function Environments.LSCheck()
@@ -298,9 +303,9 @@ local meta = FindMetaTable("Player")
 
 function meta:ResetSuit() --Resets a player's suit
 	local hash = self.suit or {}
-	hash.air = 2000 --200
-	hash.energy = 2000 --200
-	hash.coolant = 2000 --200
+	hash.air = 200 --200
+	hash.energy = 200 --200
+	hash.coolant = 200 --200
 	hash.temperature = 288
 	hash.worn = true
 	hash.helmet = true
@@ -386,10 +391,8 @@ function Environments.Hooks.LSSpawn(ply)
 	timer.Create("ResetSuit"..ply:Nick(), 1, 1, function() ply:ResetSuit() end)
 end
 
-
 function Environments.Hooks.HelmetSwitch( ply )
 	if Environments.UseSuit then
-		if not ply:Alive() then return end
 		if ply.suit.helmet then
 			--ply:TakeOffSuit()
 			ply:TakeOffHelmet()
@@ -404,7 +407,6 @@ function Environments.Hooks.HelmetSwitch( ply )
 			ply:ChatPrint("You put on your helmet.")
 		end
 	else
-		if not ply:Alive() then return end
 		if ply.suit.helmet then
 			ply:SetNWBool("helmet", false)
 			ply.suit.helmet = false

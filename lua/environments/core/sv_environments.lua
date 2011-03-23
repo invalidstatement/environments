@@ -2,6 +2,19 @@
 //   Environments  //
 //   CmdrMatthew   //
 ------------------------------------------
+
+--localize
+local math = math
+local hook = hook
+local file = file
+local table = table
+local ents = ents
+local string = string
+local os = os
+local tonumber = tonumber
+local pcall = pcall
+local print = print
+
 SRP = {} --Backup Compatability from when this was gonna be a gamemode
 UseEnvironments = false
 
@@ -48,6 +61,7 @@ local function LoadEnvironments()
 	print("//       Loading Environments      //")
 	print("/////////////////////////////////////")
 	print("// Adding Environments..           //")
+	local status, error = pcall(function() --log errors
 	--Get All Planets Loaded
 	Environments.RegisterEnvironments() 
 	if UseEnvironments then --It is a spacebuild map
@@ -61,7 +75,7 @@ local function LoadEnvironments()
 			hook.Add("PlayerDeath", "PlayerRemoveSuit", Environments.Hooks.SuitPlayerDeath)
 			hook.Add("PlayerSpawn", "PlayerSetSuit", Environments.Hooks.SuitPlayerSpawn)
 		end
-		
+			
 		//Fixes spawning ents in space
 		local meta = FindMetaTable("Entity")
 		local olds = meta.Spawn
@@ -74,7 +88,7 @@ local function LoadEnvironments()
 			end
 			self.environment = Space()
 		end
-		
+			
 		print("// Registering Sun..               //")
 		local status, error = pcall(Environments.RegisterSun)
 		if error then
@@ -82,16 +96,28 @@ local function LoadEnvironments()
 			TrueSun = {}
 			TrueSun[1] = Vector(0,0,0)
 		end
-		
+			
 		print("// Starting Periodicals..          //")
+		timer.Create("EnvEvents", 10, 1, Environments.EventChecker)
+		print("//   Event System Started          //")
 		timer.Create("LSCheck", 1, 0, Environments.LSCheck)
 		print("//   LifeSupport Checker Started   //")
 	else --Not a spacebuild map
 		print("//   This is not a valid space map //")
+	end end)--ends the error checker
+	
+	if not error then
+		print("/////////////////////////////////////")
+		print("//       Environments Loaded       //")
+		print("/////////////////////////////////////")
+		Environments.Log("Successful Startup")
+	else
+		print("/////////////////////////////////////")
+		print("//    Environments Load Failed     //")
+		print("/////////////////////////////////////")
+		Environments.Log("Load Failed")
+		Environments.Log("ERROR: "..error)
 	end
-	print("/////////////////////////////////////")
-	print("//       Environments Loaded       //")
-	print("/////////////////////////////////////")
 end
 hook.Add("InitPostEntity","EnvLoad", LoadEnvironments)
 
@@ -287,7 +313,7 @@ function Environments.RegisterEnvironments()
 	end
 	
 	--Add the file for the client to download so they can access its info
-	resource.AddFile("environments/" .. map .. ".txt")
+	--resource.AddFile("environments/" .. map .. ".txt")
 end
 
 //Space Definition
@@ -299,7 +325,6 @@ space.pressure = 0
 space.temperature = 3
 space.air.o2per = 0
 space.noclip = 0
-space.gravity = 0
 space.name = "space"
 
 function space.IsOnPlanet()
@@ -405,6 +430,28 @@ function Environments.Hooks.NoClip( ply, on )
 	end
 end
 
+function Environments.Log(text)
+	local old = file.Read("env_log.txt")
+	if old then
+		file.Write("env_log.txt", old .. "\n" .. tostring(os.date("%m/%d/%y")).." - "..tostring(os.date("%H:%M:%S")) .. "; " .. text)
+	else
+		file.Write("env_log.txt", tostring(os.date("%m/%d/%y")).." - "..tostring(os.date("%H:%M:%S")) .. "; " .. text)
+	end
+end
+
+local function Logging( ply )
+	logrecs1 = {}
+	--logrecs2 = {}
+	for logrecs in (file.Read("env_log.txt") or ""):gmatch("[^\n\r]+") do
+		table.insert(logrecs1,logrecs)
+	end
+	/*for logrecs in (file.Read("env_log.txt") or ""):gmatch("[^\n\r]+") do
+		table.insert(logrecs2,logrecs)
+	end*/
+	datastream.StreamToClients(ply,"sendEnvLogs",{logrecs1})
+end
+concommand.Add("env_get_logs", Logging)
+
 local SFX = {}
 function RegisterWorldSFXEntity(ent, planet)
 	SFX[ent:EntIndex()] = ent
@@ -433,13 +480,14 @@ local function Reload(ply,cmd,args)
 	if not ply:IsAdmin() then return end
 	for k,v in pairs(environments) do
 		if v and v:IsValid() then
-			v:Remove()
+			v:Delete()
 			v = nil
 		else
 			v = nil
 		end
 	end
 	Environments.RegisterEnvironments()
+	Environments.Log("Planets Reloaded")
 	ply:ChatPrint("Environments Has Been Reset!")
 end
 concommand.Add("env_server_reload", Reload)

@@ -4,11 +4,12 @@
 ------------------------------------------
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 85
+Environments.Version = 86
 Environments.FileVersion = 2
 Environments.UseSuit = true
 
 if CLIENT then
+	include("environments/core/cl_logging.lua")
 	function Load(msg)
 		include("vgui/lsinfo.lua")
 		include("vgui/HUD.lua")
@@ -16,34 +17,34 @@ if CLIENT then
 		if Environments.UseSuit then
 			include("environments/spacesuits/cl_suit.lua")
 		end
-	
+        
 		local function Reload()
 			include("vgui/HUD.lua")
 			include("vgui/lsinfo.lua")
 			LoadHud()
 		end
 		concommand.Add("env_reload_hud", Reload)
-		
+                
 		if msg then
 			print("Environments Version "..msg:ReadShort().." Running On Server")
 		end
 	end
 	usermessage.Hook("Environments", Load)
-	
+        
 	timer.Create("Sbcheck", 2, 1, function()
 		if CAF and CAF.GetAddon("Spacebuild") then
 			Load()
 		end
 	end)
-	
+        
 	concommand.Add("env_update_check", function(ply, cmd, args)
 		GetOnlineVersion(true)
 	end)
 
-	/*local function ENVTab()
+	local function ENVTab()
 		spawnmenu.AddToolTab( "Environments", "Environments" )
 	end
-	hook.Add( "AddToolMenuTabs", "EnvTab", ENVTab)*/
+	hook.Add( "AddToolMenuTabs", "EnvTab", ENVTab)
 else
 	include("environments/core/sv_environments.lua")
 	include("environments/core/sv_environments_planets.lua")
@@ -53,14 +54,15 @@ else
 	end
 	include("environments/events/sv_events.lua")
 	include("environments/core/sv_ls_support.lua")
-	
+        
 	AddCSLuaFile("autorun/Environments_AutoStart.lua")
 	AddCSLuaFile("environments/core/cl_core.lua")
 	AddCSLuaFile("environments/spawn_menu.lua")
 	AddCSLuaFile("vgui/HUD.lua")
 	AddCSLuaFile("vgui/lsinfo.lua")
 	AddCSLuaFile("environments/spacesuits/cl_suit.lua")
-	
+	AddCSLuaFile("environments/core/cl_logging.lua")
+        
 	resource.AddFile("resource/fonts/digital-7 (italic).ttf")
 	resource.AddFile( "materials/models/null.vmt" )
 	resource.AddFile( "materials/models/null.vtf" )
@@ -93,15 +95,13 @@ GetOnlineVersion()
 
 //Add The Server Tag
 if SERVER then
-	timer.Create("SetTagsEnvironments", 5, 1, function()
+	--timer.Create("SetTagsEnvironments", 5, 1, function()
 		local servertags = GetConVarString("sv_tags")
 		if servertags == nil then
 			RunConsoleCommand("sv_tags", "Environments")
 		else
 			servertags = servertags .. ",".."Environments"
-			RunConsoleCommand("sv_tags", servertags)	
+			RunConsoleCommand("sv_tags", servertags)        
 		end
-	end)
+	--end)
 end
-
-
