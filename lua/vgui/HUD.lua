@@ -247,7 +247,8 @@ function LoadHud()
 	function HUD:CalcOffset(pos,ang,off)
 		return pos + ang:Right() * off.x + ang:Forward() * off.y + ang:Up() * off.z;
 	end
-
+	local Draw = HUD.DrawHUD
+	local Mat = HUD.ScreenMaterial
 	--RenderScreenspaceEffects hook
 	function HUD:DrawHUDScreen()
 		if not IsValid(HUD.CS_Model) || not HUD.Convar:GetBool() then return end
@@ -264,7 +265,7 @@ function LoadHud()
 				RenderAng:RotateAroundAxis(RenderAng:Right(),HUD.EyeAngleOffset.r)
 				HUD.CS_Model:SetRenderAngles(RenderAng)
 				HUD.CS_Model:SetRenderOrigin(RenderPos)
-				SetMaterialOverride(HUD.ScreenMaterial)
+				SetMaterialOverride(Mat)
 					HUD.CS_Model:DrawModel()
 				SetMaterialOverride(0)
 			cam.IgnoreZ( false )
@@ -275,10 +276,10 @@ function LoadHud()
 		render.Clear(0,0,0,0)
 		render.SetViewPort(0,0,HUD.RT_W,HUD.RT_H)
 		--Draw the HUD on the rendertarget
-		HUD:DrawHUD()
+		Draw()
 		render.SetRenderTarget(oldRT)
 		render.SetViewPort(0,0,ScrW(),ScrH())
-		HUD.ScreenMaterial:SetMaterialTexture( "$basetexture", HUD.RenderTarget )
+		Mat:SetMaterialTexture( "$basetexture", HUD.RenderTarget )
 	end
 
 	hook.Add("Think","Environments HUD Think", HUD.Think)

@@ -18,7 +18,13 @@ function ENT:Initialize()
 end
 
 function ENT:PhysicsCollide(ent)
+	--if not ent
 	if not self.Burn then return end
+	/*local effectdata = EffectData()
+	effectdata:SetOrigin( self.Entity:GetPos() )
+	effectdata:SetStart( Vector(0,0,90))
+	util.Effect( "meteor_impact", effectdata )*/
+	
 	local expl = ents.Create("env_explosion")
 	expl:SetPos(self:GetPos())
 	expl:SetParent(self)

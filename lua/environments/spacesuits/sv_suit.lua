@@ -2,34 +2,36 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
-local SuitModel = "models/player/combine_super_soldier.mdl"
-
 
 local meta = FindMetaTable("Player")
 function meta:PutOnSuit()
 	if table.HasValue(nofingers, self.m_hSuit:GetParent():GetInfo( "cl_playermodel" )) then
 		self.m_hSuit:SetModel("models/player/barney.mdl")
 	else
-		self.m_hSuit:SetModel(SuitModel)
+		self.m_hSuit:SetModel("models/player/combine_super_soldier.mdl")
 	end
 	self:SetNWBool("helmet", true)
 end
 
 function meta:TakeOffSuit()
-	if self:GetParent() and self:GetParent():IsValid() then
+	if self.m_hHelmet:GetParent().GetInfo then
 		self:SetNWBool("helmet", false)
 		self.m_hSuit:SetModel(player_manager.TranslatePlayerModel(self.m_hSuit:GetParent():GetInfo( "cl_playermodel" )))
 	end
 end
 
 function meta:PutOnHelmet()
-	self.m_hHelmet:SetModel(SuitModel)
-	self:SetNWBool("helmet", true)
+	if self.m_hHelmet:GetParent().GetInfo then
+		self.m_hHelmet:SetModel("models/player/combine_super_soldier.mdl")
+		self:SetNWBool("helmet", true)
+	end
 end
 
 function meta:TakeOffHelmet()
-	self:SetNWBool("helmet", false)
-	self.m_hHelmet:SetModel(player_manager.TranslatePlayerModel(self.m_hHelmet:GetParent():GetInfo( "cl_playermodel" )))
+	if self.m_hHelmet:GetParent().GetInfo then
+		self:SetNWBool("helmet", false)
+		self.m_hHelmet:SetModel(player_manager.TranslatePlayerModel(self.m_hHelmet:GetParent():GetInfo( "cl_playermodel" )))
+	end
 end
 
 /*---------------------------------------------------------
@@ -85,14 +87,16 @@ function PlayerSetClothing( pl )
 	pl.m_hHelmet:SetPos( pl:GetPos() )
 	pl.m_hHelmet:SetAngles( pl:GetAngles() )
 	pl.m_hHelmet:Spawn()
-	pl.m_hHelmet:SetModel(SuitModel)
+	pl.m_hHelmet:SetModel("models/player/combine_super_soldier.mdl")
+
 	
 	pl.m_hSuit = ents.Create( "player_suit" )
 	pl.m_hSuit:SetParent( pl )
 	if table.HasValue(nofingers, pl.m_hSuit:GetParent():GetInfo( "cl_playermodel" )) then
 		pl.m_hSuit:SetModel("models/player/barney.mdl")
 	else
-		pl.m_hSuit:SetModel(SuitModel)
+		pl.m_hSuit:SetModel("models/player/combine_super_soldier.mdl")
+
 	end
 	pl.m_hSuit:SetPos( pl:GetPos() )
 	pl.m_hSuit:SetAngles( pl:GetAngles() )

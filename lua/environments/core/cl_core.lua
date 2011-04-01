@@ -2,13 +2,15 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
-planets = {} --Planetary Data Table :D updated from server usermessages
-stars = {} --Star data table updated from server usmg
+local planets = {} --Planetary Data Table :D updated from server usermessages
+local stars = {} --Star data table updated from server usmg
 
 environments = {}
+local blooms = {}
+local colors = {}
 
 //This is the planet the client is currently on, used for effects and such
-planet = 0
+local planet = nil
 
 environments.suit = {}
 environments.suit.air = 0
@@ -16,40 +18,54 @@ environments.suit.coolant = 0
 environments.suit.energy = 0
 environments.suit.o2per = 0
 
-//Create the VGUI
---topbar = vgui.Create( "LS Debug Bar" )
---topbar:SetVisible( true )
-
 //Load it depending on the server setup
 if CAF and CAF.GetAddon("Spacebuild") then --sb installed
 	print("Spacebuild is active on the server")
-		
 else --No sb installed
 	LoadHud()
-	--Attempt to load the planets table from the file from the server.
-	local data = file.Read("environments/"..game.GetMap()..".txt")
-	if data then
-		planets = table.DeSanitise(util.KeyValuesToTable(data))
-	end
 end
 
 local function EnvironmentCheck() --Whoah! What planet I am on?!
-	local location -- this goes with the if statement
 	local ply = LocalPlayer()
-	if not (ply and ply:IsValid() and ply:Alive()) then return end
-	local plypos = ply:LocalToWorld( Vector(0,0,0) )
+	if not ply:IsValid() then return end
 	--if planets[1] == nil then return end
 	for k, p in pairs( planets ) do
-		if plypos:Distance(planets[k].position) < p.radius then
+		if ply:GetPos():Distance(p.position) <= p.radius then
 			//Record the name of the planet
-			planet = p.name
-			
+			planet = p
 			return
 		end
 	end
-	planet = "space"
+	planet = nil --space
 end
---timer.Create("EnvironmentCheck", 1, 0, EnvironmentCheck )
+timer.Create("EnvironmentCheck", 1, 0, EnvironmentCheck )
+
+local function RenderEffects()
+	if( !LocalPlayer():Alive() ) then return end
+	if not planet then return end
+
+	local blom = blooms[planet.bloomid]
+	local color = colors[planet.colorid]
+	
+	if color then
+		local cmod = { }
+		cmod["$pp_colour_addr"] = color.addcol.x
+		cmod["$pp_colour_addg"] = color.addcol.y
+		cmod["$pp_colour_addb"] = color.addcol.z
+		cmod["$pp_colour_brightness"] = color.brightness
+		cmod["$pp_colour_contrast"] = color.contrast
+		cmod["$pp_colour_colour"] = color.color
+		cmod["$pp_colour_mulr"] = color.mulcol.x
+		cmod["$pp_colour_mulg"] = color.mulcol.y
+		cmod["$pp_colour_mulb"] = color.mulcol.z
+		DrawColorModify( cmod )
+	end
+	
+	if blom then
+		DrawBloom( blom.darken, blom.multiply, blom.x, blom.y, blom.passes, blom.colormul, blom.color.x, blom.color.y, blom.color.z );
+	end
+end
+hook.Add("RenderScreenspaceEffects","laskdjaldk", RenderEffects) 
 
 function Space()
 	local hash = {}
@@ -86,46 +102,53 @@ local function LS_umsg_hook1( um )
 end
 --usermessage.Hook("LS_umsg1", LS_umsg_hook1) 
 
-//Borrowed from SB, gotta have reverse compatibility
 local function PlanetUmsg( msg )
 	local ent = msg:ReadShort()
 	local hash  = {}
 	hash.ent = ents.GetByIndex(ent)
-	hash.name = msg:ReadString()
 	hash.position = msg:ReadVector()
-	hash.radius = msg:ReadFloat()
-	if msg:ReadBool() then
-		hash.color = true
-		hash.AddColor_r = msg:ReadShort()
-		hash.AddColor_g = msg:ReadShort()
-		hash.AddColor_b = msg:ReadShort()
-		hash.MulColor_r = msg:ReadShort()		
-		hash.MulColor_g = msg:ReadShort()
-		hash.MulColor_b = msg:ReadShort()
-		hash.Brightness = msg:ReadFloat()
-		hash.Contrast = msg:ReadFloat()
-		hash.CColor = msg:ReadFloat()
-	else
-		hash.color = false
-	end
-	if msg:ReadBool() then
-		hash.bloom = true
-		hash.Col_r = msg:ReadShort()
-		hash.Col_g = msg:ReadShort()
-		hash.Col_b = msg:ReadShort()
-		hash.SizeX = msg:ReadFloat()
-		hash.SizeY = msg:ReadFloat()
-		hash.Passes = msg:ReadFloat()
-		hash.Darken = msg:ReadFloat()
-		hash.Multiply = msg:ReadFloat()
-		hash.BColor = msg:ReadFloat()
-	else
-		hash.bloom = false
-	end
-	planets[ent] = hash
-end
---usermessage.Hook( "AddPlanet", PlanetUmsg )
+	hash.radius = msg:ReadShort()
+	hash.colorid = msg:ReadString()
+	hash.bloomid = msg:ReadString()
 	
+	planets[ent] = hash
+	--print("Recieved Planet: ".. hash.colorid)
+end
+usermessage.Hook( "AddPlanet", PlanetUmsg )
+
+local function PlanetColor(msg)
+	local hash = {}
+	hash.addcol = msg:ReadVector()
+		
+	hash.mulcol = msg:ReadVector()
+		
+	hash.brightness = msg:ReadFloat()
+	hash.contrast = msg:ReadFloat()
+	hash.color = msg:ReadFloat()
+	hash.ID = msg:ReadString()
+	colors[hash.ID] = hash
+	--print("Recieved Color: ".. hash.ID)
+end
+usermessage.Hook("PlanetColor", PlanetColor)
+
+local function PlanetBloom(msg)
+	local hash = {}
+	
+	hash.color = msg:ReadVector()
+
+	hash.x = msg:ReadFloat()
+	hash.y = msg:ReadFloat()
+		
+	hash.passes = msg:ReadFloat()
+	hash.darken = msg:ReadFloat()
+	hash.multiply = msg:ReadFloat()
+	hash.colormul = msg:ReadFloat()
+	hash.ID = msg:ReadString()
+	blooms[hash.ID] = hash
+	--print("Recieved Bloom: ".. hash.ID)
+end
+usermessage.Hook("PlanetBloom", PlanetBloom)
+
 local function StarUmsg( msg )
 	local ent = msg:ReadShort()
 	local tmpname = msg:ReadString()

@@ -75,6 +75,8 @@ function Environments.CreateEnvironment(planet)
 	--self.suntemperature = planet.suntemperature
 	self.noclip = planet.noclip
 	self.unstable = planet.unstable
+	self.bloomid = planet.bloomid
+	self.colorid = planet.colorid
 	
 	if gravity and type(gravity) == "number" then
 		if gravity < 0 then
