@@ -2,25 +2,88 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
+
+local util = util
+local ents = ents
+local math = math
+local GetWorldEntity = GetWorldEntity
+local Vector = Vector
+local print = print
+local MsgAll = MsgAll
+local pcall = pcall
+local pairs = pairs
+
 local mapdata = {} --stores map info
 
 //prototype events system
 local events = {}
-events["asteroidstorm"] = function(planet)
+events["meteorstorm"] = function(planet)
 	local roids = ents.Create("event_asteroid_storm")
 	roids:SetPos(planet.position + Vector(0, 0, planet.radius + 2000))
 	roids:Spawn()
 	roids:Start(planet.radius)
+	return "Meteor Storm"
 end
 events["meteor"] = function(planet)
 	local roid = ents.Create("event_meteor")
 	roid:SetPos(GetBestPath(roid, planet))
 	roid:Spawn()
 	roid:Start(planet)
+	return "Meteor Strike"
 end
 events["earthquake"] = function(planet)
 	util.ScreenShake(planet:GetPos(), 14, 255, 6, planet.radius)
+	return "Earthquake"
 end
+/*events["micrometeorite"] = function(planet)
+	local AttackVector = Vector(math.random(-9999,9999),math.random(-9999,9999),math.random(-9999,9999)):Normalize()
+	
+	local basepoint = ents.Create("prop_dynamic") --since we can't do IsInWorld on a vector we'll make a marker; Spawn once, use may times.
+	basepoint:SetModel("models/Combine_Helicopter/helicopter_bomb01.mdl")
+	basepoint:SetPos(Vector(0,0,0))
+	basepoint:Spawn()
+	
+	local trA = nil --localize now so we can access later
+	local trB = nil
+	
+	--for i=1, swarms do
+		local useA = false
+		while true do
+			while true do
+				basepoint:SetPos(Vector(math.random(-65530,65530),math.random(-65530,65530),math.random(-65530,65530)))
+				if basepoint:IsInWorld() then
+					break
+				end
+			end	
+			trA = util.QuickTrace(basepoint:GetPos(),basepoint:GetPos()+(AttackVector*99999999))
+			trB = util.QuickTrace(basepoint:GetPos(),basepoint:GetPos()+(AttackVector*-99999999))
+			if trA.HitSky or trB.HitSky then
+				if trA.HitSky then
+					useA = true
+				end
+				break
+			end
+		end
+		local bullet = {}
+		bullet.Num 			= math.random(5,10)
+		if not useA then
+			bullet.Src		= trA.HitPos
+		else
+			bullet.Src		= trB.HitPos
+		end
+		bullet.Dir 			= AttackVector
+		bullet.Spread 		= Vector(0.5,0.5,0.5)
+		bullet.Tracer		= 1
+		bullet.TracerName 	= "AirboatGunHeavyTracer"
+		bullet.Force		= 200
+		bullet.Damage		= math.random(10,50)
+		bullet.Attacker 	= GetWorldEntity()
+		basepoint:FireBullets(bullet)
+	--end
+	basepoint:Remove()
+	return "Micro Meteorite Storm"
+end*/
+--timer.Create("storms", 10, 0, events["micrometeorite"])
 
 local function FireEvent(ply,cmd,args)
 	if not ply:IsAdmin() then return end
@@ -38,26 +101,28 @@ end
 concommand.Add("env_fire_event", FireEvent)
 
 function Environments.EventChecker()
-	if math.random(1,50) <= 10 then
-		print("Event Running")
+	local chance = math.random(1,50)
+	if chance <= 15 then
 		//call the function to run the event
 		local planet = table.Random(environments)
 		local event = table.Random(events)
+		eventname = ""
 		if not planet.spawn == "1" then
-			local status, error = pcall(event(planet))
+			local status, error = pcall(function() eventname = event(planet) end)
 			if error then
 				Environments.Log("Event Error: "..error)
 			end
 		else
 			planet = table.Random(environments)
 			if not planet.spawn == "1" then
-				local status, error = pcall(event(planet))
+				local status, error = pcall(function() eventname = event(planet) end)
 				if error then
 					Environments.Log("Event Error: "..error)
 				end
 			end
 		end	
-		Environments.Log("An Event Occured")
+		MsgAll("A " .. eventname .. " Started at " .. tostring(os.date("%H:%M:%S")))
+		Environments.Log("A " .. eventname .. " Occured")
 	end
 end
 

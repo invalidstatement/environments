@@ -4,10 +4,12 @@
 ------------------------------------------
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 86
-Environments.FileVersion = 2
+Environments.Version = 87
+Environments.FileVersion = 3
 Environments.UseSuit = true
+Environments.Debug = true
 
+local start = SysTime()
 if CLIENT then
 	include("environments/core/cl_logging.lua")
 	function Load(msg)
@@ -26,6 +28,10 @@ if CLIENT then
 		concommand.Add("env_reload_hud", Reload)
                 
 		if msg then
+			include("vgui/HUD.lua")
+			include("vgui/lsinfo.lua")
+			LoadHud()
+			
 			print("Environments Version "..msg:ReadShort().." Running On Server")
 		end
 	end
@@ -70,6 +76,10 @@ end
 print("==============================================")
 print("==    Environments Revision "..Environments.Version.." Installed    ==")
 print("==============================================")
+
+if Environments.Debug then
+	print("Environments Load Time: "..(SysTime() - start))
+end
 
 local onlineversion
 function GetOnlineVersion( printChecking )

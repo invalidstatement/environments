@@ -13,6 +13,7 @@ local timer = timer
 local efficiency = 0.02 --the insulating efficiency of the suit, how fast the suit gains or loses temperature
 function Environments.LSCheck()
 	for k, ply in pairs(player.GetAll()) do
+		local status, error = pcall(function() --starts the error checker
 		if not ply:Alive() or not ply:IsValid() then return end
 		
 		if ply:GetNWBool("inspace") == true then
@@ -183,7 +184,12 @@ function Environments.LSCheck()
 			end
 		end
 		
-		Environments.UpdateLS(ply, temperature)
+		Environments.UpdateLS(ply, temperature) end) --ends the error checker
+		
+		if error then
+			Environments.Log("Player Think Error: "..error)
+			MsgAll("Environments Player Think Error: "..error.."\n")
+		end
 	end
 end
 
@@ -234,7 +240,7 @@ end
 function Environments.PlayerCheck(ent)
 	--if not ent:GetNWBool("inspace") then return end
 	local phys = ent:GetPhysicsObject()
-	if not phys:IsValid() then return end
+	local veh = ent:GetVehicle()
 	
 	if ent:GetNWBool("inspace") then
 		if !ent:IsAdmin() then
@@ -246,7 +252,7 @@ function Environments.PlayerCheck(ent)
 	local pos = ent:GetPos()
 	trace.start = pos
 	trace.endpos = pos - Vector(0,0,512)
-	trace.filter = { ent }
+	trace.filter = { ent, veh }
 	
 	local tr = util.TraceLine( trace )
 	
@@ -254,32 +260,36 @@ function Environments.PlayerCheck(ent)
 	pos = ent:GetPos()
 	trace.start = pos
 	trace.endpos = pos + Vector(0,0,512)
-	trace.filter = { ent }
+	trace.filter = { ent, veh }
 	
 	local tr2 = util.TraceLine( trace )
 	
 	if (tr.Hit) then
 		if tr.Entity.env and tr2.Entity.env then
 			if tr.Entity.env.Active == 1 then
-				ent:SetGravity(tr.Entity.env.gravity)
+				ent.environment = tr.Entity.env
+				tr.Entity.env:Breathe()
 				ent.gravity = 1
+				ent:SetGravity(tr.Entity.env.gravity)
+				if not phys:IsValid() then return end
 				phys:EnableGravity( true )
 				phys:EnableDrag( true )
-				ent.environment = tr.Entity.env
-				tr.Entity.env:Breathe()
+				
 				return
 			else
+				ent.environment = tr.Entity.env
 				ent:SetGravity(0.00001)
 				ent.gravity = 1
+				if not phys:IsValid() then return end
 				phys:EnableGravity( false )
 				phys:EnableDrag( true )
-				ent.environment = tr.Entity.env
-				tr.Entity.env:Breathe()
+				
 				return
 			end
 		elseif (tr.Entity.grav_plate and tr.Entity.grav_plate == 1) then
 			ent:SetGravity(1)
 			ent.gravity = 1
+			if not phys:IsValid() then return end
 			phys:EnableGravity( true )
 			phys:EnableDrag( true )
 			return
@@ -288,11 +298,14 @@ function Environments.PlayerCheck(ent)
 	if ent.gravity and ent.gravity == 0 then 
 		return 
 	end
-	
-	phys:EnableGravity( false )
-	phys:EnableDrag( false )
-	ent:SetGravity(0.00001)
-	ent.gravity = 0
+	if ent:GetNWBool("inspace") then
+		--print("set space")
+		phys:EnableGravity( false )
+		phys:EnableDrag( false )
+		ent:SetGravity(0.00001)
+		ent.gravity = 0
+		ent.environment = Space()
+	end
 end
 
 
@@ -383,6 +396,27 @@ function Environments.Hooks.LSInitSpawn(ply)
 	umsg.End()
 end
 
+function Environments.Hooks.LSInitSpawnDry(ply) --for when its not a space map
+	ply.suit = {}
+	ply.suit.params = {}
+	local hash = {}
+	hash.air = 200 --100
+	hash.energy = 200 --100
+	hash.coolant = 200 --100
+	hash.temperature = 288
+	hash.recover = 0
+	ply.suit = hash
+	
+	ply.environment = {}
+	ply.environment.temperature = 288
+	ply.environment.air = {}
+	ply.environment.air.o2per = 20
+	
+	umsg.Start("Environments", ply)
+		umsg.Short(Environments.Version)
+	umsg.End()
+end
+
 function Environments.Hooks.LSSpawn(ply)
 	if not ply.msged then
 		ply:ChatPrint("This server is running Environments, please report any bugs to CmdrMatthew")
@@ -392,6 +426,8 @@ function Environments.Hooks.LSSpawn(ply)
 end
 
 function Environments.Hooks.HelmetSwitch( ply )
+	local status, error = pcall(function() 
+	if not ply.m_hSuit:GetParent().GetInfo then return end
 	if Environments.UseSuit then
 		if ply.suit.helmet then
 			--ply:TakeOffSuit()
@@ -416,5 +452,8 @@ function Environments.Hooks.HelmetSwitch( ply )
 			ply.suit.helmet = true
 			ply:ChatPrint("You put on your helmet.")
 		end
+	end end)
+	if error then
+		Environments.Log("Helmet Error: "..error)
 	end
 end

@@ -6,6 +6,8 @@
 --localize
 local math = math
 local hook = hook
+local game = game
+local util = util
 local file = file
 local table = table
 local ents = ents
@@ -14,6 +16,8 @@ local os = os
 local tonumber = tonumber
 local pcall = pcall
 local print = print
+local pairs = pairs
+local SysTime = SysTime
 
 SRP = {} --Backup Compatability from when this was gonna be a gamemode
 UseEnvironments = false
@@ -57,6 +61,7 @@ timer.Create("registerCAFOverwrites", 5, 1, function()
 end)
 
 local function LoadEnvironments()
+	local start = SysTime()
 	print("/////////////////////////////////////")
 	print("//       Loading Environments      //")
 	print("/////////////////////////////////////")
@@ -68,6 +73,7 @@ local function LoadEnvironments()
 		//Add Hooks
 		hook.Add("PlayerNoClip","EnvNoClip", Environments.Hooks.NoClip)
 		hook.Add("PlayerInitialSpawn","CreateLS", Environments.Hooks.LSInitSpawn)
+		hook.Add("PlayerInitialSpawn","CreateEnvironemtns", Environments.SendInfo)
 		hook.Add("PlayerSpawn", "SpawnLS", Environments.Hooks.LSSpawn)
 		hook.Add("ShowTeam", "HelmetToggle", Environments.Hooks.HelmetSwitch)
 		if Environments.UseSuit then
@@ -104,6 +110,18 @@ local function LoadEnvironments()
 		print("//   LifeSupport Checker Started   //")
 	else --Not a spacebuild map
 		print("//   This is not a valid space map //")
+		print("//   Doing Partial Startup         //")
+		--hook.Add("PlayerNoClip","EnvNoClip", Environments.Hooks.NoClip)
+		hook.Add("PlayerInitialSpawn","CreateLS", Environments.Hooks.LSInitSpawnDry)
+		--hook.Add("PlayerInitialSpawn","CreateEnvironemtns", Environments.SendInfo)
+		hook.Add("PlayerSpawn", "SpawnLS", Environments.Hooks.LSSpawn)
+		hook.Add("ShowTeam", "HelmetToggle", Environments.Hooks.HelmetSwitch)
+		if Environments.UseSuit then
+			hook.Add("PlayerInitialSpawn", "PlayerSetSuit", Environments.Hooks.SuitInitialSpawn)
+			hook.Add("PlayerDeath", "PlayerRemoveSuit", Environments.Hooks.SuitPlayerDeath)
+			hook.Add("PlayerSpawn", "PlayerSetSuit", Environments.Hooks.SuitPlayerSpawn)
+		end
+		timer.Create("LSCheck", 1, 0, Environments.LSCheck)
 	end end)--ends the error checker
 	
 	if not error then
@@ -115,8 +133,11 @@ local function LoadEnvironments()
 		print("/////////////////////////////////////")
 		print("//    Environments Load Failed     //")
 		print("/////////////////////////////////////")
-		Environments.Log("Load Failed")
-		Environments.Log("ERROR: "..error)
+		print(error)
+		Environments.Log("Startup Error: "..error)
+	end
+	if Environments.Debug then
+		print("Environments Server Startup Time: "..(SysTime() - start))
 	end
 end
 hook.Add("InitPostEntity","EnvLoad", LoadEnvironments)
@@ -127,6 +148,35 @@ function Environments.RegisterEnvironments()
 	local map = game.GetMap()
 	
 	if file.Exists( "environments/" .. map ..".txt" ) then
+		local entities = ents.FindByClass( "logic_case" )
+		Environments.MapEntities = {}
+		Environments.MapEntities.Color = {}
+		Environments.MapEntities.Bloom = {}
+		for k,ent in pairs(entities) do
+			local values = ent:GetKeyValues()
+			local tab = ent:GetKeyValues()
+			if( tab.Case01 == "planet_color" ) then
+				table.insert( Environments.MapEntities.Color, {
+					addcol = Vector( tab.Case02 ),
+					mulcol = Vector( tab.Case03 ),
+					brightness = tonumber( tab.Case04 ),
+					contrast = tonumber( tab.Case05 ),
+					color = tonumber( tab.Case06 ),
+					id = tab.Case16
+				} );
+			elseif( tab.Case01 == "planet_bloom" ) then
+				table.insert(  Environments.MapEntities.Bloom, {
+					color = Vector( tab.Case02 ),
+					x = tonumber( string.Explode( " ", tab.Case03 )[1] ),
+					y = tonumber( string.Explode( " ", tab.Case03 )[2] ),
+					passes = tonumber( tab.Case04 ),
+					darken = tonumber( tab.Case05 ),
+					multiply = tonumber( tab.Case06 ),
+					colormul = tonumber( tab.Case07 ),
+					id = tab.Case16
+				} );
+			end
+		end
 		print("//   Attempting to Load From File  //")
 		local contents = file.Read( "environments/" .. map .. ".txt" )
 		local starscontents = file.Read( "environments/" .. map .. "_stars.txt")
@@ -158,9 +208,36 @@ function Environments.RegisterEnvironments()
 		end
 	else
 		print("//   Loading From Map              //")
+		Environments.MapEntities = {}
+		Environments.MapEntities.Color = {}
+		Environments.MapEntities.Bloom = {}
 		local entities = ents.FindByClass( "logic_case" )
 		for k,ent in pairs(entities) do
 			local values = ent:GetKeyValues()
+			local tab = ent:GetKeyValues()
+			
+			if( tab.Case01 == "planet_color" ) then
+				table.insert( Environments.MapEntities.Color, {
+					addcol = Vector( tab.Case02 ),
+					mulcol = Vector( tab.Case03 ),
+					brightness = tonumber( tab.Case04 ),
+					contrast = tonumber( tab.Case05 ),
+					color = tonumber( tab.Case06 ),
+					id = tab.Case16
+				} );
+			elseif( tab.Case01 == "planet_bloom" ) then
+				table.insert(  Environments.MapEntities.Bloom, {
+					color = Vector( tab.Case02 ),
+					x = tonumber( string.Explode( " ", tab.Case03 )[1] ),
+					y = tonumber( string.Explode( " ", tab.Case03 )[2] ),
+					passes = tonumber( tab.Case04 ),
+					darken = tonumber( tab.Case05 ),
+					multiply = tonumber( tab.Case06 ),
+					colormul = tonumber( tab.Case07 ),
+					id = tab.Case16
+				} );
+			end
+
 			for key, value in pairs(values) do
 				if key == "Case01" then
 					local planet = {}
@@ -206,9 +283,10 @@ function Environments.RegisterEnvironments()
 							elseif (k2 == "Case04") then planet.atm = tonumber(v2)
 							elseif (k2 == "Case05") then planet.temperature = tonumber(v2)
 							elseif (k2 == "Case06") then planet.suntemperature = tonumber(v2)
+							elseif (k2 == "Case07") then planet.colorid = tostring(v2)
+							elseif (k2 == "Case08") then planet.bloomid = tostring(v2)
 							elseif (k2 == "Case16") then planet.flags = tonumber(v2) end
 						end
-						
 						planet.position = ent:GetPos()
 						
 						if planet.atm == 0 then
@@ -243,7 +321,9 @@ function Environments.RegisterEnvironments()
 							elseif (k2 == "Case10") then planet.atmosphere.carbondioxide = tonumber(v2)
 							elseif (k2 == "Case11") then planet.atmosphere.nitrogen = tonumber(v2)
 							elseif (k2 == "Case12") then planet.atmosphere.hydrogen = tonumber(v2)
-							elseif (k2 == "Case13") then planet.name = tostring(v2) end --Get Name
+							elseif (k2 == "Case13") then planet.name = tostring(v2) --Get Name
+							elseif (k2 == "Case15") then planet.colorid = tostring(v2)
+							elseif (k2 == "Case16") then planet.bloomid = tostring(v2) end
 						end
 						
 						if planet.atm == 0 then
@@ -406,28 +486,28 @@ function Environments.RegisterSun()
 end
 
 function Environments.Hooks.NoClip( ply, on )
-	if ply:GetMoveType() == MOVETYPE_FLY then ply:SetMoveType(MOVETYPE_WALK) return false end --allow them to get out of jetpack
+	--if ply:GetMoveType() == MOVETYPE_FLY then ply:SetMoveType(MOVETYPE_WALK) return false end --allow them to get out of jetpack
 	// Always allow them to get out of noclip
 	if ply:GetMoveType() == MOVETYPE_NOCLIP then return true end
 	// Always allow admins
 	if ply:IsAdmin() then return true end
 	
-	if ply:GetNWBool("inspace", false) and ply.environment.gravity == 0 then --jetpack in space :D
-		ply:SetMoveType(MOVETYPE_FLY)
+	--if ply:GetNWBool("inspace", true) and ply.environment.gravity == 0 then --jetpack in space :D
+		--ply:SetMoveType(MOVETYPE_FLY)
 		
-		return false
-	else
+		--return false
+	--else
 		// Allow others based on environment (if they can breathe or not)
 		if not ply.environment then return false end --double check	
-		if ply:GetNWBool("inspace", false) then return end --not in space you don't
-		if AllowNoClip:GetBool() then return true end --check if user wants to block noclip
+		--if ply:GetNWBool("inspace", false) then return end --not in space you don't
+		--if AllowNoClip:GetBool() then return true end --check if user wants to block noclip
 		
-		if ply.environment.air.o2per >= 10 and ply.environment.temperature > 280 and ply.environment.temperature < 310 then --if can breathe
+		if ply.environment.air.o2per >= 9.5 /*and ply.environment.temperature > 270 and ply.environment.temperature <= 310*/ then --if can breathe
 			return true
 		else
 			return false
 		end
-	end
+	--end
 end
 
 function Environments.Log(text)
@@ -475,6 +555,46 @@ local function SFXManager()
 	end
 end
 --timer.Create("SFXCHECKER", 10, 0, SFXManager)
+
+function Environments.SendInfo(ply)
+	for _, v in pairs( environments ) do
+		umsg.Start( "AddPlanet", ply );
+			umsg.Short( v:EntIndex() )
+			umsg.Vector( v:GetPos() );
+			umsg.Short( v.radius );
+			if v.colorid then
+				umsg.String( v.colorid );
+			end
+			if v.bloomid then
+				umsg.String( v.bloomid );
+			end
+		umsg.End();
+	end
+
+	for _, v in pairs( Environments.MapEntities.Color ) do
+		umsg.Start( "PlanetColor", ply )
+			umsg.Vector( v.addcol )
+			umsg.Vector( v.mulcol )
+			umsg.Float( v.brightness )
+			umsg.Float( v.contrast )
+			umsg.Float( v.color )
+			umsg.String( v.id )
+		umsg.End()
+	end
+	
+	for _, v in pairs( Environments.MapEntities.Bloom ) do
+		umsg.Start( "PlanetBloom", ply )
+			umsg.Vector( v.color )
+			umsg.Float( v.x )
+			umsg.Float( v.y )
+			umsg.Float( v.passes )
+			umsg.Float( v.darken )
+			umsg.Float( v.multiply )
+			umsg.Float( v.colormul )
+			umsg.String( v.id )
+		umsg.End()
+	end
+end
 
 local function Reload(ply,cmd,args)
 	if not ply:IsAdmin() then return end
