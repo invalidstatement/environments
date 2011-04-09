@@ -4,8 +4,8 @@
 ------------------------------------------
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 87
-Environments.FileVersion = 3
+Environments.Version = 88
+Environments.FileVersion = 4
 Environments.UseSuit = true
 Environments.Debug = true
 
@@ -114,4 +114,10 @@ if SERVER then
 			RunConsoleCommand("sv_tags", servertags)        
 		end
 	--end)
+end
+
+//Fixes the crazy death notices
+if CLIENT then
+	language.Add( "worldspawn", "World" )
+	language.Add( "trigger_hurt", "Environment" )
 end

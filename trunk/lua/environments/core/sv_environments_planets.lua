@@ -46,7 +46,100 @@ function GetFlags(flags)
 	return habitat, unstable, sunburn
 end
 
-function Environments.CreateEnvironment(planet)
+function Environments.ParseSaveData(planet)
+	local compounds = {}
+	compounds["o2"] = planet.atmosphere.oxygen
+	compounds["co2"] = planet.atmosphere.carbondioxide
+	compounds["h"] = planet.atmosphere.hydrogen
+	compounds["n"] = planet.atmosphere.nitrogen
+	compounds["ch4"] = planet.atmosphere.methane
+	compounds["ar"] = planet.atmosphere.argon
+	
+	local gravity = planet.gravity
+	local o2 = planet.atmosphere.oxygen
+	local co2 = planet.atmosphere.carbondioxide
+	local n = planet.atmosphere.nitrogen
+	local h = planet.atmosphere.hydrogen
+	local ch4 = planet.atmosphere.methane
+	local ar = planet.atmosphere.argon
+	local temperature = planet.temperature
+	local suntemperature = planet.suntemperature
+	local atmosphere = planet.atm
+	local radius = planet.radius
+	local volume = GetVolume(radius)
+	
+	local self = {}
+	self.atmosphere = planet.atm
+	self.air = {}
+	for k,v in pairs(compounds) do
+		if v and type(v) == "number" and v > 0 then
+			if v < 0 then v = 0 end
+			if v > 100 then v = 100 end
+			self.air[k.."per"] = v
+			self.air[k] = math.Round(v * 5 * (volume/1000) * self.atmosphere)
+		else
+			v = 0
+			self.air[k.."per"] = v
+			self.air[k] = v
+		end
+	end
+	
+	if o2 + co2 + n + h + ch4 + ar < 100 then
+		local tmp = 100 - (o2 + co2 + n + h + ch4 + ar)
+		self.air.empty = math.Round(tmp * 5 * (volume/1000) * self.atmosphere)
+		self.air.emptyper = tmp
+	elseif o2 + co2 + n + h + ch4 + ar > 100 then
+		local tmp = (o2 + co2 + n + h + ch4 + ar) - 100
+		if co2 > tmp then
+			self.air.co2 = math.Round((co2 - tmp) * 5 * (volume/1000) * self.atmosphere)
+			self.air.co2per = co2 + tmp
+		elseif n > tmp then
+			self.air.n = math.Round((n - tmp) * 5 * (volume/1000) * self.atmosphere)
+			self.air.nper = n + tmp
+		elseif h > tmp then
+			self.air.h = math.Round((h - tmp) * 5 * (volume/1000) * self.atmosphere)
+			self.air.hper = h + tmp
+		elseif o2 > tmp then
+			self.air.o2 = math.Round((o2 - tmp) * 5 * (volume/1000) * self.atmosphere)
+			self.air.o2per = o2 - tmp
+		elseif ar > tmp then
+			self.air.ar = math.Round((ar - tmp) * 5 * (volume/1000) * self.atmosphere)
+			self.air.arper = ar - tmp
+		elseif ch4 > tmp then
+			self.air.ch4 = math.Round((ch4 - tmp) * 5 * (volume/1000) * self.atmosphere)
+			self.air.ch4per = ch4 - tmp
+		end
+		self.air.empty = 0
+		self.air.emptyper = 0
+	else
+		self.air.empty = 0
+		self.air.emptyper = 0
+	end
+	self.air.max = math.Round(100 * 5 * (volume/1000) * self.atmosphere)
+	self.originalco2per = self.air.co2per
+	
+	return self
+end
+
+//Actually creates it
+function Environments.CreatePlanet(d)
+	local planet = ents.Create("Environment")
+	planet:Spawn()
+	planet:SetPos(d.position)
+	--planet.environment = self
+	planet:Configure(d.radius, d.gravity, d.name, d)
+	
+	//stop it from getting removed
+	planet.Delete = planet.Remove
+	planet.Remove = function() 
+		Environments.Log("Something Attempted to Remove Planet "..d.name)
+	end
+	
+	table.insert(environments, planet)
+end
+
+//parses the data from the map loading
+function Environments.ParsePlanet(planet)
 	local compounds = {}
 	compounds["o2"] = planet.atmosphere.oxygen
 	compounds["co2"] = planet.atmosphere.carbondioxide
@@ -164,27 +257,14 @@ function Environments.CreateEnvironment(planet)
 		self.name = planet.name
 	end
 	self.air.max = math.Round(100 * 5 * (volume/1000) * self.atmosphere)
-	self.pressure = self.atmosphere * self.gravity * (1 - (self.air.emptyper/100))
-	self.original = table.Copy(self)
+	--self.pressure = self.atmosphere * self.gravity * (1 - (self.air.emptyper/100))
+	self.originalco2per = self.air.co2per
 	
-	//Add it to the table
-	local planet = ents.Create("Environment")
-	planet:Spawn()
-	planet:SetPos(self.position)
-	--planet.environment = self
-	planet:Configure(self.radius, self.gravity, self.name, self)
-	
-	//stop it from getting removed
-	planet.Delete = planet.Remove
-	planet.Remove = function() 
-		Environments.Log("Something Attempted to Remove Planet "..self.name)
-	end
-	
-	table.insert(environments, planet)
+	return self
 end
 
 //Borrowed from SB3
-function Environments.CreateSB2Environment(planet)
+function Environments.ParseSB2Environment(planet)
 	local habitat, unstable, sunburn = GetFlags(planet.flags)
 	local o2 = 0
 	local co2 = 0
@@ -213,21 +293,25 @@ function Environments.CreateSB2Environment(planet)
 end
 //End Borrowed code
 
-function Environments.CreateStarEnv(planet)
+function Environments.ParseStar(planet)
 	local self = {}
 	self.radius = planet.radius
 	self.position = planet.position
 	self.typeof = planet.typeof
+	self.name = planet.name
 	self.temperature = planet.temperature
 	self.isstar = true
 	self.gravity = 0 --planet.gravity
 	self.air = {}
 	self.air.o2per = 0
-	
+	return self
+end
+
+function Environments.CreateStar(planet)
 	local star = ents.Create("Star")
 	star:Spawn()
-	star:SetPos(self.position)
-	star:Configure(self.radius, self.gravity, self.name, self)
+	star:SetPos(planet.position)
+	star:Configure(planet.radius, planet.gravity, planet.name, planet)
 	
 	table.insert(environments, star)
 end

@@ -13,7 +13,11 @@ CompatibleEntities = {"func_precipitation", "env_smokestack", "func_dustcloud"}
 
 include("shared.lua")
 include("core/base.lua")
-	
+
+//fixes stargate stuff
+ENT.IgnoreStaff = true
+ENT.IgnoreTouch = true
+
 function ENT:Initialize()
 	self.Entity:SetModel( "models/combine_helicopter/helicopter_bomb01" ) --setup stuff
 	self.Entity:SetMoveType( MOVETYPE_NONE )
@@ -40,10 +44,10 @@ function ENT:Initialize()
 end
 
 function ENT:StartTouch(ent)
-	if not ent:GetPhysicsObject():IsValid() then return end
-	if ent:IsWorld() then return end
+	if not ent:GetPhysicsObject():IsValid() then return end	--only physics stuff 
+	if ent:GetClass() == "func_door" or ent:IsWorld() then return end --no world stuff
 	
-	if ent:GetClass() == "func_door" then return end
+	if ent.NoGrav then return end --let missiles,ect do their thang
 	
 	if not self.Enabled then 
 		if self.Debugging then Msg("Entity ", ent, " tried to enter but ", self.name, " wasn't on.\n") end
@@ -79,7 +83,9 @@ function ENT:EndTouch(ent)
 			ent:GetPhysicsObject():EnableDrag( false )
 			ent:GetPhysicsObject():EnableGravity( false )
 		end
-		ent.environment = Space()
+		if not ent.NoSpaceAfterEndTouch then
+			ent.environment = Space()
+		end
 		if self.Debugging then Msg("...and has decided to get spaced.\n") end
 	else
 		--if self.Debugging then Msg("...and has decided to not get spaced.\n") end

@@ -111,7 +111,7 @@ function ENT:Convert(air1, air2, value)
 			self.air.empty = self.air.empty + value
 		end
 	elseif air1 == SB_AIR_CH4 then
-		--print("Ch4")
+		print("Ch4")
 		if self.air.ch4 < value then
 			value = self.air.ch4
 		end
