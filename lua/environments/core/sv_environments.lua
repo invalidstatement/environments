@@ -76,6 +76,7 @@ local function LoadEnvironments()
 		hook.Add("PlayerInitialSpawn","CreateEnvironemtns", Environments.SendInfo)
 		hook.Add("PlayerSpawn", "SpawnLS", Environments.Hooks.LSSpawn)
 		hook.Add("ShowTeam", "HelmetToggle", Environments.Hooks.HelmetSwitch)
+		hook.Add("PlayerDeath", "ZgRagdoll", Environments.Hooks.PlayerDeath)
 		if Environments.UseSuit then
 			hook.Add("PlayerInitialSpawn", "PlayerSetSuit", Environments.Hooks.SuitInitialSpawn)
 			hook.Add("PlayerDeath", "PlayerRemoveSuit", Environments.Hooks.SuitPlayerDeath)
@@ -104,7 +105,7 @@ local function LoadEnvironments()
 		end
 			
 		print("// Starting Periodicals..          //")
-		timer.Create("EnvEvents", 10, 1, Environments.EventChecker)
+		timer.Create("EnvEvents", 10, 0, Environments.EventChecker)
 		print("//   Event System Started          //")
 		timer.Create("LSCheck", 1, 0, Environments.LSCheck)
 		print("//   LifeSupport Checker Started   //")
@@ -142,46 +143,52 @@ local function LoadEnvironments()
 end
 hook.Add("InitPostEntity","EnvLoad", LoadEnvironments)
 
+function Environments.GetMapEntities()
+	local entities = ents.FindByClass( "logic_case" )
+	Environments.MapEntities = {}
+	Environments.MapEntities.Color = {}
+	Environments.MapEntities.Bloom = {}
+	for k,ent in pairs(entities) do
+		local values = ent:GetKeyValues()
+		local tab = ent:GetKeyValues()
+		if( tab.Case01 == "planet_color" ) then
+			table.insert( Environments.MapEntities.Color, {
+				addcol = Vector( tab.Case02 ),
+				mulcol = Vector( tab.Case03 ),
+				brightness = tonumber( tab.Case04 ),
+				contrast = tonumber( tab.Case05 ),
+				color = tonumber( tab.Case06 ),
+				id = tab.Case16
+			} );
+		elseif( tab.Case01 == "planet_bloom" ) then
+			table.insert(  Environments.MapEntities.Bloom, {
+				color = Vector( tab.Case02 ),
+				x = tonumber( string.Explode( " ", tab.Case03 )[1] ),
+				y = tonumber( string.Explode( " ", tab.Case03 )[2] ),
+				passes = tonumber( tab.Case04 ),
+				darken = tonumber( tab.Case05 ),
+				multiply = tonumber( tab.Case06 ),
+				colormul = tonumber( tab.Case07 ),
+				id = tab.Case16
+			} );
+		end
+	end
+end
+
 function Environments.RegisterEnvironments()
 	local planets = {}
 	local i = 0
 	local map = game.GetMap()
 	
 	if file.Exists( "environments/" .. map ..".txt" ) then
-		local entities = ents.FindByClass( "logic_case" )
-		Environments.MapEntities = {}
-		Environments.MapEntities.Color = {}
-		Environments.MapEntities.Bloom = {}
-		for k,ent in pairs(entities) do
-			local values = ent:GetKeyValues()
-			local tab = ent:GetKeyValues()
-			if( tab.Case01 == "planet_color" ) then
-				table.insert( Environments.MapEntities.Color, {
-					addcol = Vector( tab.Case02 ),
-					mulcol = Vector( tab.Case03 ),
-					brightness = tonumber( tab.Case04 ),
-					contrast = tonumber( tab.Case05 ),
-					color = tonumber( tab.Case06 ),
-					id = tab.Case16
-				} );
-			elseif( tab.Case01 == "planet_bloom" ) then
-				table.insert(  Environments.MapEntities.Bloom, {
-					color = Vector( tab.Case02 ),
-					x = tonumber( string.Explode( " ", tab.Case03 )[1] ),
-					y = tonumber( string.Explode( " ", tab.Case03 )[2] ),
-					passes = tonumber( tab.Case04 ),
-					darken = tonumber( tab.Case05 ),
-					multiply = tonumber( tab.Case06 ),
-					colormul = tonumber( tab.Case07 ),
-					id = tab.Case16
-				} );
-			end
-		end
+		Environments.GetMapEntities()
 		print("//   Attempting to Load From File  //")
 		local contents = file.Read( "environments/" .. map .. ".txt" )
 		local starscontents = file.Read( "environments/" .. map .. "_stars.txt")
 		if contents then
 			local status, error = pcall(function()
+				Environments.PlanetSaveData = {}
+				Environments.PlanetSaveData = table.DeSanitise(util.KeyValuesToTable(contents))
 				planets = table.DeSanitise(util.KeyValuesToTable(contents))
 				stars = table.DeSanitise(util.KeyValuesToTable(starscontents))
 				if planets.version == Environments.FileVersion then
@@ -206,195 +213,241 @@ function Environments.RegisterEnvironments()
 			file.Delete("environments/"..map.."_stars.txt")
 			Environments.RegisterEnvironments()
 		end
-	else
-		print("//   Loading From Map              //")
-		Environments.MapEntities = {}
-		Environments.MapEntities.Color = {}
-		Environments.MapEntities.Bloom = {}
-		local entities = ents.FindByClass( "logic_case" )
-		for k,ent in pairs(entities) do
-			local values = ent:GetKeyValues()
-			local tab = ent:GetKeyValues()
-			
-			if( tab.Case01 == "planet_color" ) then
-				table.insert( Environments.MapEntities.Color, {
-					addcol = Vector( tab.Case02 ),
-					mulcol = Vector( tab.Case03 ),
-					brightness = tonumber( tab.Case04 ),
-					contrast = tonumber( tab.Case05 ),
-					color = tonumber( tab.Case06 ),
-					id = tab.Case16
-				} );
-			elseif( tab.Case01 == "planet_bloom" ) then
-				table.insert(  Environments.MapEntities.Bloom, {
-					color = Vector( tab.Case02 ),
-					x = tonumber( string.Explode( " ", tab.Case03 )[1] ),
-					y = tonumber( string.Explode( " ", tab.Case03 )[2] ),
-					passes = tonumber( tab.Case04 ),
-					darken = tonumber( tab.Case05 ),
-					multiply = tonumber( tab.Case06 ),
-					colormul = tonumber( tab.Case07 ),
-					id = tab.Case16
-				} );
-			end
-
-			for key, value in pairs(values) do
-				if key == "Case01" then
-					local planet = {}
-					planet.position = {}
-					if value == "cube" then --need to fix in the future
-						planet.typeof = "cube"
-						for k2,v2 in pairs(values) do
-							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
-							elseif (k2 == "Case03") then planet.gravity = tonumber(v2) end--Get Gravity
-						end
-						
-						planet.position = ent:GetPos()
-						
-						--Add Defaults
-						planet.atmosphere = {}
-						planet.atmosphere = table.Copy(default.atmosphere)
-						planet.unstable = "false"
-						planet.temperature = 288
-						planet.pressure = 1
-						planet.noclip = 0
-						planet.spawn = 0
-						
-						i=i+1
-						planet.name = i
-
-						table.insert(planets, planet)
-						print("//     Spacebuild Cube Added       //")
-					elseif value == "planet" then
-						planet.typeof = "sphere"
-						
-						--Add Defaults
-						planet.atmosphere = {}
-						planet.atmosphere = table.Copy(default.atmosphere)
-						planet.unstable = "false"
-						planet.temperature = 288
-						planet.pressure = 1
-						planet.noclip = 0
-						planet.spawn = 0
-						
-						for k2,v2 in pairs(values) do
-							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
-							elseif (k2 == "Case03") then planet.gravity = tonumber(v2) --Get Gravity
-							elseif (k2 == "Case04") then planet.atm = tonumber(v2)
-							elseif (k2 == "Case05") then planet.temperature = tonumber(v2)
-							elseif (k2 == "Case06") then planet.suntemperature = tonumber(v2)
-							elseif (k2 == "Case07") then planet.colorid = tostring(v2)
-							elseif (k2 == "Case08") then planet.bloomid = tostring(v2)
-							elseif (k2 == "Case16") then planet.flags = tonumber(v2) end
-						end
-						planet.position = ent:GetPos()
-						
-						if planet.atm == 0 then
-							planet.atm = 1
-						end
-						i=i+1
-						planet.name = i
-						
-						local planet = Environments.CreateSB2Environment(planet)
-						table.insert(planets, planet)
-						print("//     Spacebuild 2 Planet Added   //")
-					elseif value == "planet2" then
-						planet.typeof = "sphere"
-						
-						--Defaults
-						planet.atmosphere = {}
-						planet.atmosphere = table.Copy(default.atmosphere)
-						planet.unstable = "false"
-						planet.temperature = 288
-						planet.pressure = 1
-						planet.noclip = 0
-						planet.spawn = 0
-						
-						for k2,v2 in pairs(values) do
-							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
-							elseif (k2 == "Case03") then planet.gravity = tonumber(v2) --Get Gravity
-							elseif (k2 == "Case04") then planet.atm = tonumber(v2) --What does this mean?
-							elseif (k2 == "Case05") then planet.pressure = tonumber(v2)
-							elseif (k2 == "Case06") then planet.temperature = tonumber(v2)
-							elseif (k2 == "Case07") then planet.suntemperature = tonumber(v2)
-							elseif (k2 == "Case09") then planet.atmosphere.oxygen = tonumber(v2)
-							elseif (k2 == "Case10") then planet.atmosphere.carbondioxide = tonumber(v2)
-							elseif (k2 == "Case11") then planet.atmosphere.nitrogen = tonumber(v2)
-							elseif (k2 == "Case12") then planet.atmosphere.hydrogen = tonumber(v2)
-							elseif (k2 == "Case13") then planet.name = tostring(v2) --Get Name
-							elseif (k2 == "Case15") then planet.colorid = tostring(v2)
-							elseif (k2 == "Case16") then planet.bloomid = tostring(v2) end
-						end
-						
-						if planet.atm == 0 then
-							planet.atm = 1
-						end
-						
-						planet.position = ent:GetPos()
-						
-						i=i+1
-						table.insert(planets, planet)
-						print("//     Spacebuild 3 Planet Added   //")
-					elseif value == "star" then
-						planet.typeof = "sphere"
-						
-						for k2,v2 in pairs(values) do
-							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
-							elseif (k2 == "Case03") then planet.gravity = tonumber(v2) end --Get Gravity
-						end
-						
-						planet.position = ent:GetPos()
-						
-						planet.temperature = 10000
-						planet.solaractivity = "med"
-						planet.baseradiation = "1000"
-						
-						i=i+1	
-						table.insert(stars, planet)
-						print("//     Spacebuild 2 Star Added     //")
-					elseif value == "star2" then
-						planet.typeof = "sphere"
-						
-						for k2,v2 in pairs(values) do
-							if (k2 == "Case02") then planet.radius = tonumber(v2) --Get Radius
-							elseif (k2 == "Case03") then planet.gravity = tonumber(v2) --Get Gravity
-							elseif (k2 == "Case06") then planet.name = tostring(v2) end
-						end
-						
-						planet.position = ent:GetPos()
-						
-						planet.temperature = 5000
-						planet.solaractivity = "med"
-						planet.baseradiation = "1000"
-
-						i=i+1
-						table.insert(stars, planet)
-						print("//     Spacebuild 3 Star Added     //")
-					end
-				end 
-			end
+		planets.version = nil
+		for k,v in pairs(planets) do
+			v.air = Environments.ParseSaveData(v).air --get air data from atmosphere data
+			v.atmosphere = v.atm
+			Environments.CreatePlanet(v)
 		end
-		planets.version = Environments.FileVersion
-		file.Write( "environments/" .. map .. "_stars.txt", util.TableToKeyValues( table.Sanitise(stars) ) )
-		file.Write( "environments/" .. map .. ".txt", util.TableToKeyValues( table.Sanitise(planets) ) )
+		for k,v in pairs(stars) do
+			local star = Environments.ParseStar(v)
+			Environments.CreateStar(star)
+		end
+	else --load it from the map
+		local SaveData = {}
+		local rawdata, rawstars = Environments.LoadFromMap()
+		rawdata.version = nil
+		for k,v in pairs(rawdata) do
+			local planet = Environments.ParsePlanet(v)
+			Environments.CreatePlanet(planet)
+		end
+		for k,v in pairs(rawstars) do
+			local star = Environments.ParseStar(v)
+			Environments.CreateStar(star)
+		end
+		file.Write( "environments/" .. map .. "_stars.txt", util.TableToKeyValues( table.Sanitise(rawstars) ) )
 	end
-	planets.version = nil
-	
-	for k,v in pairs(planets) do
-		Environments.CreateEnvironment(v)
-	end
-	for k,v in pairs(stars) do
-		Environments.CreateStarEnv(v)
-	end
-	
-	local numberofplanets = table.Count( environments ) or 0
-	if numberofplanets > 0 then
+	if table.Count(environments) > 0 then
 		UseEnvironments = true
 	end
-	
-	--Add the file for the client to download so they can access its info
-	--resource.AddFile("environments/" .. map .. ".txt")
+	--save it all :D
+	Environments.SaveMap()
 end
+
+function Environments.LoadFromMap()
+	local i = 0
+	local planets, stars = {}, {}
+	print("//   Loading From Map              //")
+	Environments.MapEntities = {}
+	Environments.MapEntities.Color = {}
+	Environments.MapEntities.Bloom = {}
+	local entities = ents.FindByClass( "logic_case" )
+	for k,ent in pairs(entities) do
+		local values = ent:GetKeyValues()
+		local tab = ent:GetKeyValues()
+			
+		if( tab.Case01 == "planet_color" ) then
+			table.insert( Environments.MapEntities.Color, {
+				addcol = Vector( tab.Case02 ),
+				mulcol = Vector( tab.Case03 ),
+				brightness = tonumber( tab.Case04 ),
+				contrast = tonumber( tab.Case05 ),
+				color = tonumber( tab.Case06 ),
+				id = tab.Case16
+			} );
+		elseif( tab.Case01 == "planet_bloom" ) then
+			table.insert(  Environments.MapEntities.Bloom, {
+				color = Vector( tab.Case02 ),
+				x = tonumber( string.Explode( " ", tab.Case03 )[1] ),
+				y = tonumber( string.Explode( " ", tab.Case03 )[2] ),
+				passes = tonumber( tab.Case04 ),
+				darken = tonumber( tab.Case05 ),
+				multiply = tonumber( tab.Case06 ),
+				colormul = tonumber( tab.Case07 ),
+				id = tab.Case16
+			} );
+		end
+			
+		local Type = tab.Case01
+		local planet = {}
+		planet.position = {}
+			
+		if Type == "cube" then --need to fix in the future
+			planet.typeof = "cube"
+			
+			//KEYS
+			planet.radius = tonumber(tab.Case02) --Get Radius
+			planet.gravity = tonumber(tab.Case03) --Get Gravity
+			//END KEYS
+	
+			planet.position = ent:GetPos()
+						
+			--Add Defaults
+			planet.atmosphere = {}
+			planet.atmosphere = table.Copy(default.atmosphere)
+			planet.unstable = "false"
+			planet.temperature = 288
+			planet.pressure = 1
+			planet.noclip = 0
+			planet.spawn = 0
+						
+			i=i+1
+			planet.name = i
+
+			table.insert(planets, planet)
+			print("//     Spacebuild Cube Added       //")
+		elseif Type == "planet" then
+			--Add Defaults
+			planet.atmosphere = {}
+			planet.atmosphere = table.Copy(default.atmosphere)
+			planet.unstable = "false"
+			planet.temperature = 288
+			planet.pressure = 1
+			planet.noclip = 0
+			planet.spawn = 0
+				
+			//KEYS
+			planet.radius = tonumber(tab.Case02) --Get Radius
+			planet.gravity = tonumber(tab.Case03) --Get Gravity
+			planet.atm = tonumber(tab.Case04)
+			planet.temperature = tonumber(tab.Case05)
+			planet.suntemperature = tonumber(tab.Case06)
+			planet.colorid = tostring(tab.Case07)
+			planet.bloomid = tostring(tab.Case08)
+			planet.flags = tonumber(tab.Case16)
+			//END KEY
+
+			planet.position = ent:GetPos()
+						
+			if planet.atm == 0 then
+				planet.atm = 1
+			end
+			i=i+1
+			planet.name = i
+						
+			local planet = Environments.ParseSB2Environment(planet)
+			table.insert(planets, planet)
+			print("//     Spacebuild 2 Planet Added   //")
+		elseif Type == "planet2" then
+			--Defaults
+			planet.atmosphere = {}
+			planet.atmosphere = table.Copy(default.atmosphere)
+			planet.unstable = "false"
+			planet.temperature = 288
+			planet.pressure = 1
+			planet.noclip = 0
+			planet.spawn = 0
+						
+				planet.radius = tonumber(tab.Case02) --Get Radius
+				planet.gravity = tonumber(tab.Case03) --Get Gravity
+				planet.atm = tonumber(tab.Case04) --What does this mean?
+				planet.pressure = tonumber(tab.Case05)
+				planet.temperature = tonumber(tab.Case06)
+				planet.suntemperature = tonumber(tab.Case07)
+				planet.atmosphere.oxygen = tonumber(tab.Case09)
+				planet.atmosphere.carbondioxide = tonumber(tab.Case10)
+				planet.atmosphere.nitrogen = tonumber(tab.Case11)
+				planet.atmosphere.hydrogen = tonumber(tab.Case12)
+				planet.name = tostring(tab.Case13) --Get Name
+				planet.colorid = tostring(tab.Case15)
+				planet.bloomid = tostring(tab.Case16)
+				
+				planet.originalco2per = planet.atmosphere.carbondioxide
+				
+				if planet.atm == 0 then
+					planet.atm = 1
+				end
+						
+				planet.position = ent:GetPos()
+						
+				i=i+1
+			table.insert(planets, planet)
+			print("//     Spacebuild 3 Planet Added   //")
+		elseif Type == "star" then
+			planet.radius = tonumber(tab.Case02) --Get Radius
+			planet.gravity = tonumber(tab.Case03) --Get Gravity
+						
+			planet.position = ent:GetPos()
+						
+			planet.temperature = 10000
+			planet.solaractivity = "med"
+			planet.baseradiation = "1000"
+						
+			i=i+1	
+			table.insert(stars, planet)
+			print("//     Spacebuild 2 Star Added     //")
+		elseif Type == "star2" then				
+			planet.radius = tonumber(tab.Case02) --Get Radius
+			planet.gravity = tonumber(tab.Case03) --Get Gravity
+			planet.name = tostring(tab.Case06)
+				
+			if not planet.name then
+				planet.name = "Star"
+			end
+				
+			planet.position = ent:GetPos()
+						
+			planet.temperature = 5000
+			planet.solaractivity = "med"
+			planet.baseradiation = "1000"
+
+			i=i+1
+			table.insert(stars, planet)
+			print("//     Spacebuild 3 Star Added     //")
+		end
+	end
+	planets.version = Environments.FileVersion
+	Environments.PlanetSaveData = {}
+	Environments.PlanetSaveData = planets
+	
+	return planets, stars
+end
+
+function Environments.SaveMap() --plz work :)
+	local map = game.GetMap()
+	local planets = {}
+	for k,v in pairs(environments) do
+		if not v:IsStar() then
+			local planet = {}
+			--print("Gravity: "..v.gravity)
+			planet.gravity = v.gravity
+			--print("Pressure: "..v.pressure)
+			planet.pressure = v.pressure
+			planet.radius = v.radius
+			planet.name = v.name 
+			planet.temperature = v.temperature
+			planet.atm = v.atmosphere
+			planet.suntemperature = v.suntemperature
+			planet.atmosphere = {}
+			planet.atmosphere.oxygen = v.air.o2per
+			planet.atmosphere.carbondioxide = v.air.co2per
+			planet.atmosphere.hydrogen = v.air.hper
+			planet.atmosphere.nitrogen = v.air.nper
+			planet.atmosphere.argon = v.air.arper
+			planet.atmosphere.methane = v.air.ch4per
+			planet.bloomid = v.bloomid
+			planet.colorid = v.colorid
+			planet.unstable = v.unstable
+			planet.position = v:GetPos()
+			planet.originalco2per = v.originalco2per
+			table.insert(planets, planet)
+		end
+	end
+	planets.version = Environments.FileVersion
+	--print("Environments: Map Saved "..CurTime())
+	file.Write( "environments/" .. map .. ".txt", util.TableToKeyValues( table.Sanitise(planets) ) )
+end
+timer.Create("MapSavesEnv", 120, 0, Environments.SaveMap)
 
 //Space Definition
 local space = {}
@@ -486,7 +539,7 @@ function Environments.RegisterSun()
 end
 
 function Environments.Hooks.NoClip( ply, on )
-	--if ply:GetMoveType() == MOVETYPE_FLY then ply:SetMoveType(MOVETYPE_WALK) return false end --allow them to get out of jetpack
+	/*--if ply:GetMoveType() == MOVETYPE_FLY then ply:SetMoveType(MOVETYPE_WALK) return false end --allow them to get out of jetpack
 	// Always allow them to get out of noclip
 	if ply:GetMoveType() == MOVETYPE_NOCLIP then return true end
 	// Always allow admins
@@ -502,12 +555,33 @@ function Environments.Hooks.NoClip( ply, on )
 		--if ply:GetNWBool("inspace", false) then return end --not in space you don't
 		--if AllowNoClip:GetBool() then return true end --check if user wants to block noclip
 		
-		if ply.environment.air.o2per >= 9.5 /*and ply.environment.temperature > 270 and ply.environment.temperature <= 310*/ then --if can breathe
+		if ply.environment.air.o2per >= 9.5 and ply.environment.temperature > 270 and ply.environment.temperature <= 310 then --if can breathe
 			return true
 		else
 			return false
 		end
-	--end
+	--end*/
+	if ply:GetMoveType() == MOVETYPE_FLY then ply:SetMoveType(MOVETYPE_WALK) return false end --allow them to get out of jetpack
+    // Always allow them to get out of noclip
+    if ply:GetMoveType() == MOVETYPE_NOCLIP then return true end
+    // Always allow admins
+    if ply:IsAdmin() then return true end
+        
+    if ply:GetNWBool("inspace", false) and ply.environment.gravity == 0 then --jetpack in space :D
+        ply:SetMoveType(MOVETYPE_FLY)
+		return false
+	else
+		// Allow others based on environment (if they can breathe or not)
+		if not ply.environment then return false end --double check     
+		if ply:GetNWBool("inspace", false) then return end --not in space you don't
+		if AllowNoClip:GetBool() then return true end --check if user wants to block noclip
+                
+		if ply.environment.air.o2per >= 10 and ply.environment.temperature > 280 and ply.environment.temperature < 310 then --if can breathe
+			return true
+		else
+			return false
+		end
+	end
 end
 
 function Environments.Log(text)
@@ -562,6 +636,7 @@ function Environments.SendInfo(ply)
 			umsg.Short( v:EntIndex() )
 			umsg.Vector( v:GetPos() );
 			umsg.Short( v.radius );
+			umsg.String( v.name or "" )
 			if v.colorid then
 				umsg.String( v.colorid );
 			end

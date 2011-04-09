@@ -21,6 +21,7 @@ local Vector = Vector
 local IsValid = IsValid
 
 surface.CreateFont( "digital-7", 36, 2, true, true, "lcd2")
+surface.CreateFont( "coolvetica", 20, 2, true, true, "env")
 
 temp_unit = "F"
 function LoadHud()
@@ -63,7 +64,7 @@ function LoadHud()
 		ratio = 1
 		HUD.ModelScale=Vector(1,1,1.8)
 		HUD.EyeVectorOffset=Vector(-2,55,-53)
-		HUD.mode = 2
+		HUD.mode = 3
 	elseif ScrW() == 1280 and ScrH() == 720 then --1280x720 WORKING
 		ratio = 1
 		HUD.ModelScale=Vector(1.25,1.25,1.8)
@@ -129,6 +130,12 @@ function LoadHud()
 			else
 				HUD.EyeVectorOffset = Vector(-2,55,-41)
 			end
+		elseif HUD.mode == 3 then --1024x768
+			if LocalPlayer():InVehicle() then
+				HUD.EyeVectorOffset = Vector(-2,42,-54)
+			else
+				HUD.EyeVectorOffset = Vector(-2,55,-54)
+			end
 		else --everyone else
 			if LocalPlayer():InVehicle() then
 				HUD.EyeVectorOffset = Vector(-2,44,-53)
@@ -143,9 +150,12 @@ function LoadHud()
 			HUD.CS_Model:SetModelScale(HUD.ModelScale or Vector(0,0,0))
 		end
 	end
-
 	
-	--HUDPaint like hook,but called after the screen gets rendered,not associated with HUDPaint however
+	/*function Paint()
+		NeedUpdate = true
+	end
+	timer.Create("HudDraws", 0.2, 0, Paint)*/
+	
 	function HUD:DrawHUD()
 		local Air = environments.suit.air / 40
 		local Energy = environments.suit.energy / 40
@@ -191,20 +201,25 @@ function LoadHud()
 		local energy = environments.suit.energy
 		local temperature = environments.suit.temperature
 		local o2 = environments.suit.o2per
+		local temp = environments.suit.temp
 		if temperature then
 			if string.upper(HUD.Unit:GetString()) == "C" then
 				temperature = temperature - 273
+				temp = temp - 273
 				temp_unit = "C"
 			elseif string.upper(HUD.Unit:GetString()) == "F" then
 				temperature = (temperature * (9/5)) - 459.67
+				temp = (temp * (9/5)) - 459.67
 				temp_unit = "F"
+			else
+				temp_unit = "K"
 			end
 		end
 		
-		local length     = ScrW()/2 - 410 --should make 5 w/ spacer
+		local length     = ScrW()/2 - 455 --should make 5 w/ spacer
 		local spacer     = 40
 		
-		surface.SetFont( "Default" )
+		surface.SetFont( "env" )
 		
 		surface.SetTextColor( 255, 255, 255, 255 )
 		draw.RoundedBox(0, 0, 100, ScrW(), 24, Color(0, 0, 0, 150))
@@ -226,18 +241,25 @@ function LoadHud()
 		length = length + x + spacer
 			
 		surface.SetTextPos( length + spacer, 105 )
-		surface.DrawText( "Suit Temp: " .. tostring(environments.suit.temp) )
-		x = surface.GetTextSize( "Suit Temp: " .. tostring(environments.suit.temp) )
+		surface.DrawText( "Suit Temp: " .. string.Left(tostring(temp),6) .. temp_unit )
+		x = surface.GetTextSize( "Suit Temp: " .. "      " .. temp_unit )
 		length = length + x + spacer
-			
-		surface.SetTextPos( length + spacer, 105 )
-		surface.DrawText( "Planet: " .. tostring(planet) )
-		x = surface.GetTextSize( "Planet: " .. tostring(planet) )
-		length = length + x + spacer
+		
+		if planet then	
+			surface.SetTextPos( length + spacer, 105 )
+			surface.DrawText( "Planet: " .. tostring(planet.name) )
+			x = surface.GetTextSize( "Planet: " .. tostring(planet.name) )
+			length = length + x + spacer
+		else
+			surface.SetTextPos( length + spacer, 105 )
+			surface.DrawText( "Planet: " .. tostring("Space") )
+			x = surface.GetTextSize( "Planet: " .. tostring("Space") )
+			length = length + x + spacer
+		end
 
 		surface.SetTextPos( length + spacer, 105 )
-		surface.DrawText( "Temperature: " .. tostring(temperature) .. temp_unit )
-		x = surface.GetTextSize( "Temperature: " .. tostring(temperature) .. temp_unit )
+		surface.DrawText( "Temperature: " .. string.Left(tostring(temperature), 6) .. temp_unit )
+		x = surface.GetTextSize( "Temperature: " .. "      " .. temp_unit )
 		length = length + x + spacer
 			
 		surface.SetTextPos( length + spacer, 105 )
@@ -253,7 +275,7 @@ function LoadHud()
 	function HUD:DrawHUDScreen()
 		if not IsValid(HUD.CS_Model) || not HUD.Convar:GetBool() then return end
 		if not LocalPlayer():GetNWBool("helmet") then return end
-		
+		--local start = SysTime()
 		cam.Start3D( EyePos(), EyeAngles() )
 			cam.IgnoreZ( true )
 				--draw the screen in 3D,then
@@ -270,16 +292,20 @@ function LoadHud()
 				SetMaterialOverride(0)
 			cam.IgnoreZ( false )
 		cam.End3D()
+		--print(SysTime() - start)
 		
-		local oldRT = render.GetRenderTarget()
-		render.SetRenderTarget(HUD.RenderTarget)
-		render.Clear(0,0,0,0)
-		render.SetViewPort(0,0,HUD.RT_W,HUD.RT_H)
-		--Draw the HUD on the rendertarget
-		Draw()
-		render.SetRenderTarget(oldRT)
-		render.SetViewPort(0,0,ScrW(),ScrH())
-		Mat:SetMaterialTexture( "$basetexture", HUD.RenderTarget )
+		--if NeedUpdate then
+			local oldRT = render.GetRenderTarget()
+			render.SetRenderTarget(HUD.RenderTarget)
+			render.Clear(0,0,0,0)
+			render.SetViewPort(0,0,HUD.RT_W,HUD.RT_H)
+			--Draw the HUD on the rendertarget
+			Draw()
+			render.SetRenderTarget(oldRT)
+			render.SetViewPort(0,0,ScrW(),ScrH())
+			Mat:SetMaterialTexture( "$basetexture", HUD.RenderTarget )
+			NeedUpdate = false
+		--end
 	end
 
 	hook.Add("Think","Environments HUD Think", HUD.Think)

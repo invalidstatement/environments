@@ -224,14 +224,14 @@ function Environments.SunCheck(ent)
 	
 	if lit then
 		if ent.environment.suntemperature then
-			return ent.environment.suntemperature + ((ent.environment.suntemperature * ((ent.environment.air.co2per - ent.environment.original.air.co2per)/100))/2)
+			return ent.environment.suntemperature + ((ent.environment.suntemperature * ((ent.environment.air.co2per - ent.environment.originalco2per)/100))/2)
 		end
 	end
 	if not ent.environment.temperature then
 		return 0
 	end
 	if ent.environment.original then
-		return ent.environment.temperature + ((ent.environment.temperature * ((ent.environment.air.co2per - ent.environment.original.air.co2per)/100))/2)
+		return ent.environment.temperature + ((ent.environment.temperature * ((ent.environment.air.co2per - ent.environment.originalco2per)/100))/2)
 	else 
 		return ent.environment.temperature
 	end
@@ -263,7 +263,6 @@ function Environments.PlayerCheck(ent)
 	trace.filter = { ent, veh }
 	
 	local tr2 = util.TraceLine( trace )
-	
 	if (tr.Hit) then
 		if tr.Entity.env and tr2.Entity.env then
 			if tr.Entity.env.Active == 1 then
@@ -276,14 +275,14 @@ function Environments.PlayerCheck(ent)
 				phys:EnableDrag( true )
 				
 				return
-			else
+			elseif tr.Entity.env:IsValid() then
 				ent.environment = tr.Entity.env
 				ent:SetGravity(0.00001)
 				ent.gravity = 1
 				if not phys:IsValid() then return end
 				phys:EnableGravity( false )
 				phys:EnableDrag( true )
-				
+				print(ent.environment)
 				return
 			end
 		elseif (tr.Entity.grav_plate and tr.Entity.grav_plate == 1) then
@@ -299,7 +298,6 @@ function Environments.PlayerCheck(ent)
 		return 
 	end
 	if ent:GetNWBool("inspace") then
-		--print("set space")
 		phys:EnableGravity( false )
 		phys:EnableDrag( false )
 		ent:SetGravity(0.00001)
@@ -371,9 +369,9 @@ function Environments.UpdateLS(ply, temp)
 		umsg.Short(ply.suit.air)
 		umsg.Short(ply.suit.coolant)
 		umsg.Short(ply.suit.energy)
-		umsg.Short(temp)
+		umsg.Float(temp)
 		umsg.Float(ply.environment.air.o2per)
-		umsg.Short(ply.suit.temperature)
+		umsg.Float(ply.suit.temperature)
 	umsg.End()
 end
 
@@ -394,6 +392,14 @@ function Environments.Hooks.LSInitSpawn(ply)
 	umsg.Start("Environments", ply)
 		umsg.Short(Environments.Version)
 	umsg.End()
+end
+
+function Environments.Hooks.PlayerDeath( ply, inf, killer )
+	if ply.environment.name == "space" then
+		umsg.Start( "ZGRagdoll" )
+			umsg.Entity( ply )
+		umsg.End()
+	end
 end
 
 function Environments.Hooks.LSInitSpawnDry(ply) --for when its not a space map

@@ -4,14 +4,13 @@
 ------------------------------------------
 local planets = {} --Planetary Data Table :D updated from server usermessages
 local stars = {} --Star data table updated from server usmg
-
-environments = {}
 local blooms = {}
 local colors = {}
 
 //This is the planet the client is currently on, used for effects and such
-local planet = nil
+planet = nil
 
+environments = {}
 environments.suit = {}
 environments.suit.air = 0
 environments.suit.coolant = 0
@@ -86,9 +85,10 @@ local function LSUpdate(msg) --recieves life support update packet
 	hash.coolant = msg:ReadShort() --Get coolant left in suit
 	hash.energy = msg:ReadShort() --Get energy left in suit
 	environments.suit = hash
-	environments.suit.temperature = msg:ReadShort() --Get energy left in suit
+	environments.suit.temperature = msg:ReadFloat()
 	environments.suit.o2per = msg:ReadFloat()
-	environments.suit.temp = msg:ReadShort()
+	environments.suit.temp = msg:ReadFloat()
+	NeedUpdate = true
 end
 usermessage.Hook( "LSUpdate", LSUpdate )
 
@@ -108,6 +108,7 @@ local function PlanetUmsg( msg )
 	hash.ent = ents.GetByIndex(ent)
 	hash.position = msg:ReadVector()
 	hash.radius = msg:ReadShort()
+	hash.name = msg:ReadString()
 	hash.colorid = msg:ReadString()
 	hash.bloomid = msg:ReadString()
 	
@@ -148,6 +149,34 @@ local function PlanetBloom(msg)
 	--print("Recieved Bloom: ".. hash.ID)
 end
 usermessage.Hook("PlanetBloom", PlanetBloom)
+
+local function ZeroGravRagdoll( msg )
+	local ply = msg:ReadEntity();
+	timer.Create("ZGR", 0.1, 1, ZGR, ply)
+end
+usermessage.Hook( "ZGRagdoll", ZeroGravRagdoll );
+
+function ZGR(ply)
+	local ent = ply:GetRagdollEntity();
+	
+	if( ent and ent:IsValid() ) then
+		for i = 0, ent:GetPhysicsObjectCount() do	
+			local phys = ent:GetPhysicsObjectNum( i );
+			if( phys and phys:IsValid() ) then
+				phys:EnableGravity( false )
+			end
+		end
+	end
+end
+
+local function OnEntityCreated( e )
+	if( e == LocalPlayer() ) then
+		timer.Simple( 0, function()
+			RunConsoleCommand( "ragdoll_sleepaftertime", "9999.9" )
+		end )
+	end
+end
+hook.Add("OnEntityCreated", "Ragdoll checker", OnEntityCreated)
 
 local function StarUmsg( msg )
 	local ent = msg:ReadShort()
