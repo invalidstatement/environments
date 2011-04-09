@@ -632,6 +632,7 @@ end
 --timer.Create("SFXCHECKER", 10, 0, SFXManager)
 
 function Environments.SendInfo(ply)
+	timer.Create("SendPlayerInfoEnvironments", 1, 1, function()
 	for _, v in pairs( environments ) do
 		umsg.Start( "AddPlanet", ply );
 			umsg.Short( v:EntIndex() )
@@ -669,7 +670,8 @@ function Environments.SendInfo(ply)
 			umsg.Float( v.colormul )
 			umsg.String( v.id )
 		umsg.End()
-	end
+	end 
+	end, ply)
 end
 
 local function Reload(ply,cmd,args)
