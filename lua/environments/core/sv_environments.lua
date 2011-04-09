@@ -459,6 +459,7 @@ space.temperature = 3
 space.air.o2per = 0
 space.noclip = 0
 space.name = "space"
+space.originalco2per = 0
 
 function space.IsOnPlanet()
 	return false

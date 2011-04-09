@@ -4,7 +4,7 @@
 ------------------------------------------
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 88
+Environments.Version = 89
 Environments.FileVersion = 4
 Environments.UseSuit = true
 Environments.Debug = true
