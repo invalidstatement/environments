@@ -264,7 +264,7 @@ function ENT:GetPressure()
 end
 
 function ENT:GetTemperature()
-	return self.temperature + ((self.temperature * ((self.air.co2per - self.original.air.co2per)/100))/2)
+	return self.temperature + ((self.temperature * ((self.air.co2per - self.originalco2per)/100))/2)
 end
 
 function ENT:GetGravity()
