@@ -287,7 +287,6 @@ function Environments.PlayerCheck(ent)
 				if not phys:IsValid() then return end
 				phys:EnableGravity( false )
 				phys:EnableDrag( true )
-				print(ent.environment)
 				return
 			end
 		elseif (tr.Entity.grav_plate and tr.Entity.grav_plate == 1) then
