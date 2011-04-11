@@ -9,6 +9,8 @@ local player = player
 local util = util
 local umsg = umsg
 local timer = timer
+local pcall = pcall
+local pairs = pairs
 
 local efficiency = 0.02 --the insulating efficiency of the suit, how fast the suit gains or loses temperature
 function Environments.LSCheck()
@@ -18,6 +20,9 @@ function Environments.LSCheck()
 		
 		if ply:GetNWBool("inspace") == true then
 			ply.environment = Space()	
+		end
+		if ply:GetScriptedVehicle() and ply:GetScriptedVehicle():IsValid() then
+			ply.environment = ply:GetScriptedVehicle().environment
 		end
 		Environments.PlayerCheck(ply)
 		

@@ -92,6 +92,7 @@ local function LoadEnvironments()
 			if phys:IsValid() then
 				phys:EnableDrag(false)
 				phys:EnableGravity(false)
+				phys:Wake()
 			end
 			self.environment = Space()
 		end
