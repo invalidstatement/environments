@@ -4,7 +4,7 @@
 ------------------------------------------
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 92
+Environments.Version = 93
 Environments.FileVersion = 4
 Environments.UseSuit = true
 Environments.Debug = true
@@ -36,7 +36,7 @@ if CLIENT then
 		end
 	end
 	usermessage.Hook("Environments", Load)
-        
+	
 	timer.Create("Sbcheck", 2, 1, function()
 		if CAF and CAF.GetAddon("Spacebuild") then
 			Load()

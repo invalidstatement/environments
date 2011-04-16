@@ -407,3 +407,43 @@ end
 function ENT:Destruct()
 
 end
+
+function ENT:GetTemperature()
+	return self.temperature
+end
+
+function ENT:IsSpace()
+	return false
+end
+
+function ENT:IsEnvironment()
+	return true
+end
+
+function ENT:IsPlanet()
+	return false
+end
+
+function ENT:GetGravity()
+	return self.gravity
+end
+
+function ENT:GetO2Percentage()
+	return self.air.o2per
+end
+
+function ENT:GetCO2Percentage()
+	return 0
+end
+
+function ENT:GetNPercentage()
+	return 0
+end
+
+function ENT:GetHPercentage()
+	return 0
+end
+
+function ENT:GetEmptyAirPercentage()
+	return 100 - self.air.o2per
+end

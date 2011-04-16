@@ -271,20 +271,58 @@ function LoadHud()
 	end
 	local Draw = HUD.DrawHUD
 	local Mat = HUD.ScreenMaterial
+	HUD.ontime = 0
+	HUD.offtime = 0
+	HUD.ang = 0
 	--RenderScreenspaceEffects hook
 	function HUD:DrawHUDScreen()
 		if not IsValid(HUD.CS_Model) || not HUD.Convar:GetBool() then return end
-		if not LocalPlayer():GetNWBool("helmet") then return end
-		--local start = SysTime()
+		if not LocalPlayer():GetNWBool("helmet") then 
+			local mult = 0
+			if HUD.offtime != 0 then --it is being taken off
+				mult = HUD.offtime - RealTime()
+				
+				if mult < -1.4 then return end --dont draw it, it is off
+				HUD.ang = mult*25
+				if HUD.ang < -50 then
+					HUD.ang = -50
+				end
+				HUD.EyeVectorOffset = HUD.EyeVectorOffset - Vector(0,0,mult*50)
+			else --it just got taken off
+				HUD.offtime = RealTime() --tell it it was put on
+			end
+			HUD.ontime = 0
+		else
+			local old = HUD.EyeVectorOffset
+			local mult = 0
+			if HUD.ontime != 0 then --it is being taken off
+				mult = (HUD.ontime - RealTime())
+				--if mult < -1.4 then return end --dont draw it, it is off
+				HUD.ang = (50-(math.abs(mult)*40))*-1
+				HUD.EyeVectorOffset = HUD.EyeVectorOffset - Vector(0,0,-1.4*50) + Vector(0,0,mult*50)
+				if HUD.ang > 0 or HUD.ang < -45 then
+					HUD.ang = 0
+				end
+				if HUD.EyeVectorOffset.z < old.z then
+					HUD.EyeVectorOffset = old
+				end
+			else --it just got taken off
+				HUD.ontime = RealTime() --tell it it was put on
+				HUD.ang = -50
+			end
+			HUD.offtime = 0--set it as off
+		end
+
 		cam.Start3D( EyePos(), EyeAngles() )
 			cam.IgnoreZ( true )
 				--draw the screen in 3D,then
 				RenderPos = EyePos()
-				RenderAng = EyeAngles()
+				RenderAng = EyeAngles() + Angle(HUD.ang,0,0)
 				RenderPos=HUD:CalcOffset(RenderPos,RenderAng,HUD.EyeVectorOffset)
-				RenderAng:RotateAroundAxis(RenderAng:Forward(),HUD.EyeAngleOffset.p)
+				RenderAng:RotateAroundAxis(RenderAng:Right(),HUD.EyeAngleOffset.p)
 				RenderAng:RotateAroundAxis(RenderAng:Up(),HUD.EyeAngleOffset.y)
-				RenderAng:RotateAroundAxis(RenderAng:Right(),HUD.EyeAngleOffset.r)
+				RenderAng:RotateAroundAxis(RenderAng:Forward(),HUD.EyeAngleOffset.r)
+				
 				HUD.CS_Model:SetRenderAngles(RenderAng)
 				HUD.CS_Model:SetRenderOrigin(RenderPos)
 				SetMaterialOverride(Mat)
@@ -292,7 +330,6 @@ function LoadHud()
 				SetMaterialOverride(0)
 			cam.IgnoreZ( false )
 		cam.End3D()
-		--print(SysTime() - start)
 		
 		--if NeedUpdate then
 			local oldRT = render.GetRenderTarget()
