@@ -106,7 +106,7 @@ local function LoadEnvironments()
 		end
 			
 		print("// Starting Periodicals..          //")
-		timer.Create("EnvEvents", 10, 0, Environments.EventChecker)
+		timer.Create("EnvEvents", 30, 0, Environments.EventChecker)
 		print("//   Event System Started          //")
 		timer.Create("LSCheck", 1, 0, Environments.LSCheck)
 		print("//   LifeSupport Checker Started   //")
@@ -439,7 +439,7 @@ function Environments.SaveMap() --plz work :)
 			planet.bloomid = v.bloomid
 			planet.colorid = v.colorid
 			planet.unstable = v.unstable
-			planet.position = v:GetPos()
+			planet.position = v.position
 			planet.originalco2per = v.originalco2per
 			table.insert(planets, planet)
 		end

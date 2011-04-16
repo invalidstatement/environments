@@ -102,7 +102,7 @@ concommand.Add("env_fire_event", FireEvent)
 
 function Environments.EventChecker()
 	local chance = math.random(1,50)
-	if chance <= 10 then
+	if chance < 35 and chance > 30 then
 		//call the function to run the event
 		local planet = table.Random(environments)
 		local event = table.Random(events)
@@ -115,7 +115,7 @@ function Environments.EventChecker()
 				eventname = event(planet)
 			end
 		end	
-		MsgAll("A " .. eventname .. " Started at " .. tostring(os.date("%H:%M:%S")))
+		MsgN("A " .. eventname .. " Started at " .. tostring(os.date("%H:%M:%S")))
 		Environments.Log("A " .. eventname .. " Occured")
 	end
 end
@@ -149,7 +149,7 @@ local function Cleanup()
 		v:Remove()
 	end
 end
-timer.Create("EnvEventsClean", 30, 1, Cleanup)
+timer.Create("EnvEventsClean", 54, 0, Cleanup)
 
 local function physgunPickup( userid, Ent )  	
 	if Ent:GetClass() == "event_meteor" or Ent:GetClass() == "event_asteroid" then  		
