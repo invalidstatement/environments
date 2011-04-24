@@ -56,6 +56,13 @@ function ConfigMenu(Panel)
 		ShowRGB = "1",
 		Multiplier = "255"
 	})
+	
+	Panel:Help("HUD Temperature Unit")
+	local options = {}
+	options["Fahrenheit"] = {env_hud_unit = "f"}
+	options["Kelvin"] = {env_hud_unit = "k"}
+	options["Celcius"] = {env_hud_unit = "c"}
+	Panel:AddControl("ComboBox", { Label = "Hud Temperature Unit", MenuButton = 0, Options = options})
 	-- The HELP Button
 	/*if(Environments.HasInternet) then
 		local VGUI = vgui.Create("SHelpButton",Panel);
