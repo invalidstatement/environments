@@ -441,6 +441,7 @@ function Environments.SaveMap() --plz work :)
 			planet.unstable = v.unstable
 			planet.position = v.position
 			planet.originalco2per = v.originalco2per
+			planet.atmosphere.total = v.air.total
 			table.insert(planets, planet)
 		end
 	end

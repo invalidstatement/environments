@@ -326,7 +326,7 @@ function meta:ResetSuit() --Resets a player's suit
 	hash.helmet = true
 	hash.recover = 0
 	self.suit = hash
-	self:SetHealth(100)
+	--self:SetHealth(self:GetHealth())
 end
 
 function meta:FillSuit(air, energy, coolant)

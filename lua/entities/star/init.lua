@@ -5,6 +5,10 @@
 
 include("shared.lua")
 include("core/base.lua")
+
+ENT.IgnoreStaff = true
+ENT.IgnoreTouch = true
+ENT.NotTeleportable = true
 	
 function ENT:Initialize()
 	self:SetModel( "models/slyfo/cup_noodle.mdl" ) --setup stuff

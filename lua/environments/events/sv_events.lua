@@ -5,6 +5,7 @@
 
 local util = util
 local ents = ents
+local table = table
 local math = math
 local GetWorldEntity = GetWorldEntity
 local Vector = Vector
@@ -12,8 +13,6 @@ local print = print
 local MsgAll = MsgAll
 local pcall = pcall
 local pairs = pairs
-
-local mapdata = {} --stores map info
 
 //prototype events system
 local events = {}
@@ -116,7 +115,6 @@ function Environments.EventChecker()
 			end
 		end	
 		MsgN("A " .. eventname .. " Started at " .. tostring(os.date("%H:%M:%S")))
-		Environments.Log("A " .. eventname .. " Occured")
 	end
 end
 
