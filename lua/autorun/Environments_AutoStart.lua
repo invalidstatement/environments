@@ -64,6 +64,7 @@ else
 	AddCSLuaFile("environments/core/cl_core.lua")
 	AddCSLuaFile("environments/spawn_menu.lua")
 	AddCSLuaFile("vgui/HUD.lua")
+	AddCSLuaFile("environments/menu.lua")
 	AddCSLuaFile("vgui/lsinfo.lua")
 	AddCSLuaFile("environments/spacesuits/cl_suit.lua")
 	AddCSLuaFile("environments/core/cl_logging.lua")
