@@ -17,6 +17,7 @@ include("core/base.lua")
 //fixes stargate stuff
 ENT.IgnoreStaff = true
 ENT.IgnoreTouch = true
+ENT.NotTeleportable = true
 
 function ENT:Initialize()
 	self.Entity:SetModel( "models/combine_helicopter/helicopter_bomb01" ) --setup stuff

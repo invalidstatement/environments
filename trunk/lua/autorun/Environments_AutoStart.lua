@@ -4,14 +4,18 @@
 ------------------------------------------
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 93
-Environments.FileVersion = 4
+Environments.Version = 95
+//for update checking
+Environments.CurrentVersion = 0
+
+Environments.FileVersion = 5
 Environments.UseSuit = true
 Environments.Debug = true
 
 local start = SysTime()
 if CLIENT then
 	include("environments/core/cl_logging.lua")
+	include("environments/menu.lua")
 	function Load(msg)
 		include("vgui/lsinfo.lua")
 		include("vgui/HUD.lua")
@@ -46,11 +50,6 @@ if CLIENT then
 	concommand.Add("env_update_check", function(ply, cmd, args)
 		GetOnlineVersion(true)
 	end)
-
-	local function ENVTab()
-		spawnmenu.AddToolTab( "Environments", "Environments" )
-	end
-	hook.Add( "AddToolMenuTabs", "EnvTab", ENVTab)
 else
 	include("environments/core/sv_environments.lua")
 	include("environments/core/sv_environments_planets.lua")
@@ -96,24 +95,24 @@ function VersionCheck(rev, contents, size)
 	if Environments.Version >= rev then
 		print("Environments Is Up To Date")
 	else
-		print("A newer version of Environments is availible! Version: "..rev)
+		print("A newer version of Environments is availible! Version: "..rev.." You have Version: "..Environments.Version)
 		print("Please update!")
 	end
-	onlineversion = rev
+	Environments.CurrentVersion = rev
 end
 GetOnlineVersion()
 
 //Add The Server Tag
 if SERVER then
-	--timer.Create("SetTagsEnvironments", 5, 1, function()
+	timer.Create("SetTagsEnvironments", 10, 0, function()
 		local servertags = GetConVarString("sv_tags")
 		if servertags == nil then
 			RunConsoleCommand("sv_tags", "Environments")
-		else
+		elseif not string.find(servertags, "Environments") then
 			servertags = servertags .. ",".."Environments"
 			RunConsoleCommand("sv_tags", servertags)        
 		end
-	--end)
+	end)
 end
 
 //Fixes the crazy death notices

@@ -71,12 +71,16 @@ function Environments.ParseSaveData(planet)
 	local self = {}
 	self.atmosphere = planet.atm
 	self.air = {}
+	
+	self.air.max = math.Round(100 * 5 * (volume/1000) * self.atmosphere)
+	self.air.total = planet.atmosphere.total
+	
 	for k,v in pairs(compounds) do
 		if v and type(v) == "number" and v > 0 then
 			if v < 0 then v = 0 end
 			if v > 100 then v = 100 end
 			self.air[k.."per"] = v
-			self.air[k] = math.Round(v * 5 * (volume/1000) * self.atmosphere)
+			self.air[k] = math.Round((v/100)*self.air.total)
 		else
 			v = 0
 			self.air[k.."per"] = v
@@ -115,9 +119,8 @@ function Environments.ParseSaveData(planet)
 		self.air.empty = 0
 		self.air.emptyper = 0
 	end
-	self.air.max = math.Round(100 * 5 * (volume/1000) * self.atmosphere)
-	self.originalco2per = self.air.co2per
 	
+	self.originalco2per = self.air.co2per
 	return self
 end
 
@@ -209,12 +212,14 @@ function Environments.ParsePlanet(planet)
 	
 	
 	self.air = {}
+	self.air.max = math.Round(100 * 5 * (volume/1000) * self.atmosphere)
+	self.air.total = self.air.max
 	for k,v in pairs(compounds) do
 		if v and type(v) == "number" and v > 0 then
 			if v < 0 then v = 0 end
 			if v > 100 then v = 100 end
 			self.air[k.."per"] = v
-			self.air[k] = math.Round(v * 5 * (volume/1000) * self.atmosphere)
+			self.air[k] = math.Round((v/100)*self.air.total)
 		else
 			v = 0
 			self.air[k.."per"] = v
@@ -256,7 +261,7 @@ function Environments.ParsePlanet(planet)
 	if planet.name then
 		self.name = planet.name
 	end
-	self.air.max = math.Round(100 * 5 * (volume/1000) * self.atmosphere)
+
 	--self.pressure = self.atmosphere * self.gravity * (1 - (self.air.emptyper/100))
 	self.originalco2per = self.air.co2per
 	
