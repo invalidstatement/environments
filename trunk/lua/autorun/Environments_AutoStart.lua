@@ -4,7 +4,7 @@
 ------------------------------------------
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 96
+Environments.Version = 97
 //for update checking
 Environments.CurrentVersion = 0
 
