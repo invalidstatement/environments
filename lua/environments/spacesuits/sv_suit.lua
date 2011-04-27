@@ -83,12 +83,12 @@ end
 nofingers = {"barney", "mossman", "alyx", "breen", "gman", "kleiner"}
 function PlayerSetClothing( pl )
 	RemovePlayerClothing( pl )
+	//just in case
 	pl.ClothingColor = {}
 	pl.ClothingColor.r = tonumber(pl:GetInfoNum("env_suit_color_r",255))
 	pl.ClothingColor.b = tonumber(pl:GetInfoNum("env_suit_color_b",255))
 	pl.ClothingColor.g = tonumber(pl:GetInfoNum("env_suit_color_g",255))
-	--PrintTable(pl.ClothingColor)
-	--print(pl:GetInfoNum("env_suit_color_r",255),pl:GetInfoNum("env_suit_color_b",255),pl:GetInfoNum("env_suit_color_g",255))
+
 	pl:SetNWBool("helmet", true)
 	pl.m_hHelmet = ents.Create( "player_helmet" )
 	pl.m_hHelmet:SetParent( pl )
@@ -96,7 +96,6 @@ function PlayerSetClothing( pl )
 	pl.m_hHelmet:SetAngles( pl:GetAngles() )
 	pl.m_hHelmet:Spawn()
 	pl.m_hHelmet:SetModel("models/player/combine_super_soldier.mdl")
-	pl.m_hHelmet:SetColor(pl.ClothingColor.r,pl.ClothingColor.g,pl.ClothingColor.b,255)
 	
 	pl.m_hSuit = ents.Create( "player_suit" )
 	pl.m_hSuit:SetParent( pl )
@@ -108,6 +107,137 @@ function PlayerSetClothing( pl )
 	pl.m_hSuit:SetPos( pl:GetPos() )
 	pl.m_hSuit:SetAngles( pl:GetAngles() )
 	pl.m_hSuit:Spawn()
-	pl.m_hSuit:SetColor(pl.ClothingColor.r,pl.ClothingColor.g,pl.ClothingColor.b,255)
+	
+	//set the colors after player info is recieved
+	timer.Simple(0.5, function() 
+		pl.ClothingColor = {}
+		pl.ClothingColor.r = tonumber(pl:GetInfoNum("env_suit_color_r",255))
+		pl.ClothingColor.b = tonumber(pl:GetInfoNum("env_suit_color_b",255))
+		pl.ClothingColor.g = tonumber(pl:GetInfoNum("env_suit_color_g",255))
+		pl.m_hSuit:SetColor(pl.ClothingColor.r,pl.ClothingColor.g,pl.ClothingColor.b,255)
+		pl.m_hHelmet:SetColor(pl.ClothingColor.r,pl.ClothingColor.g,pl.ClothingColor.b,255)
+	end)
+end
+
+/////////////////////////////////////////////////////////
+//  This is the prototype Player MMU System WIP Code   //
+/////////////////////////////////////////////////////////
+function meta:ToggleMMU(override)
+	self.MMV = !self.MMV
+	self.Active = !self.Active
+	if override then
+		self.MMV = override
+		self.Active = override
+	end
+
+	if self.Active == true then
+		self:SetupMMU()
+	else
+		self:RemoveMMU()
+	end
+end
+
+local offset = Vector(0,0,25)
+function meta:SetupMMU()
+	self.Fuel = self.MaxFuel
+	self.CanBurstAgain = false
+	self.LastTime = CurTime()
+	
+	timer.Simple(1,function()
+		local model = "models/Slyfo_2/mmu_mk_1.mdl"
+		self.Unit = ents.Create("prop_physics")
+		self.Unit:SetModel(model)
+		self.Unit:SetPos(self:GetPos()+offset)
+		self.Unit:SetAngles(self:GetAngles())
+		self.Unit:SetParent(self)
+		self:PrintMessage(HUD_PRINTTALK,"Your MMU is now active!")
+		hook.Add("Think",self:SteamID().."MMUThink",function() self:MMUThink() end)
+	end)
+end
+
+function meta:RemoveMMU()
+	self.Fuel = self.MaxFuel
+	self.CanBurstAgain = false
+	self.LastTime = CurTime()
+	
+	self.Unit:Remove()
+	self:PrintMessage(HUD_PRINTTALK,"Your MMU is now inactive!")
+	hook.Remove("Think",self:SteamID().."MMUThink")
+end
+
+local SwepThrustSound = "npc/env_headcrabcanister/hiss.wav"
+local SwepThrustSoundObj = Sound(SwepThrustSound)
+local ThrustForce = 150
+local self = {}
+function meta:MMUThink()
+	local SwepThrustSoundObj = "npc/env_headcrabcanister/hiss.wav"
+	if not self:Alive() then 
+		self:ToggleMMU(false) 
+		if self.SoundFileThing then self.SoundFileThing:Stop() end
+		return 
+	end
+	
+	if (self.LastTime + 2.5) <= CurTime() then 
+		self.LastTime = CurTime() 
+		self.CanBurstAgain = true 
+	end
+	
+	if self.CanBurstAgain != true then return end
+	if not self.MMV then self.MMV = false end
+	if self.MMV == true then
+		if self:KeyDown(IN_FORWARD) then
+			if self.SoundFileThing then self.SoundFileThing:Stop() end
+			self:SetLocalVelocity((self:GetAimVector()*ThrustForce))
+			self.CanBurstAgain = false
+			self.SoundFileThing = CreateSound(self,SwepThrustSoundObj)
+			self.SoundFileThing:Play()
+			--self.Fuel = math.Clamp(self.Fuel-FuelConsumption,0,self.MaxFuel)
+		elseif self:KeyDown(IN_BACK) then
+			if self.SoundFileThing then self.SoundFileThing:Stop() end
+			self:SetLocalVelocity((self:GetAimVector()*-ThrustForce))
+			self.CanBurstAgain = false
+			self.SoundFileThing = CreateSound(self,SwepThrustSoundObj)
+			self.SoundFileThing:Play()
+			--self.Fuel = math.Clamp(self.Fuel-FuelConsumption,0,self.MaxFuel)
+		elseif self:KeyDown(IN_MOVELEFT) then
+			if self.SoundFileThing then self.SoundFileThing:Stop() end
+			self:SetLocalVelocity((self:GetAngles():Right()*-ThrustForce))
+			self.CanBurstAgain = false
+			self.SoundFileThing = CreateSound(self,SwepThrustSoundObj)
+			self.SoundFileThing:Play()
+			--self.Fuel = math.Clamp(self.Fuel-FuelConsumption,0,self.MaxFuel)
+		elseif self:KeyDown(IN_MOVERIGHT) then
+			if self.SoundFileThing then self.SoundFileThing:Stop() end
+			self:SetLocalVelocity((self:GetAngles():Right()*ThrustForce))
+			self.CanBurstAgain = false
+			self.SoundFileThing = CreateSound(self,SwepThrustSoundObj)
+			self.SoundFileThing:Play()
+			--self.Fuel = math.Clamp(self.Fuel-FuelConsumption,0,self.MaxFuel)
+		elseif self:KeyDown(IN_JUMP) then
+			if self.SoundFileThing then self.SoundFileThing:Stop() end
+			self:SetLocalVelocity((self:GetAngles():Up()*ThrustForce))
+			self.CanBurstAgain = false
+			self.SoundFileThing = CreateSound(self,SwepThrustSoundObj)
+			self.SoundFileThing:Play()
+			--self.Fuel = math.Clamp(self.Fuel-FuelConsumption,0,self.MaxFuel)
+		elseif self:KeyDown(IN_DUCK) then
+			if self.SoundFileThing then self.SoundFileThing:Stop() end
+			self:SetLocalVelocity((self:GetAngles():Up()*-ThrustForce))
+			self.CanBurstAgain = false
+			self.SoundFileThing = CreateSound(self,SwepThrustSoundObj)
+			self.SoundFileThing:Play()
+			--self.Fuel = math.Clamp(self.Fuel-FuelConsumption,0,self.MaxFuel)
+		elseif self:KeyDown(IN_WALK) then
+			if self.SoundFileThing then self.SoundFileThing:Stop() end
+			self:PrintMessage(HUD_PRINTTALK,"MMU Halting Movement...")
+			self:SetLocalVelocity(Vector(0,0,0))
+			self.CanBurstAgain = false
+			self.SoundFileThing = CreateSound(self,SwepThrustSoundObj)
+			self.SoundFileThing:Play()
+			--self.Fuel = math.Clamp(self.Fuel-FuelConsumption,0,self.MaxFuel)
+		end
+		timer.Simple(0.2,function() if self.SoundFileThing then self.SoundFileThing:Stop() end end)
+	end
+	--self:SetNWInt("Fuel",self.Fuel)
 end
 

@@ -36,6 +36,8 @@ function ENT:Convert(res1, res2, value)
 	if value < 1 then return 0 end
 	
 	//LS3 Compatability
+	if res1 == nil then res1 = "-1" end
+	if res2 == nil then res2 = "-1" end
 	if Conversions[tostring(res1)] then
 		res1 = Conversions[tostring(res1)]
 	end
@@ -43,8 +45,8 @@ function ENT:Convert(res1, res2, value)
 		res2 = Conversions[tostring(res2)]
 	end
 	
-	--local before1 = self.air[res1]
-	--local before2 = self.air[res2]
+	local before1 = self.air[res1]
+	local before2 = self.air[res2]
 	
 	if res1 != "empty" then
 		if self.air[res1] < value then
@@ -55,7 +57,7 @@ function ENT:Convert(res1, res2, value)
 			value = self.air.max - self.air.total
 		end
 	end
-	--print("Value: "..value)
+	print("Value: "..value)
 	
 	//take out
 	local ResourcePer1 = res1.."per"
@@ -79,13 +81,13 @@ function ENT:Convert(res1, res2, value)
 			self.air[k.."per"] = self:GetResourcePercentage(k)
 		end
 	end
-	--print(res1.." "..before1.." ===> "..self.air[res1], "Difference: "..(self.air[res1] - before1))
-	--print(res2.." "..before2.." ===> "..self.air[res2], "Difference: "..(self.air[res2] - before2))
+	print(tostring(res1).." "..tostring(before1).." ===> "..tostring(self.air[res1]), "Difference: "..(self.air[res1] - before1))
+	print(tostring(res2).." "..tostring(before2).." ===> "..tostring(self.air[res2]), "Difference: "..(self.air[res2] - before2))
 	
 	//Get Value Calculations
 	self.pressure = self.atmosphere * self.gravity * (self.air.total/self.air.max)
 	
-	--print("Pressure: "..self.pressure)
+	print("Pressure: "..self.pressure)
 	return value
 end
 

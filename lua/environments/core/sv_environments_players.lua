@@ -38,6 +38,7 @@ function Environments.LSCheck()
 			temperature = Environments.SunCheck(ply)
 		end
 		
+		local realo2 = env.air.o2per*env.pressure
 		if ply.suit.worn and ply.suit.helmet then
 			//Temperature Stuff
 			//Conduction
@@ -108,7 +109,7 @@ function Environments.LSCheck()
 			end
 			
 			//Air Stuff
-			if env.air.o2per < 10 or ply:WaterLevel() > 2 then
+			if realo2 < 10 or ply:WaterLevel() > 2 then
 				if suit.air >= 5 then
 					suit.air = suit.air - 5
 				elseif suit.air > 0 then
@@ -138,6 +139,7 @@ function Environments.LSCheck()
 			end
 		else --player is not wearing their suit or helmet
 			local tempchange = 0 
+
 			if temperature < 1500 then
 				if suit.temperature > temperature then
 					tempchange = (suit.temperature - temperature) * 0.05
@@ -165,7 +167,7 @@ function Environments.LSCheck()
 				ply.suit.recover = ply.suit.recover + 5
 			end
 			
-			if env.air.o2per < 10 or ply:WaterLevel() > 2 then
+			if realo2 < 10 or ply:WaterLevel() > 2 then
 				airused = false
 			end
 			

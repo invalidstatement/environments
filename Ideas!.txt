@@ -1,2 +1,8 @@
-Ideas!!!
-1. fix gravity not turning off when LS core is off
+AI | Todd.Puffer: How about your screen "blacking out" round the edges when you run out of air
+CmdrMatthew: I just need to stop the noclipping
+CmdrMatthew: maybe
+AI | Todd.Puffer: And when it goes utterly black,you die
+CmdrMatthew: idk how I would do that
+AI | Todd.Puffer: And when energy runs out the HUD sparkles and turns off?
+AI | Todd.Puffer: As without energy,it wont run
+CmdrMatthew: yeah, maybe

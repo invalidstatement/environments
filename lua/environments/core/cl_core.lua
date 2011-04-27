@@ -64,7 +64,7 @@ local function RenderEffects()
 		DrawBloom( blom.darken, blom.multiply, blom.x, blom.y, blom.passes, blom.colormul, blom.color.x, blom.color.y, blom.color.z );
 	end
 end
-hook.Add("RenderScreenspaceEffects","laskdjaldk", RenderEffects) 
+hook.Add("RenderScreenspaceEffects","EnvironmentsRenderPlanetEffects", RenderEffects) 
 
 function Space()
 	local hash = {}
