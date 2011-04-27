@@ -63,8 +63,10 @@ function ConfigMenu(Panel)
 	options["Kelvin"] = {env_hud_unit = "k"}
 	options["Celcius"] = {env_hud_unit = "c"}
 	Panel:AddControl("ComboBox", { Label = "Hud Temperature Unit", MenuButton = 0, Options = options})
+	
+	/*Panel:Button( "Open Help Page", "pp_superdof" )
 	-- The HELP Button
-	/*if(Environments.HasInternet) then
+	if(Environments.HasInternet) then
 		local VGUI = vgui.Create("SHelpButton",Panel);
 		VGUI:SetHelp("config/visual");
 		VGUI:SetTopic("Help:  Visual Settings");

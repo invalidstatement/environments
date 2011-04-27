@@ -56,11 +56,11 @@ function Environments.ParseSaveData(planet)
 	compounds["ar"] = planet.atmosphere.argon
 	
 	local gravity = planet.gravity
-	local o2 = planet.atmosphere.oxygen
-	local co2 = planet.atmosphere.carbondioxide
-	local n = planet.atmosphere.nitrogen
-	local h = planet.atmosphere.hydrogen
-	local ch4 = planet.atmosphere.methane
+	local o2 = tonumber(planet.atmosphere.oxygen)
+	local co2 = tonumber(planet.atmosphere.carbondioxide)
+	local n = tonumber(planet.atmosphere.nitrogen)
+	local h = tonumber(planet.atmosphere.hydrogen)
+	local ch4 = tonumber(planet.atmosphere.methane)
 	local ar = planet.atmosphere.argon
 	local temperature = planet.temperature
 	local suntemperature = planet.suntemperature
@@ -88,10 +88,11 @@ function Environments.ParseSaveData(planet)
 		end
 	end
 	
-	if o2 + co2 + n + h + ch4 + ar < 100 then
-		local tmp = 100 - (o2 + co2 + n + h + ch4 + ar)
-		self.air.empty = math.Round(tmp * 5 * (volume/1000) * self.atmosphere)
-		self.air.emptyper = tmp
+	if o2 + co2 + n + h + ch4 + ar < 1 then
+		--local tmp = 100 - (o2 + co2 + n + h + ch4 + ar)
+		self.air.total = 0
+		self.air.empty = 0
+		self.air.emptyper = 0
 	elseif o2 + co2 + n + h + ch4 + ar > 100 then
 		local tmp = (o2 + co2 + n + h + ch4 + ar) - 100
 		if co2 > tmp then
@@ -227,10 +228,12 @@ function Environments.ParsePlanet(planet)
 		end
 	end
 	
-	if o2 + co2 + n + h + ch4 + ar < 100 then
-		local tmp = 100 - (o2 + co2 + n + h + ch4 + ar)
-		self.air.empty = math.Round(tmp * 5 * (volume/1000) * self.atmosphere)
-		self.air.emptyper = tmp
+	if o2 + co2 + n + h + ch4 + ar < 1 then
+		//This is perfectly ok, it just means something isnt perfect
+		--local tmp = 100 - (o2 + co2 + n + h + ch4 + ar)
+		self.air.total = 0
+		self.air.empty = 0
+		self.air.emptyper = 0
 	elseif o2 + co2 + n + h + ch4 + ar > 100 then
 		local tmp = (o2 + co2 + n + h + ch4 + ar) - 100
 		if co2 > tmp then

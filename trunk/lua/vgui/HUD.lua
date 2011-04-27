@@ -263,7 +263,7 @@ function LoadHud()
 		length = length + x + spacer
 			
 		surface.SetTextPos( length + spacer, 105 )
-		surface.DrawText( "O2 Percent: " .. tostring(o2) )
+		surface.DrawText( "O2 Percent: " .. string.Left(tostring(o2),6) )
 	end
 
 	function HUD:CalcOffset(pos,ang,off)
