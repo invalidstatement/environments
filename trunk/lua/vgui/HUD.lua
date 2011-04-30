@@ -23,6 +23,19 @@ local IsValid = IsValid
 surface.CreateFont( "digital-7", 36, 2, true, true, "lcd2")
 surface.CreateFont( "coolvetica", 20, 2, true, true, "env")
 
+local Resolutions = {}
+function AddResolution(w,h,scale,offset)
+	local name = w.."x"..h
+	Resolutions[name] = {}
+	Resolutions[name].Scale = scale
+	Resolutions[name].Offset = offset
+end
+
+AddResolution(1280, 1024, Vector(1,1,1.8), Vector(-2,55,-53))
+AddResolution(1280, 800, Vector(1.25,1.25,1.8), Vector(-2,55,-53))
+AddResolution(1280, 720, Vector(1.25,1.25,1.8), Vector(-2,55,-53))
+AddResolution(1024, 768, Vector(1,1,1.8), Vector(-2,55,-53))
+
 temp_unit = "F"
 function LoadHud()
 	HUD={}
@@ -47,7 +60,16 @@ function LoadHud()
 	--HUD.ModelScale=Vector(1,1,1.7)
 	--HUD.EyeVectorOffset=Vector(-2,55,-48)
 	--HUD.EyeAngleOffset=Angle(0,135,0)
-
+	//experimental table system
+	local Resolutions = {}
+	Resolutions["1024x768"] = {}
+	Resolutions["1024x768"].Scale = Vector(1,1,1.8)
+	Resolutions["1024x768"].Offset = Vector(-2,55,-53)
+	
+	
+	
+	
+	
 	//Set it up for different resolutions
 	local ratio = ScrW()/1152
 	if ScrW() == 1920 then --1920x1024 MOSTLY WORKING

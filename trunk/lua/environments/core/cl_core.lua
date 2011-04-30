@@ -42,6 +42,7 @@ timer.Create("EnvironmentCheck", 1, 0, EnvironmentCheck )
 local function RenderEffects()
 	if( !LocalPlayer():Alive() ) then return end
 	if not planet then return end
+	if not Environments.EffectsCvar:GetBool() then return end
 
 	local blom = blooms[planet.bloomid]
 	local color = colors[planet.colorid]

@@ -423,7 +423,9 @@ function Environments.Hooks.LSInitSpawnDry(ply) --for when its not a space map
 	ply.environment.temperature = 288
 	ply.environment.air = {}
 	ply.environment.air.o2per = 20
+	ply.environment.pressure = 1
 	
+	//INIT THEM!
 	umsg.Start("Environments", ply)
 		umsg.Short(Environments.Version)
 	umsg.End()

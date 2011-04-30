@@ -41,6 +41,8 @@ function ENT:Initialize()
 	self.coolant2 = 0
 	
 	self.mino2 = 10.5
+	
+	self.pressure = 1
 
 	self.air = {}
 	self.air.o2per = 0
