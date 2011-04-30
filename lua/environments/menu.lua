@@ -2,6 +2,7 @@
 CreateClientConVar("env_suit_color_r",255,true,true);
 CreateClientConVar("env_suit_color_g",255,true,true);
 CreateClientConVar("env_suit_color_b",255,true,true);
+Environments.EffectsCvar = CreateClientConVar("env_effects_enable","1",true,true)
 
 local function AddToolTab()
 	-- Add Tab
@@ -11,7 +12,7 @@ local function AddToolTab()
 	-- Add Config Category
 	spawnmenu.AddToolCategory("Environments","Config"," Config");
 	-- Add the entry for config
-	spawnmenu.AddToolMenuOption("Environments","Config","Settings","Settings","","",ConfigMenu,{});
+	spawnmenu.AddToolMenuOption("Environments","Config","Settings","Settings","","",Environments.ConfigMenu,{});
 	-- Add the entry for Credits and Bugreporting!
 	--spawnmenu.AddToolMenuOption("Environments","Config","Credits","Credits and Bugs","","",Environments.Credits);
 	-- Add our tools to the tab
@@ -34,16 +35,23 @@ local function AddToolTab()
 end
 hook.Add("AddToolMenuTabs", "EnvironmentsAddTabs", AddToolTab);
 
-function ConfigMenu(Panel)
+function Environments.ConfigMenu(Panel)
 	Panel:ClearControls();
 	
-	-- Add the "Latest version" warning
-	if(Environments.CurrentVersion	> Environments.Version) then
+	-- Tells, if he is out-of-date
+	if(Environments.CurrentVersion > Environments.Version) then
 		local RED = Color(255,0,0,255);
 		Panel:Help("Your build of Environments is out of date"):SetTextColor(RED);
 		Panel:Help("LATEST BUILD: "..Environments.CurrentVersion):SetTextColor(RED);
 		Panel:Help("If you are getting this message on an internet server, tell the admin to update.");
+	elseif(Environments.CurrentVersion == 0) then
+		local ORANGE = Color(255,128,0,255);
+		Panel:Help("Couldn't determine latest BUILD. Make sure, you are connected to the Internet."):SetTextColor(ORANGE);
+	else
+		local GREEN = Color(0,255,0,255);
+		Panel:Help("Your Environments BUILD is up-to-date."):SetTextColor(GREEN);
 	end
+	Panel:Help("Current BUILD: "..Environments.Version)
 	
 	Panel:Help("Suit Color")
 	Panel:AddControl("Color", {
@@ -63,6 +71,12 @@ function ConfigMenu(Panel)
 	options["Kelvin"] = {env_hud_unit = "k"}
 	options["Celcius"] = {env_hud_unit = "c"}
 	Panel:AddControl("ComboBox", { Label = "Hud Temperature Unit", MenuButton = 0, Options = options})
+	
+	Panel:Help("Enable Planet Effects")
+	Panel:AddControl("CheckBox", {Label = "Enable Planet Effects?", Command = "env_effects_enable"} )
+	
+	Panel:Help("Enable HUD")
+	Panel:AddControl("CheckBox", {Label = "Enable HUD?", Command = "env_hud_enabled"} )
 	
 	/*Panel:Button( "Open Help Page", "pp_superdof" )
 	-- The HELP Button
