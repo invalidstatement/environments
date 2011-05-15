@@ -24,6 +24,11 @@ function Environments.LSCheck()
 		if ply:GetScriptedVehicle() and ply:GetScriptedVehicle():IsValid() then
 			ply.environment = ply:GetScriptedVehicle().environment
 		end
+		
+		if ply.GHDed then
+			Environments.BackupCheck(ply)
+		end
+		
 		Environments.PlayerCheck(ply)
 		
 		local env = ply.environment
@@ -40,6 +45,7 @@ function Environments.LSCheck()
 		
 		local realo2 = env.air.o2per*env.pressure
 		if ply.suit.worn and ply.suit.helmet then
+			local pod = ply:GetParent()
 			//Temperature Stuff
 			//Conduction
 			local tempchange = 0
@@ -107,15 +113,19 @@ function Environments.LSCheck()
 			elseif suit.temperature < 250 then
 				airused = false
 			end
-			
+
 			//Air Stuff
 			if realo2 < 10 or ply:WaterLevel() > 2 then
-				if suit.air >= 5 then
-					suit.air = suit.air - 5
-				elseif suit.air > 0 then
-					suit.air = 0
+				if pod and pod:IsValid() and RD.GetResourceAmount(pod, "oxygen") >= 5 then
+					RD.ConsumeResource(pod, "oxygen", 5)
 				else
-					airused = false
+					if suit.air >= 5 then
+						suit.air = suit.air - 5
+					elseif suit.air > 0 then
+						suit.air = 0
+					else
+						airused = false
+					end
 				end
 			end
 			
@@ -304,11 +314,13 @@ function Environments.PlayerCheck(ent)
 		return 
 	end
 	if ent:GetNWBool("inspace") then
-		phys:EnableGravity( false )
-		phys:EnableDrag( false )
-		ent:SetGravity(0.00001)
-		ent.gravity = 0
-		ent.environment = Space()
+		if !ent.GHDed then
+			phys:EnableGravity( false )
+			phys:EnableDrag( false )
+			ent:SetGravity(0.00001)
+			ent.gravity = 0
+			ent.environment = Space()
+		end
 	end
 end
 
@@ -471,3 +483,34 @@ function Environments.Hooks.HelmetSwitch( ply )
 		Environments.Log("Helmet Error: "..error)
 	end
 end
+
+function Environments.BackupCheck(ent)
+	for k,v in pairs(environments) do
+		local distance = v:GetPos():Distance(ent:GetPos())
+		if distance <= v.radius then
+			if v.gravity == 0 then
+				ent:SetGravity(0.000001)
+			else
+				ent:SetGravity(v.gravity)
+			end
+			
+			ent.environment = v
+			return
+		end
+	end
+	ent.environment = Space()
+end
+
+local function EnterShip(ent,ship,ghost,oldpos,oldang)
+	if ent:IsPlayer() then
+		ent.GHDed = true
+	end
+end
+hook.Add("EnterShip", "EnvironmentsGHDFix", EnterShip)
+
+local function ExitShip(ent,ship,ghost,oldpos,oldang)
+	if ent:IsPlayer() then
+		ent.GHDed = false
+	end
+end
+hook.Add("ExitShip", "EnvironmentsGHDFix", ExitShip)
