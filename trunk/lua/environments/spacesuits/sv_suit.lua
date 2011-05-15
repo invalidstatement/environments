@@ -145,11 +145,14 @@ function meta:SetupMMU()
 	
 	timer.Simple(1,function()
 		local model = "models/Slyfo_2/mmu_mk_1.mdl"
+		local attachment = self:LookupAttachment("chest")
+		local tab = self:GetAttachment(attachment)
 		self.Unit = ents.Create("prop_physics")
 		self.Unit:SetModel(model)
-		self.Unit:SetPos(self:GetPos()+offset)
-		self.Unit:SetAngles(self:GetAngles())
+		self.Unit:SetPos(tab.Pos)
+		self.Unit:SetAngles(tab.Ang)
 		self.Unit:SetParent(self)
+		self.Unit:Fire("SetParentAttachmentMaintainOffset", "chest", 0.01)
 		self:PrintMessage(HUD_PRINTTALK,"Your MMU is now active!")
 		hook.Add("Think",self:SteamID().."MMUThink",function() self:MMUThink() end)
 	end)
@@ -240,4 +243,5 @@ function meta:MMUThink()
 	end
 	--self:SetNWInt("Fuel",self.Fuel)
 end
+
 

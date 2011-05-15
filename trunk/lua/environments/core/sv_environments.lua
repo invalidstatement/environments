@@ -112,18 +112,22 @@ local function LoadEnvironments()
 		print("//   LifeSupport Checker Started   //")
 	else --Not a spacebuild map
 		print("//   This is not a valid space map //")
-		print("//   Doing Partial Startup         //")
-		--hook.Add("PlayerNoClip","EnvNoClip", Environments.Hooks.NoClip)
-		hook.Add("PlayerInitialSpawn","CreateLS", Environments.Hooks.LSInitSpawnDry)
-		--hook.Add("PlayerInitialSpawn","CreateEnvironemtns", Environments.SendInfo)
-		hook.Add("PlayerSpawn", "SpawnLS", Environments.Hooks.LSSpawn)
-		hook.Add("ShowTeam", "HelmetToggle", Environments.Hooks.HelmetSwitch)
-		if Environments.UseSuit then
-			hook.Add("PlayerInitialSpawn", "PlayerSetSuit", Environments.Hooks.SuitInitialSpawn)
-			hook.Add("PlayerDeath", "PlayerRemoveSuit", Environments.Hooks.SuitPlayerDeath)
-			hook.Add("PlayerSpawn", "PlayerSetSuit", Environments.Hooks.SuitPlayerSpawn)
+		if GAMEMODE.IsSandboxDerived or Environments.ForceLoad then
+			print("//     Doing Partial Startup       //")
+			--hook.Add("PlayerNoClip","EnvNoClip", Environments.Hooks.NoClip)
+			hook.Add("PlayerInitialSpawn","CreateLS", Environments.Hooks.LSInitSpawnDry)
+			--hook.Add("PlayerInitialSpawn","CreateEnvironemtns", Environments.SendInfo)
+			hook.Add("PlayerSpawn", "SpawnLS", Environments.Hooks.LSSpawn)
+			hook.Add("ShowTeam", "HelmetToggle", Environments.Hooks.HelmetSwitch)
+			if Environments.UseSuit then
+				hook.Add("PlayerInitialSpawn", "PlayerSetSuit", Environments.Hooks.SuitInitialSpawn)
+				hook.Add("PlayerDeath", "PlayerRemoveSuit", Environments.Hooks.SuitPlayerDeath)
+				hook.Add("PlayerSpawn", "PlayerSetSuit", Environments.Hooks.SuitPlayerSpawn)
+			end
+			timer.Create("LSCheck", 1, 0, Environments.LSCheck)
+		else
+			print("//     Startup Aborted             //")
 		end
-		timer.Create("LSCheck", 1, 0, Environments.LSCheck)
 	end end)--ends the error checker
 	
 	if not error then
@@ -462,6 +466,7 @@ space.air.o2per = 0
 space.noclip = 0
 space.name = "space"
 space.originalco2per = 0
+space.gravity = 0
 
 function space.IsOnPlanet()
 	return false

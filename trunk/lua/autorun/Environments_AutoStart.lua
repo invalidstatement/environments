@@ -4,11 +4,11 @@
 ------------------------------------------
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 98
-//for update checking
-Environments.CurrentVersion = 0
-
+Environments.Version = 99
+Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 5
+//User Options
+Environments.ForceLoad = false
 Environments.UseSuit = true
 Environments.Debug = true
 
@@ -41,10 +41,14 @@ if CLIENT then
 	end
 	usermessage.Hook("Environments", Load)
 	
-	timer.Create("Sbcheck", 2, 1, function()
-		if CAF and CAF.GetAddon("Spacebuild") then
+	timer.Create("ShouldDoBackupLoad", 2, 1, function()
+		if Environments.Suit then return end --has it already loaded?
+		if CAF and CAF.GetAddon("Spacebuild") then --load in case of SB
 			Load()
 		end
+		/*if GetGlobalInt("Environments") then
+			Load()
+		end*/
 	end)
         
 	concommand.Add("env_update_check", function(ply, cmd, args)
@@ -110,7 +114,7 @@ if SERVER then
 		if servertags == nil then
 			RunConsoleCommand("sv_tags", "Environments")
 		elseif not string.find(servertags, "Environments") then
-			servertags = servertags .. ",".."Environments"
+			servertags = servertags .. ",Environments"
 			RunConsoleCommand("sv_tags", servertags)        
 		end
 	end)

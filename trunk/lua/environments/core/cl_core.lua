@@ -10,12 +10,11 @@ local colors = {}
 //This is the planet the client is currently on, used for effects and such
 planet = nil
 
-environments = {}
-environments.suit = {}
-environments.suit.air = 0
-environments.suit.coolant = 0
-environments.suit.energy = 0
-environments.suit.o2per = 0
+Environments.suit = {}
+Environments.suit.air = 0
+Environments.suit.coolant = 0
+Environments.suit.energy = 0
+Environments.suit.o2per = 0
 
 //Load it depending on the server setup
 if CAF and CAF.GetAddon("Spacebuild") then --sb installed
@@ -85,21 +84,21 @@ local function LSUpdate(msg) --recieves life support update packet
 	hash.air = msg:ReadShort() --Get air left in suit
 	hash.coolant = msg:ReadShort() --Get coolant left in suit
 	hash.energy = msg:ReadShort() --Get energy left in suit
-	environments.suit = hash
-	environments.suit.temperature = msg:ReadFloat()
-	environments.suit.o2per = msg:ReadFloat()
-	environments.suit.temp = msg:ReadFloat()
+	Environments.suit = hash
+	Environments.suit.temperature = msg:ReadFloat()
+	Environments.suit.o2per = msg:ReadFloat()
+	Environments.suit.temp = msg:ReadFloat()
 	NeedUpdate = true
 end
 usermessage.Hook( "LSUpdate", LSUpdate )
 
 //Spacebuild Compatibility :D
 local function LS_umsg_hook1( um )
-	environments.suit.o2per = um:ReadFloat()
-	environments.suit.air = um:ReadShort()
-	environments.suit.temperature = um:ReadShort()
-	environments.suit.coolant = um:ReadShort()
-	environments.suit.energy = um:ReadShort()
+	Environments.suit.o2per = um:ReadFloat()
+	Environments.suit.air = um:ReadShort()
+	Environments.suit.temperature = um:ReadShort()
+	Environments.suit.coolant = um:ReadShort()
+	Environments.suit.energy = um:ReadShort()
 end
 --usermessage.Hook("LS_umsg1", LS_umsg_hook1) 
 
