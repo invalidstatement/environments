@@ -19,100 +19,73 @@ local Color = Color
 local tostring = tostring
 local Vector = Vector
 local IsValid = IsValid
+local RealTime = RealTime
+local LocalPlayer = LocalPlayer
 
 surface.CreateFont( "digital-7", 36, 2, true, true, "lcd2")
 surface.CreateFont( "coolvetica", 20, 2, true, true, "env")
 
+//New Code For Resolutions
 local Resolutions = {}
-function AddResolution(w,h,scale,offset)
+function AddResolution(w,h,scale,offset,vehoffset)
 	local name = w.."x"..h
 	Resolutions[name] = {}
 	Resolutions[name].Scale = scale
 	Resolutions[name].Offset = offset
+	Resolutions[name].VehOffset = vehoffset
 end
 
-AddResolution(1280, 1024, Vector(1,1,1.8), Vector(-2,55,-53))
-AddResolution(1280, 800, Vector(1.25,1.25,1.8), Vector(-2,55,-53))
-AddResolution(1280, 720, Vector(1.25,1.25,1.8), Vector(-2,55,-53))
-AddResolution(1024, 768, Vector(1,1,1.8), Vector(-2,55,-53))
+local DefaultRes = {}
+DefaultRes.Scale = Vector(1,1,1.8)
+DefaultRes.Offset = Vector(-2,55,-53)
+DefaultRes.VehOffset = Vector(-2,44,-53)
+
+function GetResInfo(w,h)
+	local tab = Resolutions[w.."x"..h]
+	if not tab then
+		return DefaultRes
+	end
+	return tab
+end
+//End Resolution Stuff
+
+//Define your resolutions here
+AddResolution(1920, 1080, Vector(1.53,1.53,1.5), Vector(-2,55,-41), Vector(-2,44,-41))
+AddResolution(1280, 1024, Vector(1,1,1.8), Vector(-2,55,-53), Vector(-2,44,-53))
+AddResolution(1280, 960, Vector(1,1,1.7), Vector(-2,55,-50), Vector(-2,44,-50))
+AddResolution(1280, 800, Vector(1.25,1.25,1.8), Vector(-2,55,-53), Vector(-2,44,-53))
+AddResolution(1280, 720, Vector(1.25,1.25,1.8), Vector(-2,55,-53), Vector(-2,44,-53))
+AddResolution(1024, 768, Vector(1,1,1.8), Vector(-2,55,-53), Vector(-2,42,-54) )
 
 temp_unit = "F"
 function LoadHud()
-	HUD={}
-	HUD.mode = 0
-	HUD.Convar=CreateConVar( "env_hud_enabled", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
-	HUD.Unit=CreateConVar( "env_hud_unit", "F", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
-	HUD.CS_Model=nil
-	HUD.Model="models/props_phx/construct/glass/glass_curve90x1.mdl"
-	HUD.EyeAngleOffset=Angle(0,135,0)
+	print("Setting Up HUD for "..ScrW().."x"..ScrH())
 	
-	//1024x768
-	--HUD.ModelScale=Vector(1,1,1.8)
-	--HUD.EyeVectorOffset=Vector(-2,55,-53)
-	--HUD.EyeAngleOffset=Angle(0,135,0)
-	
-	//1280x960
-	--HUD.ModelScale=Vector(1,1,1.7)
-	--HUD.EyeVectorOffset=Vector(-2,55,-50)
-	--HUD.EyeAngleOffset=Angle(0,135,0)
-	
-	//1280x1024
-	--HUD.ModelScale=Vector(1,1,1.7)
-	--HUD.EyeVectorOffset=Vector(-2,55,-48)
-	--HUD.EyeAngleOffset=Angle(0,135,0)
-	//experimental table system
-	local Resolutions = {}
-	Resolutions["1024x768"] = {}
-	Resolutions["1024x768"].Scale = Vector(1,1,1.8)
-	Resolutions["1024x768"].Offset = Vector(-2,55,-53)
-	
-	
-	
-	
+	HUD = {}
+	HUD.Convar = CreateConVar( "env_hud_enabled", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
+	HUD.Unit = CreateConVar( "env_hud_unit", "F", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
+	HUD.CS_Model = nil
+	HUD.Model = "models/props_phx/construct/glass/glass_curve90x1.mdl"
+	HUD.EyeAngleOffset = Angle(0,135,0)
 	
 	//Set it up for different resolutions
-	local ratio = ScrW()/1152
+	local ratio = 1
 	if ScrW() == 1920 then --1920x1024 MOSTLY WORKING
 		ratio = 3
-		HUD.ModelScale=Vector(1.53,1.53,1.5) 
-		HUD.EyeVectorOffset=Vector(-2,55,-41)
-		HUD.mode = 1
 	elseif ScrW() == 1920 and ScrH() >= 1200 then --1920x1200 UNTESTED
 		ratio = 3
-		HUD.ModelScale=Vector(1.53,1.53,1.5) 
-		HUD.EyeVectorOffset=Vector(-2,55,-41)
-		HUD.mode = 1
-	elseif ScrW() == 1024 and ScrH() == 768 then --1024x768 WORKING
-		ratio = 1
-		HUD.ModelScale=Vector(1,1,1.8)
-		HUD.EyeVectorOffset=Vector(-2,55,-53)
-		HUD.mode = 3
-	elseif ScrW() == 1280 and ScrH() == 720 then --1280x720 WORKING
-		ratio = 1
-		HUD.ModelScale=Vector(1.25,1.25,1.8)
-		HUD.EyeVectorOffset=Vector(-2,55,-53)
-	elseif ScrW() == 1280 and ScrH() == 800 then --1280x800 WORKING
-		ratio = 1
-		HUD.ModelScale=Vector(1.25,1.25,1.8)
-		HUD.EyeVectorOffset=Vector(-2,55,-53)
 	elseif ScrW() == 1280 and ScrH() == 1024 then --1280x1024 WORKING
-		ratio = 1
-		HUD.ModelScale=Vector(1,1,1.8)
-		HUD.EyeVectorOffset=Vector(-2,55,-53)
-		print("1280x1024")
 		HUD.mode = 2
 	else
-		ratio = 1
-		HUD.ModelScale=Vector(1,1,1.8)
-		HUD.EyeVectorOffset=Vector(-2,55,-53)
+		HUD.mode = 0
 	end
 
-	HUD.RT_W=ScrW()
-	HUD.RT_H=ScrH()*1.3
-	HUD.RenderTarget=GetRenderTarget( "ENV_HUD_15",HUD.RT_W,HUD.RT_H,false);
-	HUD.RenderPos=nil;
-	HUD.RenderAng=nil;
-	HUD.ScreenMaterial=CreateMaterial(
+	HUD.RT_W = ScrW()
+	HUD.RT_H = ScrH()*1.3
+	HUD.RenderTarget = GetRenderTarget( "ENV_HUD_15",HUD.RT_W,HUD.RT_H,false);
+	HUD.RenderPos = nil;
+	HUD.RenderAng = nil;
+	HUD.ScreenMaterial = CreateMaterial(
 		"sprites/DDD_ScreenMat22",
 		"UnlitGeneric",
 		{
@@ -134,42 +107,20 @@ function LoadHud()
 		}
 	)
 
-	function HideThings( name )
-		if (name == "CHudHealth" or name == "CHudBattery") then
-			return false
-		end
-			-- We don't return anything here otherwise it will overwrite all other 
-			-- HUDShouldDraw hooks.
-	end
-	--hook.Add( "HUDShouldDraw", "HideThings", HideThings )
 	local client = LocalPlayer()
-	--Think hook
 	function HUD:Think()
 		--first, check if the player is in a vehicle
-		if HUD.mode == 1 then --1920x1024 and such
-			if LocalPlayer():InVehicle() then
-				HUD.EyeVectorOffset = Vector(-2,44,-41)
-			else
-				HUD.EyeVectorOffset = Vector(-2,55,-41)
-			end
-		elseif HUD.mode == 3 then --1024x768
-			if LocalPlayer():InVehicle() then
-				HUD.EyeVectorOffset = Vector(-2,42,-54)
-			else
-				HUD.EyeVectorOffset = Vector(-2,55,-54)
-			end
-		else --everyone else
-			if LocalPlayer():InVehicle() then
-				HUD.EyeVectorOffset = Vector(-2,44,-53)
-			else
-				HUD.EyeVectorOffset = Vector(-2,55,-53)
-			end
+		local tab = GetResInfo(ScrW(),ScrH())
+		if LocalPlayer():InVehicle() then
+			HUD.EyeVectorOffset = tab.VehOffset
+		else
+			HUD.EyeVectorOffset = tab.Offset
 		end
 		
 		if not IsValid(HUD.CS_Model) then
 			HUD.CS_Model=ClientsideModel(HUD.Model,RENDERGROUP_OPAQUE)
 			HUD.CS_Model:SetNoDraw(true)
-			HUD.CS_Model:SetModelScale(HUD.ModelScale or Vector(0,0,0))
+			HUD.CS_Model:SetModelScale(tab.Scale or Vector(0,0,0))
 		end
 	end
 	
@@ -179,9 +130,9 @@ function LoadHud()
 	timer.Create("HudDraws", 0.2, 0, Paint)*/
 	
 	function HUD:DrawHUD()
-		local Air = environments.suit.air / 40
-		local Energy = environments.suit.energy / 40
-		local Coolant = environments.suit.coolant / 40
+		local Air = Environments.suit.air / 40
+		local Energy = Environments.suit.energy / 40
+		local Coolant = Environments.suit.coolant / 40
 		if Air >= 10 then
 			Air = math.Round(Air)
 		end
@@ -218,12 +169,12 @@ function LoadHud()
 		surface.DrawOutlinedRect(105*ratio,175,math.Clamp(Energy,0,100)*1.8,15)
 		surface.DrawOutlinedRect(105*ratio,210,math.Clamp(Coolant,0,100)*1.8,15)
 		
-		local air = environments.suit.air
-		local coolant = environments.suit.coolant
-		local energy = environments.suit.energy
-		local temperature = environments.suit.temperature
-		local o2 = environments.suit.o2per
-		local temp = environments.suit.temp
+		local air = Environments.suit.air
+		local coolant = Environments.suit.coolant
+		local energy = Environments.suit.energy
+		local temperature = Environments.suit.temperature
+		local o2 = Environments.suit.o2per
+		local temp = Environments.suit.temp
 		if temperature then
 			if string.upper(HUD.Unit:GetString()) == "C" then
 				temperature = temperature - 273
@@ -297,6 +248,9 @@ function LoadHud()
 	HUD.offtime = 0
 	HUD.ang = 0
 	--RenderScreenspaceEffects hook
+	
+	Sound("npc/env_headcrabcanister/hiss.wav")
+	timer.Simple(5, function() HUD.sound = CreateSound(LocalPlayer(),"npc/env_headcrabcanister/hiss.wav") end) --create the sound
 	function HUD:DrawHUDScreen()
 		if not IsValid(HUD.CS_Model) || not HUD.Convar:GetBool() then return end
 		if not LocalPlayer():GetNWBool("helmet") then 
@@ -304,13 +258,19 @@ function LoadHud()
 			if HUD.offtime != 0 then --it is being taken off
 				mult = HUD.offtime - RealTime()
 				
-				if mult < -1.4 then return end --dont draw it, it is off
+				if mult < -1.4 then 
+					return 
+				elseif mult < -1.2 then
+					if HUD.sound then HUD.sound:Stop() end
+				end
+				
 				HUD.ang = mult*25
 				if HUD.ang < -50 then
 					HUD.ang = -50
 				end
 				HUD.EyeVectorOffset = HUD.EyeVectorOffset - Vector(0,0,mult*50)
 			else --it just got taken off
+				if HUD.sound then HUD.sound:Play() HUD.sound:FadeOut(0.5) end
 				HUD.offtime = RealTime() --tell it it was put on
 			end
 			HUD.ontime = 0
