@@ -4,7 +4,7 @@
 ------------------------------------------
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 99
+Environments.Version = 100
 Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 5
 //User Options
@@ -78,7 +78,7 @@ else
 	resource.AddFile( "materials/models/null.vtf" )
 end
 print("==============================================")
-print("==    Environments Revision "..Environments.Version.." Installed    ==")
+print("==    Environments Revision "..Environments.Version.." Installed   ==")
 print("==============================================")
 
 if Environments.Debug then
