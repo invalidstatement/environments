@@ -21,7 +21,19 @@ if CAF and CAF.GetAddon("Spacebuild") then --sb installed
 	print("Spacebuild is active on the server")
 else --No sb installed
 	LoadHud()
+	hook.Add("PlayerNoClip", "EnvPredict", NoclipPredict)
 end
+
+local function NoclipPredict(ply)
+	if ply:GetMoveType() == MOVETYPE_NOCLIP then return true end
+	if ply:IsAdmin() then return true end
+	
+	if ply:GetNWBool("inspace") then
+		return false
+	end
+	return true
+end
+
 
 local function EnvironmentCheck() --Whoah! What planet I am on?!
 	local ply = LocalPlayer()
@@ -39,7 +51,7 @@ end
 timer.Create("EnvironmentCheck", 1, 0, EnvironmentCheck )
 
 local function RenderEffects()
-	if( !LocalPlayer():Alive() ) then return end
+	if !LocalPlayer():Alive() then return end
 	if not planet then return end
 	if not Environments.EffectsCvar:GetBool() then return end
 

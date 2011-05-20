@@ -4,7 +4,7 @@
 ------------------------------------------
 Environments = {}
 Environments.Hooks = {}
-Environments.Version = 100
+Environments.Version = 101
 Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 5
 //User Options
