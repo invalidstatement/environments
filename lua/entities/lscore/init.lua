@@ -83,6 +83,7 @@ function ENT:Check()
 	end
 	self.env.size = math.Round(size/100000)
 	self.maxair = self.env.size*100
+	MsgAll("Ship Atmosphere Size: " .. self.maxair)
 end
 
 function ENT:TurnOn()
@@ -346,10 +347,10 @@ function ENT:Regulate()
 		end
 		
 		if self.air.o2per <= self.mino2 then
-			local needed = ((mino2 - self.air.o2per)*self.maxair)/100
-			if needed > 1000 then
-				needed = 1000
-			end
+			local needed = (mino2/100)*self.maxair
+			--if needed > 100000 then
+				--needed = 100000
+			--end
 			self.air.o2 = self.air.o2 + self:ConsumeResource("oxygen", needed)
 			self.air.o2per = (self.air.o2/self.maxair)*100
 		end
