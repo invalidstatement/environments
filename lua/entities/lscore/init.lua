@@ -159,6 +159,10 @@ function ENT:TriggerInput(iname, value)
 	end
 end
 
+function ENT:Link(ent)
+	self.BaseClass.Link(self, ent)
+	self:Check()
+end
 
 local mintemp = 284
 local maxtemp = 305
@@ -384,7 +388,7 @@ function ENT:Think()
 	self.BaseClass.Think(self)
 	if self.Entities == {} or nil then return end
 	if self.Active == 1 then
-		self:Check()
+		--self:Check()
 		self:Regulate()
 		--print("Energy:"..self.energy.." Coolant:"..self.coolant.." Temp:"..self.env.temperature)
 	else
