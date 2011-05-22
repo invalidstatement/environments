@@ -70,19 +70,28 @@ function Environments.LSCheck()
 				elseif needed > 20 then
 					needed = 20
 				end
-				
-				if suit.coolant >= needed then
-					suit.coolant = suit.coolant - needed
+				if pod and pod:IsValid() and RD.GetResourceAmount(pod, "water") >= needed then
+					RD.ConsumeResource(pod, "water", needed)
 					suit.temperature = suit.temperature - tempchange
 					if suit.temperature + tempchange > 310 then
 						suit.temperature = 310
 					elseif suit.temperature - tempchange < 284 then
 						suit.temperature = 284
 					end
-				elseif suit.coolant > 0 then
-					local per = suit.coolant/needed
-					suit.coolant = 0
-					suit.temperature = suit.temperature - (tempchange * per)
+				else
+					if suit.coolant >= needed then
+						suit.coolant = suit.coolant - needed
+						suit.temperature = suit.temperature - tempchange
+						if suit.temperature + tempchange > 310 then
+							suit.temperature = 310
+						elseif suit.temperature - tempchange < 284 then
+							suit.temperature = 284
+						end
+					elseif suit.coolant > 0 then
+						local per = suit.coolant/needed
+						suit.coolant = 0
+						suit.temperature = suit.temperature - (tempchange * per)
+					end
 				end
 			elseif suit.temperature < 284 then --is it below the comfortable range?
 				local needed = tempchange*5
@@ -92,18 +101,28 @@ function Environments.LSCheck()
 					needed = 20
 				end
 				
-				if suit.energy >= needed then
-					suit.energy = suit.energy - needed
+				if pod and pod:IsValid() and RD.GetResourceAmount(pod, "energy") >= needed then
+					RD.ConsumeResource(pod, "energy", needed)
 					suit.temperature = suit.temperature + tempchange
 					if suit.temperature + tempchange > 310 then
 						suit.temperature = 310
 					elseif suit.temperature - tempchange < 284 then
 						suit.temperature = 284
 					end
-				elseif suit.energy > 0 then
-					local per = suit.energy/needed
-					suit.energy = 0
-					suit.temperature = suit.temperature + (tempchange * per)
+				else
+					if suit.energy >= needed then
+						suit.energy = suit.energy - needed
+						suit.temperature = suit.temperature + tempchange
+						if suit.temperature + tempchange > 310 then
+							suit.temperature = 310
+						elseif suit.temperature - tempchange < 284 then
+							suit.temperature = 284
+						end
+					elseif suit.energy > 0 then
+						local per = suit.energy/needed
+						suit.energy = 0
+						suit.temperature = suit.temperature + (tempchange * per)
+					end
 				end
 			end
 			

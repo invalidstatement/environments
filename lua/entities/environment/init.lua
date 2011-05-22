@@ -190,6 +190,9 @@ function ENT:Configure(rad, gravity, name, env)
 		end
 	end
 	
+	self.Env = {}
+	self.Env.sbenvironment = self:GetTable()
+	
 	//Create the earthquaker if need be :)
 	/*if self.unstable == "true" then
 		self.Shaker = ents.Create("env_shake")

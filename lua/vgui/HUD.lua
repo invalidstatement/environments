@@ -258,6 +258,7 @@ function LoadHud()
 	timer.Simple(5, function() HUD.sound = CreateSound(LocalPlayer(),"npc/env_headcrabcanister/hiss.wav") end) --create the sound
 	function HUD:DrawHUDScreen()
 		if not IsValid(HUD.CS_Model) || not HUD.Convar:GetBool() then return end
+		if LocalPlayer():GetActiveWeapon():GetPrintName() == "#GMOD_Camera" then return end
 		if not LocalPlayer():GetNWBool("helmet") then 
 			local mult = 0
 			if HUD.offtime != 0 then --it is being taken off
