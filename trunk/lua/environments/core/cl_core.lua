@@ -24,7 +24,7 @@ else --No sb installed
 	hook.Add("PlayerNoClip", "EnvPredict", NoclipPredict)
 end
 
-local function NoclipPredict(ply)
+function NoclipPredict(ply)
 	if ply:GetMoveType() == MOVETYPE_NOCLIP then return true end
 	if ply:IsAdmin() then return true end
 	
