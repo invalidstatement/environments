@@ -139,7 +139,7 @@ local function LoadEnvironments()
 		print("/////////////////////////////////////")
 		print("//    Environments Load Failed     //")
 		print("/////////////////////////////////////")
-		print(error)
+		print("ERROR: "..error)
 		Environments.Log("Startup Error: "..error)
 	end
 	if Environments.Debug then
@@ -190,7 +190,7 @@ function Environments.RegisterEnvironments()
 		print("//   Attempting to Load From File  //")
 		local contents = file.Read( "environments/" .. map .. ".txt" )
 		local starscontents = file.Read( "environments/" .. map .. "_stars.txt")
-		if contents then
+		if contents and starscontents then
 			local status, error = pcall(function()
 				Environments.PlanetSaveData = {}
 				Environments.PlanetSaveData = table.DeSanitise(util.KeyValuesToTable(contents))
@@ -229,9 +229,8 @@ function Environments.RegisterEnvironments()
 			Environments.CreateStar(star)
 		end
 	else --load it from the map
-		local SaveData = {}
-		local rawdata, rawstars = Environments.LoadFromMap()
-		rawdata.version = nil
+		local rawdata, rawstars = Environments.CreateEnvironmentsFromMap()
+		/*rawdata.version = nil
 		for k,v in pairs(rawdata) do
 			local planet = Environments.ParsePlanet(v)
 			Environments.CreatePlanet(planet)
@@ -239,7 +238,7 @@ function Environments.RegisterEnvironments()
 		for k,v in pairs(rawstars) do
 			local star = Environments.ParseStar(v)
 			Environments.CreateStar(star)
-		end
+		end*/
 		file.Write( "environments/" .. map .. "_stars.txt", util.TableToKeyValues( table.Sanitise(rawstars) ) )
 	end
 	if table.Count(environments) > 0 then
@@ -247,6 +246,20 @@ function Environments.RegisterEnvironments()
 	end
 	--save it all :D
 	Environments.SaveMap()
+end
+
+function Environments.CreateEnvironmentsFromMap()
+	local rawdata, rawstars = Environments.LoadFromMap()
+	rawdata.version = nil
+	for k,v in pairs(rawdata) do
+		local planet = Environments.ParsePlanet(v)
+		Environments.CreatePlanet(planet)
+	end
+	for k,v in pairs(rawstars) do
+		local star = Environments.ParseStar(v)
+		Environments.CreateStar(star)
+	end
+	return rawdata, rawstars
 end
 
 function Environments.LoadFromMap()
@@ -678,6 +691,7 @@ local function Reload(ply,cmd,args)
 			v = nil
 		end
 	end
+	environments = {}
 	Environments.RegisterEnvironments()
 	Environments.Log("Planets Reloaded")
 	ply:ChatPrint("Environments Has Been Reset!")
