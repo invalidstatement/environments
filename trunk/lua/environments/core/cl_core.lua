@@ -20,7 +20,7 @@ Environments.suit.o2per = 0
 if CAF and CAF.GetAddon("Spacebuild") then --sb installed
 	print("Spacebuild is active on the server")
 else --No sb installed
-	LoadHud()
+	--LoadHud()
 	hook.Add("PlayerNoClip", "EnvPredict", NoclipPredict)
 end
 

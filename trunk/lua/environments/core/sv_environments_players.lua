@@ -43,6 +43,10 @@ function Environments.LSCheck()
 			temperature = Environments.SunCheck(ply)
 		end
 		
+		if not env.pressure then
+			env.pressure = 1
+		end
+		
 		local realo2 = env.air.o2per*env.pressure
 		if ply.suit.worn and ply.suit.helmet then
 			local pod = ply:GetParent()

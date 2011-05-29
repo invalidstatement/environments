@@ -140,7 +140,7 @@ function ENT:OnRemove()
 	for k,ent in pairs(constrainedents) do
 		ent.env = nil
 	end
-	self.BaseClass.OnRemove(self)
+	if self.BaseClass.OnRemove then self.BaseClass.OnRemove(self) end
 end
 
 function ENT:TriggerInput(iname, value)
