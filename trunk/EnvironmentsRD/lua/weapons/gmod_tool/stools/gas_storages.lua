@@ -13,14 +13,14 @@ local toolname = "gas_storages"
 
 cleanup.Register("storage")
 
-local StorageModels = { ["models/props/de_port/tankoil01.mdl"] = {},
+local GenModels = { ["models/props/de_port/tankoil01.mdl"] = {},
 						["models/props/de_nuke/storagetank.mdl"] = {},
 						["models/props_wasteland/coolingtank02.mdl"] = {},
 						["models/props_c17/oildrum001.mdl"] = {} }
 
 
 -- This needs to be shared...
-function TOOL:GetCannonModel()
+function TOOL:GetGenModel()
 	local mdl = self:GetClientInfo("model")
 	if (!util.IsValidModel(mdl) or !util.IsValidProp(mdl)) then return "models/props_wasteland/coolingtank02.mdl" end
 	return mdl
@@ -66,7 +66,7 @@ if (SERVER) then
 		local ply = self:GetOwner()
 		
 		-- Get the model
-		local model = self:GetCannonModel()
+		local model = self:GetGenModel()
 		if (!model) then return end
 
 		-- If the trace hit an entity
@@ -160,7 +160,7 @@ else
 			Label = "#Models",
 			ConVar = "gas_storages_model",
 			Category = "Storages",
-			Models = StorageModels
+			Models = GenModels
 		})
 		CPanel:AddControl("ComboBox", { Label = "Gas", MenuButton = 0, Options = options})
 		CPanel:AddControl("CheckBox", { Label = "Weld", Command = "gas_storages_Weld" })
@@ -179,7 +179,7 @@ else
 	end
 	
 	function TOOL:Think()
-		local model = self:GetCannonModel()
+		local model = self:GetGenModel()
 		if (!self.GhostEntity or !self.GhostEntity:IsValid() or self.GhostEntity:GetModel() != model) then
 			local trace = self:GetOwner():GetEyeTrace()
 			self:MakeGhostEntity( Model(model), trace.HitPos, trace.HitNormal:Angle() + Angle(90,0,0) )
