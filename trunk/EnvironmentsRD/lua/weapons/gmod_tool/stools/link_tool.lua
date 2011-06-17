@@ -1,0 +1,172 @@
+
+
+TOOL.Category       = "Tools"
+TOOL.Name           = "Link Tool"
+TOOL.Command        = nil
+TOOL.ConfigName     = nil
+TOOL.Tab = "Environments"
+
+if ( CLIENT ) then
+	language.Add( "Tool_link_tool_name", "Link Tool" )
+	language.Add( "Tool_link_tool_desc", "Links Resource-Carrying Devices together to a Resource Node." )
+	language.Add( "Tool_link_tool_0", "Left Click: Link Devices.  Right Click: Unlink Two Devices.  Reload: Unlink Device from All." )
+	language.Add( "Tool_link_tool_1", "Click on another Resource-Carrying Device" )
+	language.Add( "Tool_link_tool_2", "Right-Click on another Resource-Carrying Device(or the same one to unlink ALL)" )
+	language.Add( "rd3_dev_link_width", "Width:" )
+	language.Add( "link_tool_material", "Material:" )
+	language.Add( "rd3_dev_link_colour", "Color:")
+end
+
+TOOL.ClientConVar[ "material" ] = "cable/cable2"
+TOOL.ClientConVar[ "width" ] = "2"
+TOOL.ClientConVar[ "color_r" ] = "255"
+TOOL.ClientConVar[ "color_g" ] = "255"
+TOOL.ClientConVar[ "color_b" ] = "255"
+TOOL.ClientConVar[ "color_a" ] = "255"
+TOOL.ClientConVar[ "cable" ] = "1"
+
+if SERVER then
+	AddCSLuaFile("link_tool.lua")
+end
+
+function TOOL:LeftClick( trace )
+	//if not valid or player, exit
+	if ( trace.Entity:IsValid() && trace.Entity:IsPlayer() ) then return end
+	//if client exit
+	if ( CLIENT ) then return true end
+	// If there's no physics object then we can't constraint it!
+	if ( !util.IsValidPhysicsObject( trace.Entity, trace.PhysicsBone ) ) then return false end
+
+	//how many objects stored
+	local iNum = self:NumObjects() + 1
+
+	//save clicked postion
+	self:SetObject( iNum, trace.Entity, trace.HitPos, trace.Entity:GetPhysicsObjectNum( trace.PhysicsBone ), trace.PhysicsBone, trace.HitNormal )
+	self.Objects[iNum].Normal = trace.HitNormal
+	
+	//if finishing, run StartTouch on Resource Node to do link
+	if ( iNum > 1 ) then
+		local Ent1 = self:GetEnt(1) 	//get first ent
+		local Ent2 = self:GetEnt(iNum) 	//get last ent
+		local length = ( self:GetPos(1) - self:GetPos(iNum)):Length()
+
+		if Ent1.IsNode or Ent2.IsNode then
+			if Ent1.Link and Ent2.Link then
+				Ent1:Link(Ent2)
+				Ent2:Link(Ent1)
+				if tonumber(self:GetClientInfo("cable")) == 1 then
+					if Ent1.IsNode then
+						Environments.Create_Beam(Ent2, self:GetLocalPos(iNum), self.Objects[iNum].Normal, self:GetClientInfo("material"))
+					else
+						Environments.Create_Beam(Ent1, self:GetLocalPos(1), self.Objects[1].Normal, self:GetClientInfo("material"))
+					end
+				else
+					if Ent1.IsNode then
+						Ent2:SetNWVector("CablePos", Vector(0,0,0))
+					else
+						Ent1:SetNWVector("CablePos", Vector(0,0,0))
+					end
+				end
+			else
+				self:GetOwner():SendLua( "GAMEMODE:AddNotify('Invalid Combination!', NOTIFY_GENERIC, 7);" )
+			end
+		elseif Ent1.node or Ent2.node then
+			if Ent1.node then
+				Ent2:Link(Ent1.node)
+				Ent1.node:Link(Ent2)
+			else
+				Ent1:Link(Ent2.node)
+				Ent2.node:Link(Ent1)
+			end
+		else
+			self:GetOwner():SendLua( "GAMEMODE:AddNotify('Invalid Combination!', NOTIFY_GENERIC, 7);" )
+		end
+
+		self:ClearObjects()	//clear objects
+	else
+		self:SetStage( iNum )
+	end
+
+	//success!
+	return true
+end
+
+function TOOL:RightClick( trace )
+	//if not valid or player, exit
+	if ( trace.Entity:IsValid() && trace.Entity:IsPlayer() ) then return end
+	//if client exit
+	if ( CLIENT ) then return true end
+	// If there's no physics object then we can't constraint it!
+	if ( SERVER && !util.IsValidPhysicsObject( trace.Entity, trace.PhysicsBone ) ) then return false end
+
+	//how many objects stored
+	local iNum = self:NumObjects() + 1
+
+	//save clicked postion
+	self:SetObject( iNum, trace.Entity, trace.HitPos, trace.Entity:GetPhysicsObjectNum( trace.PhysicsBone ), trace.PhysicsBone, trace.HitNormal )
+
+	if ( iNum > 1 ) then
+		// Get information we're about to use
+		local Ent1, Ent2 = self:GetEnt(1), self:GetEnt(2)
+
+		/*if Ent1.Link and Ent2.Link then
+			if 
+			
+			else
+				self:GetOwner():SendLua( "GAMEMODE:AddNotify('Invalid Combination!', NOTIFY_GENERIC, 7);" )
+			end
+		else
+			self:GetOwner():SendLua( "GAMEMODE:AddNotify('Invalid Combination!', NOTIFY_GENERIC, 7);" )
+		end*/
+
+		// Clear the objects so we're ready to go again
+		self:ClearObjects()
+	else
+		self:SetStage( iNum )
+	end
+
+	return true
+end
+
+function TOOL:Reload(trace)
+	//if not valid or player, exit
+	if ( trace.Entity:IsValid() && trace.Entity:IsPlayer() ) then return end
+	//if client exit
+	if ( CLIENT ) then return true end
+
+	if trace.Entity.IsNode then
+		
+	elseif trace.Entity.Unlink then
+		trace.Entity:Unlink()
+	end
+
+	self:ClearObjects()	//clear objects
+	return true
+end
+
+function TOOL.BuildCPanel( panel )
+	panel:AddControl( "Header", { Text = "#Tool_link_tool_name", Description	= "#Tool_link_tool_desc" }  )
+	
+	panel:AddControl("CheckBox", { Label = "Use Cables? DO NOT USE ON MOVING STRUCTURES", Command = "link_tool_cable" })
+
+	panel:AddControl( "MatSelect", {
+		Height = "1",
+		Label = "#link_tool_material",
+		ItemWidth = 24,
+		ItemHeight = 64,
+		ConVar = "link_tool_material",
+		Options = list.Get( "BeamMaterials" )
+	})
+
+	/*panel:AddControl("Color", {
+		Label = "#rd3_dev_link_colour",
+		Red = "rd3_dev_link_color_r",
+		Green = "rd3_dev_link_color_g",
+		Blue = "rd3_dev_link_color_b",
+		ShowAlpha = "1",
+		ShowHSV = "1",
+		ShowRGB = "1",
+		Multiplier = "255"
+	})*/
+end
+
