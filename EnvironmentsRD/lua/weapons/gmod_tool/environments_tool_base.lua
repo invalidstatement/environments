@@ -56,7 +56,7 @@ if SERVER then
 	end
 	
 	function TOOL:CreateDevice(ply, trace, Model)
-		if (!ply:CheckLimit("generator")) then return end
+		if (!ply:CheckLimit(self.CleanupGroup)) then return end
 		local ent = ents.Create( self.Entity.Class )
 		if (!ent:IsValid()) then return end
 			
@@ -129,7 +129,7 @@ if SERVER then
 		undo.Finish();
 	end
 else --client	
-	// Ghosts
+	// Ghosts, scary
 	function TOOL:UpdateGhostEntity( ent, player )
 		if (!ent or !ent:IsValid()) then return end
 		local trace = player:GetEyeTrace()

@@ -42,7 +42,7 @@ if (SERVER) then
 		ent:Spawn()
 		ent:Activate()
 		--pump  rate  length
-		ent:Setup(1,256,self:GetClientInfo("Rate"))
+		ent:Setup(1,tonumber(self:GetClientInfo("Rate")),1024)
 		return ent
 	end
 	

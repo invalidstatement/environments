@@ -7,7 +7,6 @@ include('shared.lua')
 ENT.IsLS = true
 
 function ENT:Initialize()
-	//self.BaseClass.Initialize(self) --use this in all ents
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
@@ -16,11 +15,6 @@ function ENT:Initialize()
 	self.Active = 0
 end
 
---use this to set self.active
---put a self:TurnOn and self:TurnOff() in your ent
---give value as nil to toggle
---override to do overdrive
---AcceptInput (use action) calls this function with value = nil
 function ENT:SetActive( value, caller )
 	if ((not(value == nil) and value != 0) or (value == nil)) and self.Active == 0 then
 		if self.TurnOn then self:TurnOn( nil, caller ) end
@@ -42,33 +36,9 @@ function ENT:Repair()
 	self:SetHealth( self:GetMaxHealth( ))
 end
 
---[[
 function ENT:AcceptInput(name,activator,caller)
 	if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then
 		self:SetActive( nil, caller )
-	end
-end
-]]
---Considering I don't want to break RD until it's working, I'll work inside commented code...for now.
-
-function ENT:AcceptInput(name,activator,caller)
-	if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then
-		if self.Inputs and caller.useaction and caller.useaction==true then
-			local maxz = table.Count(self.Inputs)
-			local last = false
-			local num = 1
-			for k,v in pairs(self.Inputs) do
-				if num >= maxz then last = true end
-				umsg.Start("RD_AddInputToMenu", caller)
-					umsg.Bool(last)
-					umsg.String(v.Name)
-					umsg.Short(self:EntIndex())
-				umsg.End()
-				num = num+1
-			end
-		else
-			self:SetActive( nil, caller )
-		end
 	end
 end
 
@@ -81,7 +51,6 @@ function ENT:OnTakeDamage(DmgInfo)//should make the damage go to the shield if t
 end
 
 function ENT:OnRemove()
-	//self.BaseClass.OnRemove(self) --use this if you have to use OnRemove
 	if self.node then
 		self.node:Unlink() --fails
 		local node = self.node --backup unlink :D
@@ -96,11 +65,6 @@ function ENT:OnRemove()
 		end
 	end
 	if WireLib then WireLib.Remove(self) end
-	if self.InputsBeingTriggered then
-		for k,v in pairs(self.InputsBeingTriggered) do
-			hook.Remove("Think","ButtonHoldThinkNumber"..v.hooknum)
-		end
-	end
 end
 
 function ENT:ConsumeResource( resource, amount)

@@ -18,11 +18,6 @@ function ENT:Initialize()
 	self.Active = 0
 end
 
---use this to set self.active
---put a self:TurnOn and self:TurnOff() in your ent
---give value as nil to toggle
---override to do overdrive
---AcceptInput (use action) calls this function with value = nil
 function ENT:SetActive( value, caller )
 	if ((not(value == nil) and value != 0) or (value == nil)) and self.Active == 0 then
 		if self.TurnOn then self:TurnOn( nil, caller ) end
@@ -44,21 +39,13 @@ function ENT:Repair()
 	self:SetHealth( self:GetMaxHealth( ))
 end
 
---[[
-function ENT:AcceptInput(name,activator,caller)
-	if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then
-		self:SetActive( nil, caller )
-	end
-end
-]]
-
 function ENT:AcceptInput(name,activator,caller)
 	if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then
 		self:SetActive( nil, caller )
 	end
 end
 
-function ENT:OnTakeDamage(DmgInfo)//should make the damage go to the shield if the shield is installed(CDS)
+function ENT:OnTakeDamage(DmgInfo)
 	if self.Shield then
 		self.Shield:ShieldDamage(DmgInfo:GetDamage())
 		CDS_ShieldImpact(self:GetPos())
@@ -67,7 +54,6 @@ function ENT:OnTakeDamage(DmgInfo)//should make the damage go to the shield if t
 end
 
 function ENT:OnRemove()
-	//self.BaseClass.OnRemove(self) --use this if you have to use OnRemove
 	if self.node then
 		self.node:Unlink() --fails
 		local node = self.node --backup unlink :D
@@ -167,12 +153,10 @@ function ENT:GetNetworkCapacity(resource)
 end
 
 function ENT:OnRestore()
-	//self.BaseClass.OnRestore(self) --use this if you have to use OnRestore
 	if WireLib then WireLib.Restored(self) end
 end
 
 function ENT:PreEntityCopy()
-	//self.BaseClass.PreEntityCopy(self) --use this if you have to use PreEntityCopy
 	Environments.BuildDupeInfo(self)
 	if WireLib then
 		local DupeInfo = WireLib.BuildDupeInfo(self)
@@ -183,7 +167,6 @@ function ENT:PreEntityCopy()
 end
 
 function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
-	//self.BaseClass.PostEntityPaste(self, Player, Ent, CreatedEntities ) --use this if you have to use PostEntityPaste
 	Environments.ApplyDupeInfo(Ent, CreatedEntities)
 	if WireLib and (Ent.EntityMods) and (Ent.EntityMods.WireDupeInfo) then
 		WireLib.ApplyDupeInfo(Player, Ent, Ent.EntityMods.WireDupeInfo, function(id) return CreatedEntities[id] end)

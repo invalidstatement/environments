@@ -16,9 +16,6 @@ OOO[0] = "Off"
 OOO[1] = "On"
 OOO[2] = "Overdrive"
 
-local client_chosen_number = CreateClientConVar( "number_to_send", "0", true, false )
-local client_chosen_hold = CreateClientConVar( "number_to_hold", "1", true, false )
-
 local ResourceUnits = {}
 ResourceUnits["energy"] = " Kj"
 ResourceUnits["water"] = " L"
@@ -89,21 +86,17 @@ function ENT:DoNormalDraw( bDontDrawModel )
 		local node = self:GetNWEntity("node")
 		local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] --replace this
 		local HasOOO = OverlaySettings.HasOOO
-		local num = OverlaySettings.num or 0
-		local strings = OverlaySettings.strings
 		local resnames = OverlaySettings.resnames
 		local genresnames = OverlaySettings.genresnames
 		--End overlaysettings
-		local trace = LocalPlayer():GetEyeTrace()
+
 		if ( !bDontDrawModel ) then self:DrawModel() end
-		local nettable = {} 
+		
 		local playername = self:GetPlayerName()
 		if playername == "" then
 			playername = "World"
 		end
-		-- 0 = no overlay!
-		-- 1 = default overlaytext
-		-- 2 = new overlaytext
+
 		if not self.ScreenMode then
 			local OverlayText = self.PrintName.."\n"
 			
