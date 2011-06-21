@@ -13,7 +13,7 @@ local print = print
 local DrawBloom = DrawBloom
 local DrawColorModify = DrawColorModify
 
-local breathing = CreateConVar( "env_breathing_sound_enabled", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the breathing sound." )
+local breathing = CreateConVar( "env_breathing_sound_enabled", "0", { FCVAR_ARCHIVE, }, "Enable/Disable the breathing sound." )
 
 local planets = {} --Planetary Data Table :D updated from server usermessages
 local stars = {} --Star data table updated from server usmg
