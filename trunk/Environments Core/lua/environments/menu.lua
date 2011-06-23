@@ -37,7 +37,7 @@ hook.Add("AddToolMenuTabs", "EnvironmentsAddTabs", AddToolTab);
 
 function Environments.ConfigMenu(Panel)
 	Panel:ClearControls();
-	
+	Environments.ConfigPanel = Panel
 	if(Environments.CurrentVersion > Environments.Version) then
 		local RED = Color(255,0,0,255);
 		Panel:Help("Your build of Environments is out of date"):SetTextColor(RED);
@@ -76,6 +76,13 @@ function Environments.ConfigMenu(Panel)
 	
 	Panel:Help("Enable HUD")
 	Panel:AddControl("CheckBox", {Label = "Enable HUD?", Command = "env_hud_enabled"} )
+	
+	Panel:Help("Use Cool HUD?")
+	local check = Panel:AddControl("CheckBox", {Label = "Use Cool HUD?", Command = "env_hud_mode"} )
+	
+	check.OnChange = function()
+		LoadHud()
+	end
 	
 	Panel:Help("Enable Breathing Sound")
 	Panel:AddControl("CheckBox", {Label = "Enable Breathing Sound?", Command = "env_breathing_sound_enabled"} )
