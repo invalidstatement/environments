@@ -8,7 +8,7 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 110
+Environments.Version = 112
 Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 5
 //User Options
@@ -105,6 +105,12 @@ function VersionCheck(rev, contents, size)
 		print("Please update!")
 	end
 	Environments.CurrentVersion = rev
+	
+	if CLIENT then
+		if Environments.ConfigPanel then
+			Environments.ConfigMenu(Environments.ConfigPanel) --update the config panel to show that it is up to date
+		end
+	end
 end
 GetOnlineVersion()
 
