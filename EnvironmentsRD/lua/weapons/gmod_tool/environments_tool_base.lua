@@ -119,16 +119,18 @@ if SERVER then
 	
 	//Cleanups and stuff
 	function TOOL:AddUndo(p,...)
-		undo.Create(self.CleanupGroup);
+		undo.Create(self.CleanupGroup)
 		for k,v in pairs({...}) do
 			if(k ~= "n") then
 				undo.AddEntity(v)
 			end
 		end
-		undo.SetPlayer(p);
-		undo.Finish();
+		undo.SetPlayer(p)
+		undo.Finish()
 	end
-else --client	
+end
+
+if SinglePlayer() and SERVER or !SinglePlayer() and CLIENT then
 	// Ghosts, scary
 	function TOOL:UpdateGhostEntity( ent, player )
 		if (!ent or !ent:IsValid()) then return end

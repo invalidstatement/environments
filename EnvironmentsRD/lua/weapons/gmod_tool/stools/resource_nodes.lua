@@ -15,7 +15,7 @@ TOOL.Entity.Angle = Angle(0,0,0)
 local name = TOOL.Mode
 
 TOOL.CleanupGroup = "node" --sets what this things count adds from
-TOOL.Language["Undone"] = "Resource Node Removed";
+TOOL.Language["Undone"] = "Resource Node Undone";
 TOOL.Language["Cleanup"] = "Resource Nodes";
 TOOL.Language["Cleaned"] = "Removed all Resource Nodes";
 TOOL.Language["SBoxLimit"] = "Hit the Resource Node limit";

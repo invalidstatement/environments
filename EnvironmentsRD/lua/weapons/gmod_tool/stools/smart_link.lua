@@ -1,8 +1,4 @@
---load our other stools first
---include( "RD2/tool_manifest.lua" )
 
---dev link stool
-//TOOL			= ToolObj:Create()
 TOOL.Category	= 'Tools'
 TOOL.Name		= 'Smart Link Tool'
 TOOL.Command	= nil
@@ -11,15 +7,17 @@ TOOL.Tab = "Environments"
 
 if ( CLIENT ) then
 	language.Add( "Tool_smart_link_name", "Smart Link Tool" )
-	language.Add( "Tool_smart_link_desc", "Links Resource-Carrying Devices to a Resource Node, including Vehicle Pods." )
+	language.Add( "Tool_smart_link_desc", "Links Resource-Carrying Devices to a Resource Node." )
 	language.Add( "Tool_smart_link_0", "Left Click: Select Devices.  Right Click: Link All devices to the selected Node.  Reload: Reset selected devices." )
-    language.Add( "Tool_smart_link_1", "Click on another Resource-Carrying Device(or Vehicle Pod)" )
+    language.Add( "Tool_smart_link_1", "Click on another Resource-Carrying Device" )
 end
+
+TOOL.ClientConVar[ "material" ] = "cable/cable2"
+TOOL.ClientConVar[ "cable" ] = "1"
 
 function TOOL:LeftClick( trace )
 	if (!trace.Entity:IsValid()) or (trace.Entity:IsPlayer()) then return end
 	if (CLIENT) then return true end
-	local enttable = CAF.GetAddon("Resource Distribution").GetEntityTable(trace.Entity)
 	if trace.Entity.Link then
 		local iNum = self:NumObjects()
 		local Phys = trace.Entity:GetPhysicsObjectNum( trace.PhysicsBone )
@@ -34,8 +32,6 @@ function TOOL:RightClick( trace )
 	
 	if (CLIENT) then return true end
 	local iNum = self:NumObjects()
-	//local Phys = trace.Entity:GetPhysicsObjectNum( trace.PhysicsBone )
-	//self:SetObject( iNum + 1, trace.Entity, trace.HitPos, Phys, trace.PhysicsBone, trace.HitNormal )
 
 	if ( iNum > 0 and trace.Entity.IsNode ) then
 		-- Get information we're about to use
@@ -47,21 +43,10 @@ function TOOL:RightClick( trace )
 			local length = ( WPos1 - WPos2):Length()
 			Ent1:SetColor(255, 255, 255, 255) 
 			
-			-- Get client's CVars
-			--local addlength	 = self:GetClientNumber( "addlength" )
+
 			local material	= self:GetClientInfo( "material" )
 			local width		= self:GetClientNumber( "width" ) 
 			local color		= Color(self:GetClientNumber("color_r"), self:GetClientNumber("color_g"), self:GetClientNumber("color_b"))
-			--Possible
-			---- Ent - Node V
-			---- Node - Ent V
-			---- Node - Node V
-			---- Ent - Cutoff valve V
-			---- Node - Cutoff valve V
-			---- Cutoff valve - node V
-			---- Cutoff valve - ent V
-			---- pump - node
-			---- node - pump
 			
 
 			if length <= 2048 then
