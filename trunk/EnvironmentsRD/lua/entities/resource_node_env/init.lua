@@ -61,14 +61,18 @@ function ENT:Link(ent)
 	if ent.resources then
 		for name,amt in pairs(ent.resources) do
 			local curmax = self.maxresources[name]
-			local cur = self.resources[name]
-			if cur and (cur + amt) <= curmax then
-				self.resources[name] = cur + amt
-			elseif cur then
-				self.resources[name] = curmax
+			if self.resources[name] then
+				local cur = self.resources[name].value
+				if cur and (cur + amt) <= curmax then
+					self.resources[name].value = cur + amt
+				elseif cur then
+					self.resources[name].value = curmax
+				end
 			else
-				self.resources[name] = amt
+				self.resources[name] = {}
+				self.resources[name].value = amt
 			end
+			self.resources[name].haschanged = true
 			self.updated = true
 		end
 	end
@@ -139,7 +143,7 @@ function ENT:LinkCheck()
 			self.connected[k] = nil
 			continue
 		end
-		if v:GetPos():Distance(curpos) > 2054 then
+		if v:GetPos():Distance(curpos) > 2048 then
 			v:Unlink()
 			self:EmitSound( Sound( "weapons/stunstick/spark" .. tostring( math.random( 1, 3 ) ) .. ".wav" ) )
 			v:EmitSound( Sound( "weapons/stunstick/spark" .. tostring( math.random( 1, 3 ) ) .. ".wav" ) )
@@ -153,8 +157,17 @@ function ENT:Think()
 		self.nextcheck = CurTime() + 5
 	end
 	if self.updated then
-		for name,value in pairs(self.resources) do
-			self:SetNWInt(name, value)
+		for name,v in pairs(self.resources) do
+			if v.haschanged then
+				umsg.Start("Env_UpdateResAmt") --temporary prototype system
+					umsg.Entity(self)
+					umsg.String(name)
+					umsg.Long(v.value)
+				umsg.End()
+				v.haschanged = false
+			end
+			
+			--self:SetNWInt(name, value) --get rid of soon
 		end
 		self.updated = false
 	end
@@ -163,21 +176,27 @@ function ENT:Think()
 end
 
 function ENT:GenerateResource(name, amt)
-	local res = self.resources[name]
+	amt = math.Round(amt) -- :(
+	
 	local max = self.maxresources[name]
 	if not max then return 0 end
-	if res then
+	if self.resources[name] then
+		local res = self.resources[name].value
 		if res + amt < max then
-			self.resources[name] = self.resources[name] + amt
+			self.resources[name].value = self.resources[name].value + amt
+			self.resources[name].haschanged = true
 			self.updated = true
 			return amt
 		else
-			self.resources[name] = max
+			self.resources[name].value = max
+			self.resources[name].haschanged = true
 			self.updated = true
 			return max - res
 		end
 	else
-		self.resources[name] = amt
+		self.resources[name] = {}
+		self.resources[name].value = amt
+		self.resources[name].haschanged = true
 		self.updated = true
 		return amt
 	end
@@ -185,15 +204,18 @@ function ENT:GenerateResource(name, amt)
 end
 
 function ENT:ConsumeResource(name, amt)
+	amt = math.Round(amt) -- :(
 	if self.resources[name] then
-		local res = self.resources[name]
+		local res = self.resources[name].value
 		if res >= amt then
-			self.resources[name] = res - amt
+			self.resources[name].value = res - amt
 			self.updated = true
+			self.resources[name].haschanged = true
 			return amt
 		elseif not res == 0 then
-			amt = res
+			--amt = res
 			res = 0
+			self.resources[name].haschanged = true
 			self.updated = true
 			return res
 		else
@@ -225,7 +247,7 @@ end
 
 function ENT:GetResourceAmount(resource)
 	if self.resources[resource] then
-		return self.resources[resource]
+		return self.resources[resource].value
 	else
 		return 0
 	end

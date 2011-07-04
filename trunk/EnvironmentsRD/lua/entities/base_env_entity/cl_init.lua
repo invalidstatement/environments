@@ -44,6 +44,7 @@ function ENT:Initialize()
 		self.ScreenAngles = info.Angle
 		self.ScreenPos = info.Offset
 	end
+	self.maxresources = {}
 end
 
 function ENT:Draw( bDontDrawModel )
@@ -81,7 +82,7 @@ end
 function ENT:DoNormalDraw( bDontDrawModel )
 	if ( LocalPlayer():GetEyeTrace().Entity == self and EyePos():Distance( self:GetPos() ) < 512) then
 		--overlaysettings
-		local node = self:GetNWEntity("node")
+		local node = self:GetNWEntity("node", nil)
 		local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] --replace this
 		local HasOOO = OverlaySettings.HasOOO
 		local num = OverlaySettings.num or 0
@@ -118,6 +119,39 @@ function ENT:DoNormalDraw( bDontDrawModel )
 			if num == -1 then
 				if ( table.Count(resources) > 0 ) then
 					for k, v in pairs(resources) do
+						if node and node:IsValid() then
+							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/0\n" .. (ResourceUnits[k] or "")
+						else
+							OverlayText = OverlayText ..(ResourceNames[k] or k)..": 0/0\n"
+						end
+					end
+				else
+					OverlayText = OverlayText .. "No Resources Connected\n"
+				end
+			else
+				if resnames and table.Count(resnames) > 0 then
+					for _, k in pairs(resnames) do
+						if node and node:IsValid() then
+							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. node:GetNWInt("max"..k, 0) .. (ResourceUnits[k] or "") .."\n"
+						else
+							OverlayText = OverlayText ..(ResourceNames[k] or k)..": 0/".. (self.maxresources[k] or 0) .."\n"
+						end
+					end
+				end
+				if genresnames and table.Count(genresnames) > 0 then
+					OverlayText = OverlayText.."\nGenerates:\n"
+					for _, k in pairs(genresnames) do
+						if node and node:IsValid() then
+							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. node:GetNWInt("max"..k, 0).. (ResourceUnits[k] or "") .."\n"
+						else
+							OverlayText = OverlayText ..(ResourceNames[k] or k)..": 0/0\n"
+						end
+					end
+				end
+			end
+			/*if num == -1 then
+				if ( table.Count(resources) > 0 ) then
+					for k, v in pairs(resources) do
 						if node then
 							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. node:GetNWInt(k, 0) .."/".. 0 .."\n" .. (ResourceUnits[k] or "")
 						else
@@ -147,7 +181,7 @@ function ENT:DoNormalDraw( bDontDrawModel )
 						end
 					end
 				end
-			end
+			end*/
 			OverlayText = OverlayText .. "(" .. playername ..")"
 			AddWorldTip( self:EntIndex(), OverlayText, 0.5, self:GetPos(), self  )
 		else

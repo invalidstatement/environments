@@ -21,6 +21,10 @@ ResourceNames["carbon dioxide"] = "CO2"
 surface.CreateFont( "arial", 60, 600, true, false, "ConflictText" )
 surface.CreateFont( "arial", 40, 600, true, false, "Flavour" )
 
+function ENT:Initialize()
+	self.resources = {}
+end
+
 function ENT:Draw( bDontDrawModel )
 	self:DoNormalDraw()
 
@@ -103,3 +107,9 @@ if Wire_UpdateRenderBounds then
 		self:NextThink(CurTime() + 3)
 	end
 end
+
+local function RecieveAmts(msg)
+	--local ent = msg:ReadEntity()
+	msg:ReadEntity().resources[msg:ReadString()] = msg:ReadLong()
+end
+usermessage.Hook("Env_UpdateResAmt", RecieveAmts)
