@@ -10,7 +10,6 @@ function ENT:Initialize()
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	self:SetNetworkedInt( "overlaymode", 1 )
 	self:SetNetworkedInt( "OOO", 0 )
 	self.Active = 0
 end
@@ -100,7 +99,7 @@ end
 function ENT:GetResourceAmount(resource)
 	if self.node then
 		if self.node.resources[resource] then
-			return self.node.resources[resource]
+			return self.node.resources[resource].value
 		else
 			return 0
 		end
