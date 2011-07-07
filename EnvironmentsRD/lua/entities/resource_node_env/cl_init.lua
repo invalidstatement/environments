@@ -23,6 +23,7 @@ surface.CreateFont( "arial", 40, 600, true, false, "Flavour" )
 
 function ENT:Initialize()
 	self.resources = {}
+	self.maxresources = {}
 end
 
 function ENT:Draw( bDontDrawModel )
@@ -113,3 +114,8 @@ local function RecieveAmts(msg)
 	msg:ReadEntity().resources[msg:ReadString()] = msg:ReadLong()
 end
 usermessage.Hook("Env_UpdateResAmt", RecieveAmts)
+
+local function RecieveMax(msg)
+	msg:ReadEntity().maxresources[msg:ReadString()] = msg:ReadLong()
+end
+usermessage.Hook("Env_UpdateMaxRes", RecieveMax)

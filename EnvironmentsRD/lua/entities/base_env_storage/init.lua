@@ -54,17 +54,7 @@ end
 
 function ENT:OnRemove()
 	if self.node then
-		self.node:Unlink() --fails
-		local node = self.node --backup unlink :D
-		node.connected[self:EntIndex()] = nil
-		if not self.maxresources then return end
-		for name,max in pairs(self.maxresources) do
-			local curmax = node.maxresources[name]
-			if curmax then
-				node.maxresources[name] = curmax - max
-			end
-			node:SetNWInt("max"..name, node.maxresources[name])
-		end
+		self.node:Unlink(self)
 	end
 	if WireLib then WireLib.Remove(self) end
 end

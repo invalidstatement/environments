@@ -79,6 +79,8 @@ function Environments.LSCheck()
 				elseif needed > 20 then
 					needed = 20
 				end
+				
+				local RD = CAF.GetAddon("Resource Distribution")
 				if pod and pod:IsValid() and RD.GetResourceAmount(pod, "water") >= needed then
 					RD.ConsumeResource(pod, "water", needed)
 					suit.temperature = suit.temperature - tempchange
@@ -110,6 +112,7 @@ function Environments.LSCheck()
 					needed = 20
 				end
 				
+				local RD = CAF.GetAddon("Resource Distribution")
 				if pod and pod:IsValid() and RD.GetResourceAmount(pod, "energy") >= needed then
 					RD.ConsumeResource(pod, "energy", needed)
 					suit.temperature = suit.temperature + tempchange
@@ -315,9 +318,10 @@ function Environments.PlayerCheck(ent)
 				tr.Entity.env:Breathe()
 				ent.gravity = 1
 				ent:SetGravity(tr.Entity.env.gravity)
-				if not phys:IsValid() then return end
-				phys:EnableGravity( true )
-				phys:EnableDrag( true )
+				if phys:IsValid() then
+					phys:EnableGravity( true )
+					phys:EnableDrag( true )
+				end
 				
 				return
 			elseif tr.Entity.env:IsValid() and tr.Entity.env.air.o2per > 0 then
@@ -325,17 +329,19 @@ function Environments.PlayerCheck(ent)
 				ent:SetGravity(0.00001)
 				tr.Entity.env:Breathe()
 				ent.gravity = 1
-				if not phys:IsValid() then return end
-				phys:EnableGravity( false )
-				phys:EnableDrag( true )
+				if phys:IsValid() then
+					phys:EnableGravity( false )
+					phys:EnableDrag( true )
+				end
 				return
 			end
 		elseif (tr.Entity.grav_plate and tr.Entity.grav_plate == 1) then
 			ent:SetGravity(1)
 			ent.gravity = 1
-			if not phys:IsValid() then return end
-			phys:EnableGravity( true )
-			phys:EnableDrag( true )
+			if phys:IsValid() then
+				phys:EnableGravity( true )
+				phys:EnableDrag( true )
+			end
 			return
 		end
 	end

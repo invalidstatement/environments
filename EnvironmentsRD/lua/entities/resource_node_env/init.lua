@@ -27,12 +27,6 @@ function ENT:Initialize()
 	self.resources = {}
 	self.connected = {}
 	self.maxresources = {}
-	/*if self.maxresources then
-		for name,max in pairs(self.maxresources) do
-			self.maxresources[name] = max
-			self:SetNWInt("max"..name, self.maxresources[name])
-		end
-	end*/
 	
 	self.vent = false
 	
@@ -55,7 +49,12 @@ function ENT:Link(ent)
 			else
 				self.maxresources[name] = max
 			end
-			self:SetNWInt("max"..name, self.maxresources[name])
+			umsg.Start("Env_UpdateMaxRes")
+				umsg.Entity(self)
+				umsg.String(name)
+				umsg.Long(self.maxresources[name])
+			umsg.End()
+			--self:SetNWInt("max"..name, self.maxresources[name])
 		end
 	end
 	if ent.resources then
@@ -79,61 +78,28 @@ function ENT:Link(ent)
 end
 
 function ENT:Unlink(ent)
-	if ent and ent:IsValid() then
+	if ent then
+		print("Check Passed!")
 		self.connected[ent:EntIndex()] = nil
-		if not ent.maxresources then return end
-		for name,max in pairs(ent.maxresources) do
-			local curmax = self.maxresources[name]
-			if curmax then
-				self.maxresources[name] = curmax - max
+		if ent.maxresources then
+			for name,max in pairs(ent.maxresources) do
+				local curmax = self.maxresources[name]
+				if curmax then
+					self.maxresources[name] = curmax - max
+				end
+				umsg.Start("Env_UpdateMaxRes")
+					umsg.Entity(self)
+					umsg.String(name)
+					umsg.Long(self.maxresources[name])
+				umsg.End()
+				--self:SetNWInt("max"..name, self.maxresources[name])
 			end
-			self:SetNWInt("max"..name, self.maxresources[name])
 		end
 	end
 end
 
 function ENT:Repair()
 	self:SetHealth( self:GetMaxHealth( ))
-end
-
-function ENT:Leak()
-	if self.environment then
-		if self.vent == "oxygen" then
-			local air = self:GetResourceAmount("oxygen")
-			local mul = air/self.maxresources["oxygen"]
-			local am = math.Round(mul * 1000);
-			if (air >= am) then
-				self:ConsumeResource("oxygen", am)
-				self.environment:Convert(-1, 0, am)
-			else
-				self:ConsumeResource("oxygen", air)
-				self.environment:Convert(-1, 0, air)
-			end
-		elseif self.vent == "nitrogen" then
-			local air = self:GetResourceAmount("nitrogen")
-			local mul = air/self.maxresources["nitrogen"]
-			local am = math.Round(mul * 1000);
-			if (air >= am) then
-				self:ConsumeResource("nitrogen", am)
-				self.environment:Convert(-1, 2, am)
-			else
-				self:ConsumeResource("nitrogen", air)
-				self.environment:Convert(-1, 2, air)
-			end
-		elseif self.vent == "hydrogen" then
-			local air = self:GetResourceAmount("hydrogen")
-			local mul = air/self.maxresources["hydrogen"]
-			local am = math.Round(mul * 1000);
-			if (air >= am) then
-				self:ConsumeResource("hydrogen", am)
-				self.environment:Convert(-1, 3, am)
-			else
-				self:ConsumeResource("hydrogen", air)
-				self.environment:Convert(-1, 3, air)
-			end
-		end
-		self.updated = true
-	end
 end
 
 function ENT:LinkCheck()
