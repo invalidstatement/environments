@@ -187,8 +187,14 @@ function ENT:Think()
 			end
 			if rate == 0 then return end
 			for res,v in pairs(self.node.resources) do --actually send it
-				local amt = self:ConsumeResource(res, self.pump_rate)
-				self.OtherSocket:SupplyResource(res, amt)
+				if self.OtherSocket:GetNetworkCapacity(res) > (self.OtherSocket:GetResourceAmount(res) + self.pump_rate) then
+					local amt = self:ConsumeResource(res, self.pump_rate)
+					self.OtherSocket:SupplyResource(res, amt)	
+				else
+					local amt = self.OtherSocket:GetNetworkCapacity(res) - self.OtherSocket:GetResourceAmount(res)
+					amt = self:ConsumeResource(res, amt)
+					self.OtherSocket:SupplyResource(res, amt)	
+				end	
 			end
 		end
 	end

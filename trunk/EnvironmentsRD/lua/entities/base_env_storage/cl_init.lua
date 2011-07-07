@@ -125,7 +125,7 @@ function ENT:DoNormalDraw( bDontDrawModel )
 				if resnames and table.Count(resnames) > 0 then
 					for _, k in pairs(resnames) do
 						if node then
-							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. node:GetNWInt("max"..k, 0) .. (ResourceUnits[k] or "") .."\n"
+							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. (ResourceUnits[k] or "") .."\n"
 						else
 							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. 0 .."/".. self.maxresources[k] .."\n"
 						end
@@ -135,42 +135,13 @@ function ENT:DoNormalDraw( bDontDrawModel )
 					OverlayText = OverlayText.."\nGenerates:\n"
 					for _, k in pairs(genresnames) do
 						if node then
-							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. node:GetNWInt("max"..k, 0).. (ResourceUnits[k] or "") .."\n"
+							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0).. (ResourceUnits[k] or "") .."\n"
 						else
 							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. 0 .."/".. 0 .."\n"
 						end
 					end
 				end
 			end
-			/*if not node:IsValid() then
-				if self.resources and table.Count(self.resources) > 0 then
-					for k, v in pairs(self.resources) do
-						OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. v .."/".. self.maxresources[k] .. (ResourceUnits[k] or "") .."\n"
-					end
-				else
-					OverlayText = OverlayText .. "No Resources Connected\n"
-				end
-			else
-				if resnames and table.Count(resnames) > 0 then
-					for _, k in pairs(resnames) do
-						if node then
-							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. node:GetNWInt(k, 0) .."/".. node:GetNWInt("max"..k, 0) .. (ResourceUnits[k] or "") .."\n"
-						else
-							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. 0 .."/".. self.maxresources[k] .."\n"
-						end
-					end
-				end
-				if genresnames and table.Count(genresnames) > 0 then
-					OverlayText = OverlayText.."\nGenerates:\n"
-					for _, k in pairs(genresnames) do
-						if node then
-							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. node:GetNWInt(k, 0) .."/".. node:GetNWInt("max"..k, 0).. (ResourceUnits[k] or "") .."\n"
-						else
-							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. 0 .."/".. 0 .."\n"
-						end
-					end
-				end
-			end*/
 			OverlayText = OverlayText .. "(" .. playername ..")"
 			AddWorldTip( self:EntIndex(), OverlayText, 0.5, self:GetPos(), self  )
 		else
@@ -178,7 +149,7 @@ function ENT:DoNormalDraw( bDontDrawModel )
 			local TempY = 0
 			local maxvector = self:OBBMaxs()
 			local getpos = self:GetPos()
-			
+
 			//SetPosition
 			local pos = getpos + (self:GetRight() * self.ScreenPos.y) //y-axis
 			pos = pos + (self:GetUp() * self.ScreenPos.z) //z-axis

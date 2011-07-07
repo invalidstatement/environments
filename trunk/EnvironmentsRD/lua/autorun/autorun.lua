@@ -22,17 +22,7 @@ scripted_ents.Register = function(...)
 				-- General handlers
 				ENT.OnRemove = function(self)
 					if self.node then
-						self.node:Unlink() --fails
-						local node = self.node --backup unlink :D
-						node.connected[self:EntIndex()] = nil
-						if not self.maxresources then return end
-						for name,max in pairs(self.maxresources) do
-							local curmax = node.maxresources[name]
-							if curmax then
-								node.maxresources[name] = curmax - max
-							end
-							node:SetNWInt("max"..name, node.maxresources[name])
-						end
+						self.node:Unlink(self)
 					end
 					if(WireAddon and (self.Outputs or self.Inputs)) then
 						Wire_Remove(self.Entity);
@@ -128,10 +118,8 @@ scripted_ents.Register = function(...)
 						end
 					else
 						if self.resources then
-						--print("self.resources")
 							return self.resources[resource] or 0
 						end
-						--print("returning 0")
 						return 0
 					end
 				end
@@ -147,6 +135,13 @@ scripted_ents.Register = function(...)
 					if ent and ent:IsValid() then
 						self.node = ent
 						self:SetNWEntity("node", ent)
+					end
+				end
+				ENT.Unlink = function(self)
+					if self.node then
+						self.node:Unlink(self)
+						self.node = nil
+						self:SetNWEntity("node", NullEntity())
 					end
 				end
 				ENT.SupplyResource = function(self,resource, amount)
@@ -195,12 +190,6 @@ scripted_ents.Register = function(...)
 	end
 	o(...)
 end
-
-timer.Simple(0,function() --Stargate fix?
-	StarGate.LifeSupportAndWire = function(ent) 
-		print("hello") 
-	end 
-end)
 
 function Environments.BuildDupeInfo( ent )
 	if ent.IsNode then
@@ -352,6 +341,26 @@ if CLIENT then
 		
 		return a0 * y2 + a1 * m0 + a2 * m1 + a3 * y3
 	end
+else
+	function Environments.RDPlayerUpdate(ply)
+		for k,ent in pairs(ents.FindByClass("resource_node_env")) do
+			for name,tab in pairs(ent.resources) do
+				umsg.Start("Env_UpdateResAmt")
+					umsg.Entity(ent)
+					umsg.String(name)
+					umsg.Long(tab.value)
+				umsg.End()
+			end
+			for name,amount in pairs(ent.maxresources) do
+				umsg.Start("Env_UpdateMaxRes")
+					umsg.Entity(ent)
+					umsg.String(name)
+					umsg.Long(amount)
+				umsg.End()
+			end
+		end
+	end
+	hook.Add("PlayerInitialSpawn", "EnvRDPlayerUpdate", Environments.RDPlayerUpdate)
 end
 
 print("==============================================")
