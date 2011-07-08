@@ -19,6 +19,11 @@ local Environments = Environments
 
 local efficiency = 0.02 --the insulating efficiency of the suit, how fast the suit gains or loses temperature
 function Environments.LSCheck()
+	if CAF then
+		local RD = CAF.GetAddon("Resource Distribution") --I dont want to depend on this being there :(
+	else
+		local RD = nil
+	end
 	for k, ply in pairs(player.GetAll()) do
 		local status, error = pcall(function() --starts the error checker
 		if not ply:Alive() or not ply:IsValid() then return end
@@ -78,10 +83,9 @@ function Environments.LSCheck()
 					needed = 5
 				elseif needed > 20 then
 					needed = 20
-				end
+				end	
 				
-				local RD = CAF.GetAddon("Resource Distribution")
-				if pod and pod:IsValid() and RD.GetResourceAmount(pod, "water") >= needed then
+				if pod and pod:IsValid() and RD and RD.GetResourceAmount(pod, "water") >= needed then
 					RD.ConsumeResource(pod, "water", needed)
 					suit.temperature = suit.temperature - tempchange
 					if suit.temperature + tempchange > 310 then
@@ -111,9 +115,8 @@ function Environments.LSCheck()
 				elseif needed > 20 then
 					needed = 20
 				end
-				
-				local RD = CAF.GetAddon("Resource Distribution")
-				if pod and pod:IsValid() and RD.GetResourceAmount(pod, "energy") >= needed then
+			
+				if pod and pod:IsValid() and RD and RD.GetResourceAmount(pod, "energy") >= needed then
 					RD.ConsumeResource(pod, "energy", needed)
 					suit.temperature = suit.temperature + tempchange
 					if suit.temperature + tempchange > 310 then
@@ -147,7 +150,7 @@ function Environments.LSCheck()
 
 			//Air Stuff
 			if realo2 < 10 or ply:WaterLevel() > 2 then
-				if pod and pod:IsValid() and RD.GetResourceAmount(pod, "oxygen") >= 5 then
+				if pod and pod:IsValid() and RD and RD.GetResourceAmount(pod, "oxygen") >= 5 then
 					RD.ConsumeResource(pod, "oxygen", 5)
 				else
 					if suit.air >= 5 then
@@ -278,7 +281,7 @@ function Environments.SunCheck(ent)
 	if not ent.environment.temperature then
 		return 0
 	end
-	if ent.environment.originalco2per then
+	if ent.environment.originalco2per and ent.environment.air.co2 then
 		return ent.environment.temperature + ((ent.environment.temperature * (((ent.environment.air.co2/ent.environment.air.max)*100 - ent.environment.originalco2per)/100))/2)
 	else 
 		return ent.environment.temperature
