@@ -162,27 +162,18 @@ function ENT:Pump_Air()
 	mul = 1
 	local einc = (Energy_Increment + (self.overdrive*Energy_Increment)) * self.Multiplier
 	einc = math.ceil(einc * self:GetMultiplier())
-	if not (WireAddon == nil) then Wire_TriggerOutput(self, "EnergyUsage", math.Round(einc)) end
+	if WireAddon then Wire_TriggerOutput(self, "EnergyUsage", math.Round(einc)) end
 	if (self.energy >= einc) then
 		local ainc = math.ceil((Pressure_Increment + (self.overdrive * Pressure_Increment)) * mul * self:GetMultiplier())
 		if ( self.overdrive == 1 ) then
 			ainc = ainc * 2
-			if CAF and CAF.GetAddon("Life Support") then
-				CAF.GetAddon("Life Support").DamageLS(self, math.random(2, 3))
-			else
-				self:SetHealth( self:Health( ) - math.Random(2, 3))
-				if self:Health() <= 0 then
-					self:Remove()
-				end
-			end
+			Environments.DamageLS(self, math.random(2, 3))
 		end
 		self:ConsumeResource("energy", einc)
 		if ainc > 0 then
 			ainc = (ainc * self:GetMultiplier()) * self.Multiplier
-			if not (WireAddon == nil) then Wire_TriggerOutput(self, "GasProduction", math.Round(ainc)) end
-			local sb_resources = {"oxygen", "carbon dioxide", "hydrogen", "nitrogen"}
-			--local SB = CAF.GetAddon("Spacebuild")
-			--if SB and SB.GetStatus() and table.HasValue(sb_resources, self.caf.custom.resource) then
+			if WireAddon then Wire_TriggerOutput(self, "GasProduction", math.Round(ainc)) end
+			if self.environment then
 				local usage = ainc;
 				if self.caf.custom.resource == "oxygen" then
 					usage = self.environment:Convert(0, -1, ainc)
@@ -194,18 +185,20 @@ function ENT:Pump_Air()
 					usage = self.environment:Convert(2, -1, ainc)
 				end
 				local left = self:SupplyResource(self.caf.custom.resource, usage)
-				/*if self.caf.custom.resource == "oxygen" then
-					self.environment:Convert(-1, 0, left)
-				elseif self.caf.custom.resource == "carbon dioxide" then
-					self.environment:Convert(-1, 1, left)
-				elseif self.caf.custom.resource == "hydrogen" then
-					self.environment:Convert(-1, 3, left)
-				elseif self.caf.custom.resource == "nitrogen" then
-					self.environment:Convert(-1, 2, left)
-				end*/
-			--else
-				--self:SupplyResource(self.caf.custom.resource, ainc)
-			--end
+				if left then --use this to put back excess when supply resource is fixed to return amount not added
+					/*if self.caf.custom.resource == "oxygen" then
+						self.environment:Convert(-1, 0, left)
+					elseif self.caf.custom.resource == "carbon dioxide" then
+						self.environment:Convert(-1, 1, left)
+					elseif self.caf.custom.resource == "hydrogen" then
+						self.environment:Convert(-1, 3, left)
+					elseif self.caf.custom.resource == "nitrogen" then
+						self.environment:Convert(-1, 2, left)
+					end*/
+				end
+			else
+				self:SupplyResource(self.caf.custom.resource, ainc)
+			end
 		end
 	else
 		self:TurnOff()
@@ -214,14 +207,9 @@ end
 
 function ENT:Think()
 	self.BaseClass.Think(self)
-	if ( self.Active == 1 ) then
-		local waterlevel = 0
-		if CAF then
-			waterlevel = self:WaterLevel2()
-		else
-			waterlevel = self:WaterLevel()
-		end
-		if (waterlevel > 1) then
+	if self.Active == 1 then
+		local waterlevel = self:WaterLevel()
+		if waterlevel > 1 then
 			self:SetColor(50, 50, 50, 255)
 			self:TurnOff()
 			self:Destruct()

@@ -40,6 +40,7 @@ function TOOL:GetMults(ent)
 	ent.caf.custom.resource = string.lower(self:GetClientInfo("Type"))
 	
 	ent:SetMultiplier(volume_mul)
+	return volume_mul
 end
 	
 local options = {}

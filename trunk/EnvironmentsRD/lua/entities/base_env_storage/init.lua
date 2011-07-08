@@ -35,7 +35,8 @@ function ENT:GetMultiplier()
 end
 
 function ENT:Repair()
-	self:SetHealth( self:GetMaxHealth( ))
+	self:SetHealth( self:GetMaxHealth())
+	self:SetColor(255,255,255,255)
 end
 
 function ENT:AcceptInput(name,activator,caller)
@@ -50,6 +51,7 @@ function ENT:OnTakeDamage(DmgInfo)
 		CDS_ShieldImpact(self:GetPos())
 		return
 	end
+	Environments.DamageLS(self, DmgInfo:GetDamage())
 end
 
 function ENT:OnRemove()
@@ -132,12 +134,12 @@ function ENT:GetResourceAmount(resource)
 end
 
 function ENT:GetUnitCapacity(resource)
-	return self.maxresources[resource]
+	return self.maxresources[resource] or 0
 end
 
 function ENT:GetNetworkCapacity(resource)
 	if self.node then
-		return self.node.maxresources[resource]
+		return self.node.maxresources[resource] or 0
 	end
 end
 

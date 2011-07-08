@@ -32,7 +32,7 @@ function TOOL:Register()
 		//Yay, simplified titles
 		language.Add( "Tool_"..self.Mode.."_name", self.Name )
 		language.Add( "Tool_"..self.Mode.."_desc", self.Description )
-		language.Add( "Tool_"..self.Mode.."_0", "Primary: Spawn a "..self.Name )
+		language.Add( "Tool_"..self.Mode.."_0", "Primary: Spawn a "..self.Name.. " Secondary: Repair LS Device" )
 		
 		for k,v in pairs(self.Language) do
 			language.Add(k.."_"..self.CleanupGroup,v);
@@ -52,7 +52,7 @@ end
 
 if SERVER then
 	function TOOL:GetMults(ent) --filler
-		
+		return 1
 	end
 	
 	function TOOL:CreateDevice(ply, trace, Model)
@@ -70,7 +70,11 @@ if SERVER then
 		ent:Activate()
 		ent:GetPhysicsObject():Wake()
 			
-		self:GetMults(ent)
+		local mul = self:GetMults(ent) or 1
+		if mul then 
+			ent:SetMaxHealth(mul*500)
+			ent:SetHealth(mul*500)
+		end
 		
 		return ent
 	end
@@ -115,6 +119,15 @@ if SERVER then
 		self:AddUndo(ply, ent, weld, nocollide)
 
 		return true
+	end
+	
+	function TOOL:RightClick( trace )
+		if !trace then return end
+		if trace.Entity and trace.Entity:IsValid() then
+			if trace.Entity.Repair then
+				trace.Entity.Repair()
+			end
+		end
 	end
 	
 	//Cleanups and stuff

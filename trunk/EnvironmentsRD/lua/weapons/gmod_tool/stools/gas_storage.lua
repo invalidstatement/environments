@@ -42,6 +42,8 @@ function TOOL:GetMults(ent)
 	ent:AddResource("carbon dioxide", math.Round(volume/10))
 		
 	ent:SetMultiplier(volume_mul)
+	
+	return volume_mul
 end
 	
 function TOOL.BuildCPanel( CPanel )
