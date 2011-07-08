@@ -19,7 +19,6 @@ function ENT:Initialize()
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	--self:SetNetworkedInt( "overlaymode", 2 )
 	
 	self.nextcheck = CurTime() + 5
 	
@@ -54,7 +53,6 @@ function ENT:Link(ent)
 				umsg.String(name)
 				umsg.Long(self.maxresources[name])
 			umsg.End()
-			--self:SetNWInt("max"..name, self.maxresources[name])
 		end
 	end
 	if ent.resources then
@@ -79,7 +77,6 @@ end
 
 function ENT:Unlink(ent)
 	if ent then
-		print("Check Passed!")
 		self.connected[ent:EntIndex()] = nil
 		if ent.maxresources then
 			for name,max in pairs(ent.maxresources) do
@@ -92,14 +89,14 @@ function ENT:Unlink(ent)
 					umsg.String(name)
 					umsg.Long(self.maxresources[name])
 				umsg.End()
-				--self:SetNWInt("max"..name, self.maxresources[name])
 			end
 		end
 	end
 end
 
 function ENT:Repair()
-	self:SetHealth( self:GetMaxHealth( ))
+	self:SetHealth( self:GetMaxHealth())
+	self:SetColor(255,255,255,255)
 end
 
 function ENT:LinkCheck()
@@ -132,8 +129,6 @@ function ENT:Think()
 				umsg.End()
 				v.haschanged = false
 			end
-			
-			--self:SetNWInt(name, value) --get rid of soon
 		end
 		self.updated = false
 	end
@@ -179,7 +174,6 @@ function ENT:ConsumeResource(name, amt)
 			self.resources[name].haschanged = true
 			return amt
 		elseif not res == 0 then
-			--amt = res
 			res = 0
 			self.resources[name].haschanged = true
 			self.updated = true
@@ -198,6 +192,7 @@ function ENT:OnTakeDamage(DmgInfo)//should make the damage go to the shield if t
 		CDS_ShieldImpact(self:GetPos())
 		return
 	end
+	Environments.DamageLS(self, DmgInfo:GetDamage())
 end
 
 function ENT:OnRemove()	
@@ -208,7 +203,7 @@ function ENT:OnRemove()
 			end
 		end
 	end
-	if not (WireAddon == nil) then Wire_Remove(self) end
+	if WireAddon then Wire_Remove(self) end
 end
 
 function ENT:GetResourceAmount(resource)
@@ -221,13 +216,13 @@ end
 
 function ENT:OnRestore()
 	//self.BaseClass.OnRestore(self) --use this if you have to use OnRestore
-	if not (WireAddon == nil) then Wire_Restored(self) end
+	if WireAddon then Wire_Restored(self) end
 end
 
 function ENT:PreEntityCopy()
 	//self.BaseClass.PreEntityCopy(self) --use this if you have to use PreEntityCopy
 	Environments.BuildDupeInfo(self)
-	if not (WireAddon == nil) then
+	if WireAddon then
 		local DupeInfo = WireLib.BuildDupeInfo(self)
 		if DupeInfo then
 			duplicator.StoreEntityModifier( self, "WireDupeInfo", DupeInfo )
@@ -238,7 +233,7 @@ end
 function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
 	//self.BaseClass.PostEntityPaste(self, Player, Ent, CreatedEntities ) --use this if you have to use PostEntityPaste
 	Environments.ApplyDupeInfo(Ent, CreatedEntities)
-	if not (WireAddon == nil) and (Ent.EntityMods) and (Ent.EntityMods.WireDupeInfo) then
+	if WireAddon and Ent.EntityMods and Ent.EntityMods.WireDupeInfo then
 		WireLib.ApplyDupeInfo(Player, Ent, Ent.EntityMods.WireDupeInfo, function(id) return CreatedEntities[id] end)
 	end
 end

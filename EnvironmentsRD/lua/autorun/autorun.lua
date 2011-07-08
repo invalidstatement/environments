@@ -361,6 +361,101 @@ else
 		end
 	end
 	hook.Add("PlayerInitialSpawn", "EnvRDPlayerUpdate", Environments.RDPlayerUpdate)
+	
+	function Environments.DamageLS(ent, dam)
+		if !ent or !ent:IsValid() or !dam then return end
+		if ent:GetMaxHealth() == 0 then return end
+		dam = math.floor(dam / 2)
+		if (ent:Health() > 0) then
+			local HP = ent:Health() - dam
+			ent:SetHealth( HP )
+			if (ent:Health() <= (ent:GetMaxHealth() / 2)) then
+				if ent.Damage then
+					ent:Damage()
+				end
+			end
+			
+			if (ent:Health() <= 0) then
+				ent:SetColor(50, 50, 50, 255)
+				if ent.Destruct then
+					ent:Destruct()
+				else
+					Environments.LSDestruct( ent, true )
+				end
+				return
+			end
+			
+			local health = ent:Health()
+			local max = ent:GetMaxHealth()
+			if health <= max/7 then
+				ent:SetColor(75,75,75,255)
+			elseif health <= max/6 then
+				ent:SetColor(100,100,100,255)
+			elseif health <= max/5 then
+				ent:SetColor(125,125,125,255)
+			elseif health <= max/4 then
+				ent:SetColor(150,150,150,255)
+			elseif health <= max/3 then
+				ent:SetColor(175,175,175,255)
+			elseif health <= max/2 then
+				ent:SetColor(200,200,200,255)
+			end
+		end
+	end
+	
+	function Environments.ZapMe(pos, magnitude)
+		if not (pos and magnitude) then return end
+		zap = ents.Create("point_tesla")
+		zap:SetKeyValue("targetname", "teslab")
+		zap:SetKeyValue("m_SoundName" ,"DoSpark")
+		zap:SetKeyValue("texture" ,"sprites/physbeam.spr")
+		zap:SetKeyValue("m_Color" ,"200 200 255")
+		zap:SetKeyValue("m_flRadius" ,tostring(magnitude*80))
+		zap:SetKeyValue("beamcount_min" ,tostring(math.ceil(magnitude)+4))
+		zap:SetKeyValue("beamcount_max", tostring(math.ceil(magnitude)+12))
+		zap:SetKeyValue("thick_min", tostring(magnitude))
+		zap:SetKeyValue("thick_max", tostring(magnitude*8))
+		zap:SetKeyValue("lifetime_min" ,"0.1")
+		zap:SetKeyValue("lifetime_max", "0.2")
+		zap:SetKeyValue("interval_min", "0.05")
+		zap:SetKeyValue("interval_max" ,"0.08")
+		zap:SetPos(pos)
+		zap:Spawn()
+		zap:Fire("DoSpark","",0)
+		zap:Fire("kill","", 1)
+	end
+	
+	function Environments.LSDestruct( ent, Simple )
+		if (Simple) then
+			Explode2( ent )
+		else
+			timer.Simple(1, Explode1, ent)
+			timer.Simple(1.2, Explode1, ent)
+			timer.Simple(2, Explode1, ent)
+			timer.Simple(2, Explode2, ent)
+		end
+	end
+	
+	function Explode1( ent )
+		if ent:IsValid() then
+			local Effect = EffectData()
+				Effect:SetOrigin(ent:GetPos() + Vector( math.random(-60, 60), math.random(-60, 60), math.random(-60, 60) ))
+				Effect:SetScale(1)
+				Effect:SetMagnitude(25)
+			util.Effect("Explosion", Effect, true, true)
+		end
+	end
+
+	function Explode2( ent )
+		if ent:IsValid() then
+			local Effect = EffectData()
+				Effect:SetOrigin(ent:GetPos())
+				Effect:SetScale(3)
+				Effect:SetMagnitude(100)
+			util.Effect("Explosion", Effect, true, true)
+			ent:Remove()
+		end
+	end
 end
 
 print("==============================================")

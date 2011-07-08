@@ -32,7 +32,8 @@ function ENT:GetMultiplier()
 end
 
 function ENT:Repair()
-	self:SetHealth( self:GetMaxHealth( ))
+	self:SetHealth( self:GetMaxHealth())
+	self:SetColor(255,255,255,255)
 end
 
 function ENT:AcceptInput(name,activator,caller)
@@ -47,6 +48,7 @@ function ENT:OnTakeDamage(DmgInfo)//should make the damage go to the shield if t
 		CDS_ShieldImpact(self:GetPos())
 		return
 	end
+	Environments.DamageLS(self, DmgInfo:GetDamage())
 end
 
 function ENT:OnRemove()
