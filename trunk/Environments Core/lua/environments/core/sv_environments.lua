@@ -44,24 +44,26 @@ default.atmosphere.argon = 0
 
 //Overwrite CAF to fix issues with tools
 timer.Create("registerCAFOverwrites", 5, 1, function()
-	local old = CAF.GetAddon
-	local SB = {}
-		
-	function SB.GetStatus()
-		return true
-	end
-
-	function LS.GetStatus()
-		return true
-	end
-		
-	function CAF.GetAddon(name)
-		if name == "Spacebuild" then
-			return SB
-		elseif name == "Life Support" then
-			return LS
+	if CAF then
+		local old = CAF.GetAddon
+		local SB = {}
+			
+		function SB.GetStatus()
+			return true
 		end
-		return old(name)
+
+		function LS.GetStatus()
+			return true
+		end
+			
+		function CAF.GetAddon(name)
+			if name == "Spacebuild" then
+				return SB
+			elseif name == "Life Support" then
+				return LS
+			end
+			return old(name)
+		end
 	end
 end)
 
@@ -101,6 +103,18 @@ local function LoadEnvironments()
 			end
 			self.environment = Space()
 		end
+		
+		//Fixes cleanup breaking everything :D
+		local o = game.CleanUpMap
+		function game.CleanUpMap(b, filters)
+			if filters then
+				table.insert(filters, "environment")
+				table.insert(filters, "star")
+			else
+				filters = {"environment", "star"}
+			end
+			o(b, filters)
+		end
 			
 		print("// Registering Sun..               //")
 		local status, error = pcall(Environments.RegisterSun)
@@ -139,7 +153,7 @@ local function LoadEnvironments()
 		print("/////////////////////////////////////")
 		print("//       Environments Loaded       //")
 		print("/////////////////////////////////////")
-		Environments.Log("Successful Startup")
+		--Environments.Log("Successful Startup")
 	else
 		print("/////////////////////////////////////")
 		print("//    Environments Load Failed     //")
@@ -600,7 +614,7 @@ end
 function Environments.Log(text)
 	local old = file.Read("env_log.txt")
 	if old then
-		file.Write("env_log.txt", old .. "\n" .. tostring(os.date("%m/%d/%y")).." - "..tostring(os.date("%H:%M:%S")) .. "; " .. text)
+		file.Append("env_log.txt", "\n" .. tostring(os.date("%m/%d/%y")).." - "..tostring(os.date("%H:%M:%S")) .. "; " .. text)
 	else
 		file.Write("env_log.txt", tostring(os.date("%m/%d/%y")).." - "..tostring(os.date("%H:%M:%S")) .. "; " .. text)
 	end
