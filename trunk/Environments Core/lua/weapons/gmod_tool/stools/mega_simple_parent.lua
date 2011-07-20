@@ -8,7 +8,7 @@ TOOL.ConfigName = ''
 if ( CLIENT ) then
 	language.Add( "Tool_mega_simple_parent_name", "Mega Parent" )
 	language.Add( "Tool_mega_simple_parent_desc", "Parent Props Together to Reduce Lag." )
-	language.Add( "Tool_mega_simple_parent_0", "Left Click to Parent all Constrained Props." )
+	language.Add( "Tool_mega_simple_parent_0", "Left Click to Select all Constrained Props. Right Click to Parent all Selected Props." )
 end
 
 function TOOL:LeftClick( trace )
@@ -35,14 +35,14 @@ function TOOL:Parent(ent)
 	local Ents = constraint.GetAllConstrainedEntities(ent)
 	if Ents then
 		for k,v in pairs(Ents) do
-			if v and v:IsValid() then
+			if v and v:IsValid() and v != ent then
 				v:GetPhysicsObject():EnableMotion( false ) 
 				self:GetOwner():AddFrozenPhysicsObject( v, v:GetPhysicsObject() )
 				constraint.RemoveAll(v)
 				v:SetParent(ent)
 				constraint.Weld(ent, v, 0, 0, 0)
+				v:SetSolid(SOLID_VPHYSICS)
 				v:SetColor(255,255,255,255)
-				print("Parented: "..tostring(v))
 			end
 		end
 	end

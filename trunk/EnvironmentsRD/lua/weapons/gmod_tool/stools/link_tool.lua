@@ -155,7 +155,7 @@ function TOOL.BuildCPanel( panel )
 		ItemWidth = 24,
 		ItemHeight = 64,
 		ConVar = "link_tool_material",
-		Options = list.Get( "BeamMaterials" )
+		Options = list.Get( "OverrideMaterials" )
 	})
 
 	/*panel:AddControl("Color", {

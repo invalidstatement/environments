@@ -51,13 +51,13 @@ if (SERVER) then
 			volume = volume/10
 		end
 		
-		ent.maxresources = {}
-		ent:AddResource(string.lower(self:GetClientInfo("Type")), math.Round(volume/10))
-		
 		ent:SetPlayer(ply)
 		ent:Spawn()
 		ent:Activate()
 		ent:GetPhysicsObject():Wake()
+		
+		ent:AddResource(string.lower(self:GetClientInfo("Type")), math.Round(volume/10))
+		
 		return ent
 	end
 	

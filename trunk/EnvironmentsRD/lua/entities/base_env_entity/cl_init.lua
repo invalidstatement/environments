@@ -205,10 +205,10 @@ function ENT:DoNormalDraw( bDontDrawModel )
 			
 				if ( table.Count(resnames) > 0 ) then		
 					for k, v in pairs(resnames) do
-						if node.resources then
-							stringUsage = stringUsage.."["..ResourceNames[v]..": "..(node.resources[k] or 0) .."/".. (node.maxresources[k] or 0).."] "
+						if node and node:IsValid() then
+							stringUsage = stringUsage.."["..(ResourceNames[v] or v)..": "..(node.resources[v] or 0) .."/".. (node.maxresources[v] or 0).."] "
 						else
-							stringUsage = stringUsage.."["..ResourceNames[v]..": ".. 0 .."/".. 0 .."] "
+							stringUsage = stringUsage.."["..(ResourceNames[v] or v)..": ".. 0 .."/".. 0 .."] "
 						end
 						surface.SetTextPos(textStartPos+15,TempY)
 						surface.DrawText("   "..stringUsage)
@@ -223,10 +223,10 @@ function ENT:DoNormalDraw( bDontDrawModel )
 					surface.DrawText("Generates: ")
 					TempY = TempY + 50
 					for k, v in pairs(genresnames) do
-						if node.resources then
-							stringUsage = stringUsage.."["..ResourceNames[v]..": "..(node.resources[k] or 0) .."/".. (node.maxresources[k] or 0).."] "
+						if node and node:IsValid() then
+							stringUsage = stringUsage.."["..(ResourceNames[v] or v)..": "..(node.resources[v] or 0) .."/".. (node.maxresources[v] or 0).."] "
 						else
-							stringUsage = stringUsage.."["..ResourceNames[v]..": ".. 0 .."/".. 0 .."] "
+							stringUsage = stringUsage.."["..(ResourceNames[v] or v)..": ".. 0 .."/".. 0 .."] "
 						end
 						surface.SetTextPos(textStartPos+15,TempY)
 						surface.DrawText("   "..stringUsage)

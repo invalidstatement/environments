@@ -4,7 +4,9 @@ TOOL.Category = "Generators"
 TOOL.Name = "Water Pump"
 TOOL.Description = "Used to spawn water pumps"
 
-TOOL.Models = { 	["models/props_wasteland/buoy01.mdl"] = {} }
+TOOL.Models = { 	["models/props_wasteland/buoy01.mdl"] = {},
+					["models/props_phx/life_support/gen_water.mdl"] = {},
+					["models/chipstiks_ls3_models/LargeH2OPump/largeh2opump.mdl"] = {} }
 local Models = TOOL.Models --fixes stuph		
 
 TOOL.Entity.Class = "generator_water";

@@ -284,7 +284,7 @@ function LoadHud()
 		function HUD:DrawHUDScreen()
 			if !IsValid(HUD.CS_Model) or !HUD.Convar:GetBool() then return end
 			if LocalPlayer():GetActiveWeapon() and LocalPlayer():GetActiveWeapon().GetPrintName and LocalPlayer():GetActiveWeapon():GetPrintName() == "#GMOD_Camera" then return end
-			if not HUD.Show and not LocalPlayer():GetNWBool("helmet") then 
+			if !LocalPlayer():GetNWBool("helmet") and Environments.UseSuit then --stay on if suits are off
 				local mult = 0
 				if HUD.offtime != 0 then --it is being taken off
 					mult = HUD.offtime - RealTime()
@@ -308,7 +308,7 @@ function LoadHud()
 			else
 				local old = HUD.EyeVectorOffset
 				local mult = 0
-				if HUD.ontime != 0 then --it is being taken off
+				if HUD.ontime != 0 then --it is being put on
 					mult = (HUD.ontime - RealTime())
 					--if mult < -1.4 then return end --dont draw it, it is off
 					HUD.ang = (50-(math.abs(mult)*40))*-1

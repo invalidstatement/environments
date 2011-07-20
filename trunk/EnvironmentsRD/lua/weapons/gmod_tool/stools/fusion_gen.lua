@@ -6,7 +6,11 @@ TOOL.Name = "Fusion Reactor"
 TOOL.Description = "Used to spawn fusion reactors"
 
 TOOL.Models = { 	["models/Punisher239/punisher239_reactor_small.mdl"] = {},
-					["models/Punisher239/punisher239_reactor_big.mdl"] = {} }
+					["models/Punisher239/punisher239_reactor_big.mdl"] = {},
+					["models/ce_ls3additional/fusion_generator/fusion_generator_huge.mdl"]  = {},
+					["models/ce_ls3additional/fusion_generator/fusion_generator_large.mdl"] = {},
+					["models/ce_ls3additional/fusion_generator/fusion_generator_medium.mdl"] = {},
+					["models/ce_ls3additional/fusion_generator/fusion_generator_small.mdl"] = {} }
 local Models = TOOL.Models --fixes stuph		
 
 TOOL.Entity.Class = "generator_fusion";

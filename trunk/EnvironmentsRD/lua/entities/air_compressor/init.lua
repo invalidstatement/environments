@@ -121,7 +121,6 @@ function ENT:TriggerInput(iname, value)
 			self.Multiplier = value
 		else
 			self.Multiplier = 1
-
 		end	
 	end
 end
@@ -133,16 +132,8 @@ function ENT:Damage()
 	end
 end
 
-function ENT:Repair()
-	self.BaseClass.Repair(self)
-	self.Entity:SetColor(255, 255, 255, 255)
-	self.damaged = 0
-end
-
 function ENT:Destruct()
-	if CAF and CAF.GetAddon("Life Support") then
-		CAF.GetAddon("Life Support").Destruct( self, true )
-	end
+	Environments.LSDestruct( self, true )
 end
 
 function ENT:OnRemove()

@@ -5,7 +5,8 @@ TOOL.Name = "Water Splitter"
 TOOL.Description = "Used to spawn water splitters"
 
 TOOL.Models = { 	["models/Slyfo/electrolysis_gen.mdl"] = {},
-					["models/SBEP_community/d12fusionbomb.mdl"] = {} }
+					["models/SBEP_community/d12fusionbomb.mdl"] = {},
+					["models/ce_ls3additional/water_air_extractor/water_air_extractor.mdl"] = {} }
 local Models = TOOL.Models --fixes stuph		
 
 TOOL.Entity.Class = "generator_water_to_air";

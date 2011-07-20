@@ -79,7 +79,7 @@ end
 function ENT:Destruct()
 	self:StopSound( "coast.siren_citizen" )
 	if (self:GetResourceAmount("energy") < 100000) or (GetConVarNumber("LS_AllowNukeEffect") == 0) then
-		CAF.GetAddon("Life Support").Destruct( self )
+		Environments.LSDestruct( self )
 	else -- !!oh shi-
 		self:ConsumeResource("energy", self:GetResourceAmount("energy"))
 		local effectdata = EffectData()
@@ -200,9 +200,7 @@ function ENT:Extract_Energy()
 		local pos = (self:GetPos() + (ang:Up() * self:BoundingRadius()))
 		local test = math.random(1, 10)
 		local zapme = nil
-		if CAF.GetAddon("Life Support") then
-			zapme = CAF.GetAddon("Life Support").ZapMe
-		end
+		zapme = Environments.ZapMe
 		if (test <= 2) then
 			if zapme then
 				zapme((pos + (ang:Right() * 90)), 5)
@@ -228,9 +226,9 @@ function ENT:Extract_Energy()
 	end
 	
 	if (self:GetResourceAmount("water") < math.ceil(Coolant_Increment * self:GetMultiplier())) then
-		--if CAF.GetAddon("Life Support") then
-			--CAF.GetAddon("Life Support").DamageLS(self, math.Round(15 - (15 * ( self:GetResourceAmount("water")/math.ceil(Coolant_Increment * self:GetMultiplier())))))
-		--end
+		if CAF.GetAddon("Life Support") then
+			Environments.DamageLS(self, math.Round(15 - (15 * ( self:GetResourceAmount("water")/math.ceil(Coolant_Increment * self:GetMultiplier())))))
+		end
 		/*local Smoke = ents.Create("env_smoketrail")
 			Smoke:SetKeyValue("opacity", 1)
 			Smoke:SetKeyValue("spawnrate", 10)
