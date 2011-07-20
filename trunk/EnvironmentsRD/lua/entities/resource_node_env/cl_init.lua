@@ -116,6 +116,9 @@ end
 usermessage.Hook("Env_UpdateResAmt", RecieveAmts)
 
 local function RecieveMax(msg)
-	msg:ReadEntity().maxresources[msg:ReadString()] = msg:ReadLong()
+	local ent = msg:ReadEntity()
+	if !ent.maxresources then ent.maxresources = {} end
+
+	ent.maxresources[msg:ReadString()] = msg:ReadLong()
 end
 usermessage.Hook("Env_UpdateMaxRes", RecieveMax)

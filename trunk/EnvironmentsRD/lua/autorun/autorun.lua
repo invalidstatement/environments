@@ -213,6 +213,12 @@ function Environments.BuildDupeInfo( ent )
 		info.rate = ent.pump_rate
 		info.hoselength = ent.hose_length
 		duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
+	else --everything else?
+		local info = {}
+		if ent.maxresources then
+			info.maxresources = table.Copy(ent.maxresources)
+			duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
+		end
 	end
 end
 
@@ -226,17 +232,29 @@ function Environments.ApplyDupeInfo( ent, CreatedEntities )
 				ent:Initialize()
 			end
 			if DupeInfo.entities and table.Count(DupeInfo.entities) > 0 then
-				for _,ID in pairs(DupeInfo.entities) do
-					local ent2 = CreatedEntities[ID]
-					if ent2 and ent2:IsValid() then
-						ent:Link(ent2)
-						ent2:Link(ent)
+				timer.Simple(1, function(ents, CreatedEntities) --wait til the client knows the ents exist
+					for _,ID in pairs(ents) do
+						local ent2 = CreatedEntities[ID]
+						if ent2 and ent2:IsValid() then
+							ent:Link(ent2)
+							ent2:Link(ent)
+						end
 					end
-				end
+				end, DupeInfo.entities, CreatedEntities)
 			end
 			ent.EntityMods.EnvDupeInfo = nil //trash this info, we'll never need it again
 		elseif ent:GetClass() == "env_pump" then
 			ent:Setup( DupeInfo.pump, DupeInfo.rate, DupeInfo.hoselength )
+			ent.EntityMods.EnvDupeInfo = nil
+		else
+			if DupeInfo.maxresources then 
+				ent.maxresources = table.Copy(DupeInfo.maxresources)
+				if ent.node then
+					local node = ent.node
+					ent:Unlink()
+					ent:Link(node)
+				end
+			end
 			ent.EntityMods.EnvDupeInfo = nil
 		end
 	end
