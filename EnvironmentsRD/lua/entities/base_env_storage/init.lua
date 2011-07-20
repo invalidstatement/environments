@@ -74,6 +74,7 @@ function ENT:SupplyResource(resource, amount)
 end
 
 function ENT:AddResource(name,amt)--adds to storage
+	if not self.maxresources then self.maxresources = {} end
 	self.maxresources[name] = (self.maxresources[name] or 0) + amt
 end
 

@@ -29,6 +29,7 @@ Environments.suit.coolant = 0
 Environments.suit.energy = 0
 Environments.suit.o2per = 0
 Environments.suit.temp = 0
+Environments.suit.temperature = 0
 
 //This is used for the player's breathing sound
 timer.Simple(2, function()

@@ -5,13 +5,16 @@ TOOL.Category = "Storages"
 TOOL.Name = "Water Tanks"
 TOOL.Description = "Used to spawn water tanks."
 
-TOOL.Models = { 	["models/props/de_port/tankoil01.mdl"] = {},
-					["models/props/de_nuke/storagetank.mdl"] = {},
-					["models/props_wasteland/coolingtank02.mdl"] = {},
-					["models/props_c17/oildrum001.mdl"] = {},
-					["models/ce_ls3additional/resource_tanks/resource_tank_large.mdl"] = {},
-					["models/ce_ls3additional/resource_tanks/resource_tank_medium.mdl"] = {} }
-
+TOOL.Models = { 	
+	["models/ce_ls3additional/resource_tanks/resource_tank_large.mdl"] = {},
+	["models/ce_ls3additional/resource_tanks/resource_tank_medium.mdl"] = {},
+	["models/ce_ls3additional/resource_tanks/resource_tank_small.mdl"] = {},
+	["models/ce_ls3additional/resource_tanks/resource_tank_tiny.mdl"] = {}, 
+	["models/props/de_port/tankoil01.mdl"] = {},
+	["models/props/de_nuke/storagetank.mdl"] = {},
+	["models/props_wasteland/coolingtank02.mdl"] = {},
+	["models/props_c17/oildrum001.mdl"] = {} 
+}
 local Models = TOOL.Models --fixes stuph		
 
 TOOL.Entity.Class = "env_storage_water";
@@ -36,14 +39,17 @@ function TOOL:GetMults(ent)
 		volume = math.Round(vol)
 	end
 		
-	if volume >= 100000000 then
-		volume = volume/10
+	base_volume = 339933 * 3 --3399325  
+	if volume != -1 then
+		volume_mul = volume/base_volume
 	end
-		
+	
 	ent.maxresources = {}
 	ent:AddResource("water", math.Round(volume/10))
 		
 	ent:SetMultiplier(volume_mul)
+	
+	return volume_mul
 end
 	
 function TOOL.BuildCPanel( CPanel )

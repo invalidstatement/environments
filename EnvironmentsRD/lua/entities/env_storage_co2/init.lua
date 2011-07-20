@@ -74,9 +74,3 @@ function ENT:Repair()
 	self:SetColor(100, 100, 100, 255)
 	self.damaged = 0
 end
-
-function ENT:Destruct()
-	if CAF and CAF.GetAddon("Life Support") then
-		CAF.GetAddon("Life Support").Destruct( self, true )
-	end
-end

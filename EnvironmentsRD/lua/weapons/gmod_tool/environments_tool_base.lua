@@ -56,9 +56,9 @@ if SERVER then
 	end
 	
 	function TOOL:CreateDevice(ply, trace, Model)
-		if (!ply:CheckLimit(self.CleanupGroup)) then return end
+		if !ply:CheckLimit(self.CleanupGroup) then return end
 		local ent = ents.Create( self.Entity.Class )
-		if (!ent:IsValid()) then return end
+		if !ent:IsValid() then return end
 			
 		-- Pos/Model/Angle
 		ent:SetModel( Model )
@@ -80,17 +80,17 @@ if SERVER then
 	end
 
 	function TOOL:LeftClick( trace )
-		if (!trace) then return end
+		if !trace then return end
 		local traceent = trace.Entity
 		local ply = self:GetOwner()
 			
 		-- Get the model
 		local model = self:GetDeviceModel()
-		if (!model) then return end
+		if !model then return end
 	
 		//create it
 		local ent = self:CreateDevice( ply, trace, model )
-		if (!ent or !ent:IsValid()) then return end
+		if !ent or !ent:IsValid() then return end
 		
 		//effect :D
 		if DoPropSpawnedEffect then
@@ -98,13 +98,15 @@ if SERVER then
 		end
 		
 		//constraints
+		local weld = nil
+		local nocollide = nil
 		local phys = ent:GetPhysicsObject()
 		if (!traceent:IsWorld() and !traceent:IsPlayer()) then
 			if self:GetClientInfo("Weld") == "1" then
-				local weld = constraint.Weld( ent, trace.Entity, 0, trace.PhysicsBone, 0 )
+				weld = constraint.Weld( ent, trace.Entity, 0, trace.PhysicsBone, 0 )
 			end
 			if self:GetClientInfo("NoCollide") == "1" then
-				local nocollide = constraint.NoCollide( ent, trace.Entity, 0, trace.PhysicsBone )
+				nocollide = constraint.NoCollide( ent, trace.Entity, 0, trace.PhysicsBone )
 			end
 		end
 		if self:GetClientInfo("Freeze") == "1" then
@@ -126,6 +128,7 @@ if SERVER then
 		if trace.Entity and trace.Entity:IsValid() then
 			if trace.Entity.Repair then
 				trace.Entity.Repair()
+				self:GetOwner():ChatPrint("Device Repaired!")
 			end
 		end
 	end
@@ -146,7 +149,7 @@ end
 if SinglePlayer() and SERVER or !SinglePlayer() and CLIENT then
 	// Ghosts, scary
 	function TOOL:UpdateGhostEntity( ent, player )
-		if (!ent or !ent:IsValid()) then return end
+		if !ent or !ent:IsValid() then return end
 		local trace = player:GetEyeTrace()
 			
 		ent:SetAngles( trace.HitNormal:Angle() + self.Entity.Angle )
@@ -157,7 +160,7 @@ if SinglePlayer() and SERVER or !SinglePlayer() and CLIENT then
 		
 	function TOOL:Think()
 		local model = self:GetDeviceModel()
-		if (!self.GhostEntity or !self.GhostEntity:IsValid() or self.GhostEntity:GetModel() != model) then
+		if !self.GhostEntity or !self.GhostEntity:IsValid() or self.GhostEntity:GetModel() != model then
 			local trace = self:GetOwner():GetEyeTrace()
 			self:MakeGhostEntity( Model(model), trace.HitPos, trace.HitNormal:Angle() + self.Entity.Angle )
 		end
