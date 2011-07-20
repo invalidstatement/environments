@@ -12,7 +12,7 @@ TOOL.Models = {     ["models/props_vehicles/generatortrailer01.mdl"] = {},
 					
 local Models = TOOL.Models --fixes stuph		
 
-TOOL.Entity.Class = "air_compressor";
+TOOL.Entity.Class = "env_air_compressor";
 TOOL.Entity.Keys = 0
 TOOL.Entity.Limit = 20
 local name = TOOL.Mode
