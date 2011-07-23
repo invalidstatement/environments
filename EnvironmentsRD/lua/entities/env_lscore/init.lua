@@ -52,7 +52,6 @@ function ENT:Initialize()
 	if (phys:IsValid()) then
 		phys:Wake()
 	end
-	CAF.GetAddon("Resource Distribution").RegisterNonStorageDevice(self)
 	self.Entities = {}
 	
 	--self:AddResource("energy", 0)

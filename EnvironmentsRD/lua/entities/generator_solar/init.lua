@@ -44,9 +44,7 @@ function ENT:Repair()
 end
 
 function ENT:Destruct()
-	if CAF and CAF.GetAddon("Life Support") then
-		CAF.GetAddon("Life Support").Destruct( self.Entity, true )
-	end
+	Environments.LSDestruct( self.Entity, true )
 end
 
 function ENT:Extract_Energy(mul)
@@ -55,13 +53,10 @@ function ENT:Extract_Energy(mul)
 		return
 	end
 	local inc = 0
-	local SB = CAF.GetAddon("Spacebuild")
-	if SB and SB.GetStatus() then
-		if not self.environment then return end
-		inc = math.ceil(Energy_Increment / ((self.environment:GetAtmosphere()) + 1))
-	else
-		inc = math.ceil(Energy_Increment / 2)
-	end
+
+	if not self.environment then return end
+	inc = math.ceil(Energy_Increment / ((self.environment:GetAtmosphere()) + 1))
+
 	if (self.damaged == 1) then inc = math.ceil(inc / 2) end
 	if (inc > 0) then
 		inc = math.ceil(inc * self:GetMultiplier() * mul)
@@ -73,11 +68,8 @@ end
 
 function ENT:GenEnergy()
 	local waterlevel = 0
-	if CAF then
-		waterlevel = self:WaterLevel2()
-	else
-		waterlevel = self:WaterLevel()
-	end
+	waterlevel = self:WaterLevel()
+
 	if (waterlevel > 1) then
 		self:TurnOff()
 	else

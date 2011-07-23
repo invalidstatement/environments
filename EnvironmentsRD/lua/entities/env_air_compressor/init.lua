@@ -144,13 +144,12 @@ end
 function ENT:Pump_Air()
 	self.energy = self:GetResourceAmount("energy")
 	local mul = 1
-	local SB = CAF.GetAddon("Spacebuild")
-	if SB and SB.GetStatus() and self.environment and (self.environment:IsSpace() or self.environment:IsStar() )then
+	if self.environment and self.environment:IsSpace() or self.environment:IsStar() then
 		mul = 0 //Make the device still absorb energy, but not produce any gas anymore
-	elseif SB and SB.GetStatus() and self.environment and  self.environment:IsEnvironment() and not self.environment:IsPlanet() then
+	elseif self.environment and self.environment:IsEnvironment() and not self.environment:IsPlanet() then
 		mul = 0.5
 	end
-	mul = 1
+	
 	local einc = (Energy_Increment + (self.overdrive*Energy_Increment)) * self.Multiplier
 	einc = math.ceil(einc * self:GetMultiplier())
 	if WireAddon then Wire_TriggerOutput(self, "EnergyUsage", math.Round(einc)) end

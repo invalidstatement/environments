@@ -79,7 +79,5 @@ function ENT:Repair()
 end
 
 function ENT:Destruct()
-	if CAF and CAF.GetAddon("Life Support") then
-		CAF.GetAddon("Life Support").Destruct( self, true )
-	end
+	Environments.LSDestruct( self, true )
 end
