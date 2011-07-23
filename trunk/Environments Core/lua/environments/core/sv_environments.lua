@@ -700,6 +700,16 @@ function Environments.SendInfo(ply)
 	end, ply)
 end
 
+function Environments.OnEnvironment(pos)
+	for k,v in pairs(environments) do
+		local distance = pos:Distance(ent:GetPos())
+		if distance <= v.radius then
+			return true
+		end
+	end
+	return false
+end
+
 local function Reload(ply,cmd,args)
 	if not ply:IsAdmin() then return end
 	for k,v in pairs(environments) do

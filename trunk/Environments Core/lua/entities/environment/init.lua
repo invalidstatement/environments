@@ -114,7 +114,7 @@ function ENT:Check()
 			else --space
 				//Set Space
 				if ent.environment == self then
-					if( ent:IsPlayer() ) then
+					if ent:IsPlayer() then
 						ent:SetGravity( 0.00001 )
 						if not ent:IsAdmin() then
 							ent:SetMoveType( MOVETYPE_WALK )
@@ -178,7 +178,7 @@ function ENT:Configure(rad, gravity, name, env)
 	self.Enabled = true
 	self.gravity = gravity
 	
-	if Init_Debugging_Override or self.Debugging then
+	if self.Debugging then
 		Msg("Initialized a new entity env: ", self, "\n")
 		Msg("ID is: ", self.name, "\n")
 		Msg("Dumping stats:\n")
@@ -195,7 +195,7 @@ function ENT:Configure(rad, gravity, name, env)
 	end
 	
 	self.Env = {}
-	self.Env.sbenvironment = self:GetTable()
+	self.Env.sbenvironment = self:GetTable() --reverse compat
 	
 	//Create the earthquaker if need be :)
 	/*if self.unstable == "true" then

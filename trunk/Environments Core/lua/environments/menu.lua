@@ -1,7 +1,10 @@
 
-CreateClientConVar("env_suit_color_r",255,true,true);
-CreateClientConVar("env_suit_color_g",255,true,true);
-CreateClientConVar("env_suit_color_b",255,true,true);
+CreateClientConVar("env_suit_color_r",255,true,true)
+CreateClientConVar("env_suit_color_g",255,true,true)
+CreateClientConVar("env_suit_color_b",255,true,true)
+
+CreateClientConVar("env_suit_model", "models/player/combine_super_soldier.mdl", true, true)
+
 Environments.EffectsCvar = CreateClientConVar("env_effects_enable","1",true,true)
 
 local function AddToolTab()
@@ -35,20 +38,29 @@ local function AddToolTab()
 end
 hook.Add("AddToolMenuTabs", "EnvironmentsAddTabs", AddToolTab);
 
+SuitModels = {
+	["models/player/combine_super_soldier.mdl"] = {},
+	["models/SBEP Player Models/bluehevsuit.mdl"] = {},
+	["models/SBEP Player Models/orangehevsuit.mdl"] = {},
+	["models/SBEP Player Models/redhevsuit.mdl"] = {},
+	["models/Combine_Soldier_PrisonGuard.mdl"] = {},
+	["models/Combine_Soldier.mdl"] = {}
+}
+
 function Environments.ConfigMenu(Panel)
-	Panel:ClearControls();
+	Panel:ClearControls()
 	Environments.ConfigPanel = Panel
 	if(Environments.CurrentVersion > Environments.Version) then
-		local RED = Color(255,0,0,255);
-		Panel:Help("Your build of Environments is out of date"):SetTextColor(RED);
-		Panel:Help("LATEST BUILD: "..Environments.CurrentVersion):SetTextColor(RED);
-		Panel:Help("If you are getting this message on an internet server, tell the admin to update.");
+		local RED = Color(255,0,0,255)
+		Panel:Help("Your build of Environments is out of date"):SetTextColor(RED)
+		Panel:Help("LATEST BUILD: "..Environments.CurrentVersion):SetTextColor(RED)
+		Panel:Help("If you are getting this message on an internet server, tell the admin to update.")
 	elseif(Environments.CurrentVersion == 0) then
-		local ORANGE = Color(255,128,0,255);
-		Panel:Help("Couldn't determine latest BUILD. Make sure, you are connected to the Internet."):SetTextColor(ORANGE);
+		local ORANGE = Color(255,128,0,255)
+		Panel:Help("Couldn't determine latest BUILD. Make sure, you are connected to the Internet."):SetTextColor(ORANGE)
 	else
-		local GREEN = Color(0,255,0,255);
-		Panel:Help("Your Environments BUILD is up-to-date."):SetTextColor(GREEN);
+		local GREEN = Color(0,255,0,255)
+		Panel:Help("Your Environments BUILD is up-to-date."):SetTextColor(GREEN)
 	end
 	Panel:Help("Current BUILD: "..Environments.Version)
 	
@@ -86,6 +98,14 @@ function Environments.ConfigMenu(Panel)
 	
 	Panel:Help("Enable Breathing Sound")
 	Panel:AddControl("CheckBox", {Label = "Enable Breathing Sound?", Command = "env_breathing_sound_enabled"} )
+	
+	Panel:Help("Suit Model")
+	Panel:AddControl( "PropSelect", {
+		Label = "#Models",
+		ConVar = "env_suit_model",
+		Category = "Storages",
+		Models = SuitModels
+	})
 	
 	/*Panel:Button( "Open Help Page", "pp_superdof" )
 	-- The HELP Button

@@ -8,7 +8,7 @@ function meta:PutOnSuit()
 	if table.HasValue(nofingers, self.m_hSuit:GetParent():GetInfo( "cl_playermodel" )) then
 		self.m_hSuit:SetModel("models/player/barney.mdl")
 	else
-		self.m_hSuit:SetModel("models/player/combine_super_soldier.mdl")
+		self.m_hSuit:SetModel(self.SuitModel)
 	end
 	self:SetNWBool("helmet", true)
 end
@@ -22,7 +22,7 @@ end
 
 function meta:PutOnHelmet()
 	if self.m_hHelmet:GetParent().GetInfo then
-		self.m_hHelmet:SetModel("models/player/combine_super_soldier.mdl")
+		self.m_hHelmet:SetModel(self.SuitModel)
 		self:SetNWBool("helmet", true)
 		self.m_hHelmet:SetColor(self.ClothingColor.r,self.ClothingColor.g,self.ClothingColor.b,255,255)
 	end
@@ -75,13 +75,8 @@ end
    Name: gamemode:PlayerSpawn( )
    Desc: Called when a player spawns
 ---------------------------------------------------------*/
-function Environments.Hooks.SuitPlayerSpawn( pl )
-	// Set player clothing
-	PlayerSetClothing(pl)
-end
-
 nofingers = {"barney", "mossman", "alyx", "breen", "gman", "kleiner"}
-function PlayerSetClothing( pl )
+function Environments.Hooks.SuitPlayerSpawn( pl )
 	RemovePlayerClothing( pl )
 	//just in case
 	pl.ClothingColor = {}
@@ -116,6 +111,11 @@ function PlayerSetClothing( pl )
 		pl.ClothingColor.g = tonumber(pl:GetInfoNum("env_suit_color_g",255))
 		pl.m_hSuit:SetColor(pl.ClothingColor.r,pl.ClothingColor.g,pl.ClothingColor.b,255)
 		pl.m_hHelmet:SetColor(pl.ClothingColor.r,pl.ClothingColor.g,pl.ClothingColor.b,255)
+		
+		pl.SuitModel = pl:GetInfo("env_suit_model") --or "models/player/combine_super_soldier.mdl"
+		
+		pl.m_hHelmet:SetModel(pl.SuitModel)
+		pl.m_hSuit:SetModel(pl.SuitModel)
 	end)
 end
 
