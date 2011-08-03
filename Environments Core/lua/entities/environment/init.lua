@@ -10,6 +10,7 @@ local table = table
 local pairs = pairs
 local CurTime = CurTime
 local Vector = Vector
+local Msg = Msg
 
 PlayerGravity = true
 
@@ -24,10 +25,10 @@ ENT.IgnoreTouch = true
 ENT.NotTeleportable = true
 
 function ENT:Initialize()
-	self.Entity:SetModel( "models/combine_helicopter/helicopter_bomb01" ) --setup stuff
-	self.Entity:SetMoveType( MOVETYPE_NONE )
-	self.Entity:SetSolid( SOLID_NONE )
-	self.Entity:PhysicsInitSphere(1)
+	self:SetModel( "models/combine_helicopter/helicopter_bomb01" ) --setup stuff
+	self:SetMoveType( MOVETYPE_NONE )
+	self:SetSolid( SOLID_NONE )
+	self:PhysicsInitSphere(1)
 	self:SetCollisionBounds(Vector(-1,-1,-1),Vector(1,1,1))
 	self:SetTrigger( true )
     self:GetPhysicsObject():EnableMotion( false )
@@ -36,7 +37,7 @@ function ENT:Initialize()
 	self.gravity = 0
 	self.Debugging = false
 	
-	local phys = self.Entity:GetPhysicsObject() --reset physics
+	local phys = self:GetPhysicsObject() --reset physics
 	if (phys:IsValid()) then
 		phys:Wake()
 	end
@@ -77,10 +78,13 @@ function ENT:EndTouch(ent)
 	if not ent:GetPhysicsObject():IsValid() then return end
 
 	if ent.environment == self then
-		if( ent:IsPlayer() ) then
+		if ent:IsPlayer() then
 			ent:SetGravity( 0.00001 )
 			if not ent:IsAdmin() then
 				ent:SetMoveType( MOVETYPE_WALK )
+				if math.abs(ent:GetVelocity():Length()) > 50 then
+					ent:SetLocalVelocity(Vector(0,0,0))
+				end
 			end
 			
 			ent:SetNWBool( "inspace", true )
@@ -118,6 +122,9 @@ function ENT:Check()
 						ent:SetGravity( 0.00001 )
 						if not ent:IsAdmin() then
 							ent:SetMoveType( MOVETYPE_WALK )
+							if math.abs(ent:GetVelocity():Length()) > 50 then
+								ent:SetLocalVelocity(Vector(0,0,0))
+							end
 						end
 
 						ent:SetNWBool( "inspace", true )
@@ -127,7 +134,7 @@ function ENT:Check()
 					end
 					ent.environment = Space()
 					if self.Debugging then Msg("...and has decided to get spaced.\n") end
-				else
+				else --they teleported out
 					--if self.Debugging then Msg("...and has decided to not get spaced.\n") end
 				end
 			end
@@ -164,7 +171,7 @@ function ENT:Configure(rad, gravity, name, env)
     self:GetPhysicsObject():EnableMotion( false )
 	self:SetMoveType( MOVETYPE_NONE )
 	
-	local phys = self.Entity:GetPhysicsObject()
+	local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Wake()
 	end

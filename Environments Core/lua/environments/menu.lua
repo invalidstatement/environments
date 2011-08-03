@@ -22,7 +22,7 @@ local function AddToolTab()
 	/*local toolgun = weapons.Get("gmod_tool");
 	if(toolgun and toolgun.Tool) then
 		for k,v in pairs(toolgun.Tool) do
-			if(not v.AddToMenu and v.Tab == "Stargate") then
+			if(not v.AddToMenu and v.Tab == "Environments") then
 				spawnmenu.AddToolMenuOption(
 					v.Tab,
 					v.Category or "",

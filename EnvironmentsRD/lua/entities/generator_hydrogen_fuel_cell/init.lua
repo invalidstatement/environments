@@ -131,16 +131,8 @@ function ENT:Damage()
 	end
 end
 
-function ENT:Repair()
-	self.BaseClass.Repair(self)
-	self.Entity:SetColor(255, 255, 255, 255)
-	self.damaged = 0
-end
-
 function ENT:Destruct()
-	if CAF and CAF.GetAddon("Life Support") then
-		CAF.GetAddon("Life Support").Destruct( self.Entity, true )
-	end
+	Environments.LSDestruct( self.Entity, true )
 end
 
 function ENT:OnRemove()
@@ -157,14 +149,7 @@ function ENT:Proc_Water()
 	oinc = (math.Round(oinc * self:GetMultiplier())) * self.Multiplier
 	if (oxygen >= oinc and hydrogen >= hinc) then
 		if ( self.overdrive == 1 ) then
-			if CAF and CAF.GetAddon("Life Support") then
-				CAF.GetAddon("Life Support").DamageLS(self, math.random(2, 3))
-			else
-				self:SetHealth( self:Health( ) - math.Random(2, 3))
-				if self:Health() <= 0 then
-					self:Remove()
-				end
-			end
+			Environments.DamageLS(self, math.random(2, 3))
 		end
 		self:ConsumeResource("oxygen", oinc)
 		self:ConsumeResource("hydrogen", hinc)

@@ -127,7 +127,7 @@ if SERVER then
 		if !trace then return end
 		if trace.Entity and trace.Entity:IsValid() then
 			if trace.Entity.Repair then
-				trace.Entity.Repair()
+				trace.Entity:Repair()
 				self:GetOwner():ChatPrint("Device Repaired!")
 			end
 		end

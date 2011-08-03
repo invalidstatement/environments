@@ -11,7 +11,8 @@ TOOL.Models = { 	["models/props_c17/substation_circuitbreaker01a.mdl"] = {},
 					["models/props_c17/substation_transformer01a.mdl"] = {},
 					["models/props_c17/oildrum001.mdl"] = {},
 					["models/props_phx/life_support/battery_large.mdl"] = {},
-					["models/props_phx/life_support/battery_medium.mdl"] = {} }
+					["models/props_phx/life_support/battery_medium.mdl"] = {},
+					["models/props_phx/life_support/battery_small.mdl"] = {} }
 local Models = TOOL.Models --fixes stuph		
 
 TOOL.Entity.Class = "env_storage_energy";
@@ -27,21 +28,19 @@ TOOL.Language["SBoxLimit"] = "Hit the storage limit";
 
 function TOOL:GetMults(ent)
 	local volume_mul = 1 //Change to be 0 by default later on
-	local base_volume = 4084 //Change to the actual base volume later on
+	local base_volume = 6021 //Change to the actual base volume later on
 	local phys = ent:GetPhysicsObject()
 	local volume = -1
 		
+	local phys = ent:GetPhysicsObject()
 	if phys:IsValid() and phys.GetVolume then
 		local vol = phys:GetVolume()
-		volume = math.Round(vol)
-	end
-		
-	if volume >= 100000000 then
-		volume = volume/10
+		vol = math.Round(vol)
+		volume_mul = vol/base_volume
 	end
 		
 	ent.maxresources = {}
-	ent:AddResource("energy", math.Round(volume/10))
+	ent:AddResource("energy", math.Round(volume_mul*3600))
 		
 	ent:SetMultiplier(volume_mul)
 	return volume_mul

@@ -8,7 +8,8 @@ TOOL.Description = "Used to spawn air compressors"
 TOOL.ClientConVar[ "Type" ] = "Oxygen"
 
 TOOL.Models = {     ["models/props_vehicles/generatortrailer01.mdl"] = {},
-					["models/props_outland/generator_static01a.mdl"] = {} }
+					["models/props_outland/generator_static01a.mdl"] = {},
+					["models/ce_ls3additional/compressor/compressor.mdl"] = {} }
 					
 local Models = TOOL.Models --fixes stuph		
 

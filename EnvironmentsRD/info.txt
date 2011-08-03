@@ -1,7 +1,7 @@
 "AddonInfo"
 {
 	"name"				"Environments RD"
-	"version"			"0.5"
+	"version"			"1.0"
 	"up_date"			"17th June 2010"
 	"author_name"			"CmdrMatthew"
 	"author_email"			""

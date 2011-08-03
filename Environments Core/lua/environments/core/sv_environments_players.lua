@@ -451,10 +451,12 @@ function Environments.Hooks.LSInitSpawn(ply)
 end
 
 function Environments.Hooks.PlayerDeath( ply, inf, killer )
-	if ply.environment.name == "space" then
-		umsg.Start( "ZGRagdoll" )
-			umsg.Entity( ply )
-		umsg.End()
+	if ply.environment then
+		if ply.environment.name == "space" then
+			umsg.Start( "ZGRagdoll" )
+				umsg.Entity( ply )
+			umsg.End()
+		end
 	end
 end
 
@@ -486,12 +488,12 @@ function Environments.Hooks.LSSpawn(ply)
 		ply:ChatPrint("This server is running Environments, please report any bugs to CmdrMatthew")
 		ply.msged = true
 	end
-	timer.Create("ResetSuit"..ply:Nick(), 1, 1, function() ply:ResetSuit() end)
+	timer.Simple(1, function(ply) ply:ResetSuit() end, ply)
 end
 
 function Environments.Hooks.HelmetSwitch( ply )
 	local status, error = pcall(function() 
-	if not ply.m_hSuit:GetParent().GetInfo then return end
+	if !ply.m_hSuit or !ply.m_hSuit:GetParent().GetInfo then return end
 	if Environments.UseSuit then
 		if ply.suit.helmet then
 			--ply:TakeOffSuit()
