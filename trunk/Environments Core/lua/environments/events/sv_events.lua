@@ -6,6 +6,7 @@
 local util = util
 local ents = ents
 local table = table
+local os = os
 local math = math
 local GetWorldEntity = GetWorldEntity
 local Vector = Vector
@@ -13,6 +14,15 @@ local print = print
 local MsgAll = MsgAll
 local pcall = pcall
 local pairs = pairs
+
+function table.Random(t) --darn you garry
+	local rk = math.random(1,table.Count(t))
+	local i = 1
+	for k,v in pairs(t) do
+		if i == rk then return v, k end
+		i = i + 1
+	end
+end
 
 //prototype events system
 local events = {}
@@ -104,17 +114,16 @@ function Environments.EventChecker()
 	if chance < 35 and chance > 30 then
 		//call the function to run the event
 		local planet = table.Random(environments)
-		local event = table.Random(events)
-		eventname = ""
+		local event, eventname = table.Random(events)
 		if not planet.spawn == "1" then
-			eventname = event(planet)
+			event(planet)
 		else
 			planet = table.Random(environments)
 			if not planet.spawn == "1" then
-				eventname = event(planet)
+				event(planet)
 			end
 		end	
-		MsgN("A " .. eventname .. " Started at " .. tostring(os.date("%H:%M:%S")))
+		MsgN("A " .. eventname .. " Started at " .. tostring(os.date("%H:%M:%S")).." on planet ".. (planet.name or "Unnamed Planet"))
 	end
 end
 

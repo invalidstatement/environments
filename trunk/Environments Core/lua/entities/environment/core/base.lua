@@ -23,10 +23,6 @@ local print = print
 local pairs = pairs
 local tostring = tostring
 
-function GetVolume(radius)
-	return (4/3) * math.pi * radius * radius
-end
-
 --self.air.max = total volume
 --self.air.total = amount filled
 function ENT:Convert(res1, res2, value)

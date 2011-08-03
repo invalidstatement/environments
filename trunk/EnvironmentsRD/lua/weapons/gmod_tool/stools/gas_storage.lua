@@ -23,23 +23,18 @@ function TOOL:GetMults(ent)
 	local volume_mul = 1 //Change to be 0 by default later on
 	local base_volume = 4084 //Change to the actual base volume later on
 	local phys = ent:GetPhysicsObject()
-	local volume = -1
-		
+
 	if phys:IsValid() and phys.GetVolume then
 		local vol = phys:GetVolume()
-		volume = math.Round(vol)
-	end
-		
-	base_volume = 339933 * 3 --3399325  
-	if volume != -1 then
-		volume_mul = volume/base_volume
+		vol = math.Round(vol)
+		volume_mul = vol/base_volume
 	end
 	
 	ent.maxresources = {}
-	ent:AddResource("oxygen", math.Round(volume/10))
-	ent:AddResource("hydrogen", math.Round(volume/10))
-	ent:AddResource("nitrogen", math.Round(volume/10))
-	ent:AddResource("carbon dioxide", math.Round(volume/10))
+	ent:AddResource("oxygen", math.Round(volume_mul*4000))
+	ent:AddResource("hydrogen", math.Round(volume_mul*4000))
+	ent:AddResource("nitrogen", math.Round(volume_mul*4000))
+	ent:AddResource("carbon dioxide", math.Round(volume_mul*4000))
 		
 	ent:SetMultiplier(volume_mul)
 	

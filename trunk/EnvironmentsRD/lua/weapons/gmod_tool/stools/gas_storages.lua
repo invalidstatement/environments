@@ -44,11 +44,13 @@ if (SERVER) then
 		ent:SetPos( trace.HitPos - trace.HitNormal * ent:OBBMins().z )
 		ent:SetAngles( trace.HitNormal:Angle() + Angle(90,0,0) )
 
-		local vec = ent:OBBMaxs() - ent:OBBMins()
-		local volume = (vec.x * vec.y * vec.z)
-		
-		if volume >= 100000000 then
-			volume = volume/10
+		local volume_mul = 1
+		local base_volume = 4084
+		local phys = ent:GetPhysicsObject()
+		if phys:IsValid() and phys.GetVolume then
+			local vol = phys:GetVolume()
+			vol = math.Round(vol)
+			volume_mul = vol/base_volume
 		end
 		
 		ent:SetPlayer(ply)
@@ -56,7 +58,7 @@ if (SERVER) then
 		ent:Activate()
 		ent:GetPhysicsObject():Wake()
 		
-		ent:AddResource(string.lower(self:GetClientInfo("Type")), math.Round(volume/10))
+		ent:AddResource(string.lower(self:GetClientInfo("Type")), math.Round(volume_mul * 4600))
 		
 		return ent
 	end

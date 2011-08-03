@@ -10,10 +10,6 @@ local SB_AIR_AR = 5
 //       Meta Table Stuff For Planets        //
 ///////////////////////////////////////////////
 
-function GetVolume(radius)
-	return (4/3) * math.pi * radius * radius
-end
-
 function ENT:Convert(air1, air2, value)
 	
 	--if not air1 or not air2 or not value then return 0 end

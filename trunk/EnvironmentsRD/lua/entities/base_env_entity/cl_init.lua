@@ -65,13 +65,13 @@ function ENT:Draw( bDontDrawModel )
 		end
 	end
 
-	if (Wire_Render) then
+	if Wire_Render then
 		Wire_Render(self)
 	end
 end
 
 function ENT:DrawTranslucent( bDontDrawModel )
-	if ( bDontDrawModel ) then return end
+	if bDontDrawModel then return end
 	self:Draw()
 end
 
@@ -82,28 +82,25 @@ end
 function ENT:DoNormalDraw( bDontDrawModel )
 	if ( LocalPlayer():GetEyeTrace().Entity == self and EyePos():Distance( self:GetPos() ) < 512) then
 		--overlaysettings
-		local node = self:GetNWEntity("node", nil)
+		local node = self.node --self:GetNWEntity("node", nil)
 		local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] --replace this
 		local HasOOO = OverlaySettings.HasOOO
-		local num = OverlaySettings.num or 0
 		local resnames = OverlaySettings.resnames
 		local genresnames = OverlaySettings.genresnames
 		--End overlaysettings
 		
-		if ( !bDontDrawModel ) then self:DrawModel() end
+		if !bDontDrawModel then self:DrawModel() end
 		
 		local playername = self:GetPlayerName()
 		if playername == "" then
 			playername = "World"
 		end
-		-- 0 = no overlay!
-		-- 1 = default overlaytext
-		-- 2 = new overlaytext
+
 		if not self.ScreenMode then
 			local OverlayText = ""
-				OverlayText = OverlayText ..self.PrintName.."\n"
-			if not node:IsValid() then
-				OverlayText = OverlayText .. "Not connected to a network\n"
+			OverlayText = OverlayText ..self.PrintName.."\n"
+			if !node or !node:IsValid() then
+				OverlayText = OverlayText .. "Not Connected\n"
 			else
 				OverlayText = OverlayText .. "Network " .. tostring(node:EntIndex()) .."\n"
 			end

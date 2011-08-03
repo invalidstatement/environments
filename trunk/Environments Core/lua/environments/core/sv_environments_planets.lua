@@ -23,6 +23,7 @@ local SB_AIR_H = 3
 local SB_AIR_CH4 = 4
 local SB_AIR_AR = 5
 
+
 local function Extract_Bit(bit, field)
 	if not bit or not field then return false end
 	local retval = 0
@@ -43,16 +44,21 @@ local function Extract_Bit(bit, field)
 	return false
 end
 
-function GetFlags(flags)
+local function GetFlags(flags)
 	if not flags or type(flags) != "number" then return end
 	local habitat = Extract_Bit(1, flags)
 	local unstable = Extract_Bit(2, flags)
-	local sunburn = Extract_Bit(3, flags)
+	local sunburn = Extract_Bit(3, flags) 
 	return habitat, unstable, sunburn
+end
+
+local function GetVolume(radius)
+	return (4/3) * math.pi * radius * radius
 end
 
 function Environments.ParseSaveData(planet)
 	local compounds = {}
+	--compounds = table.Copy(planet.atmosphere)
 	compounds["o2"] = planet.atmosphere.oxygen
 	compounds["co2"] = planet.atmosphere.carbondioxide
 	compounds["h"] = planet.atmosphere.hydrogen
@@ -332,8 +338,4 @@ function Environments.CreateStar(planet)
 	star:Configure(planet.radius, planet.gravity, planet.name, planet)
 	
 	table.insert(environments, star)
-end
-
-function GetVolume(radius)
-	return (4/3) * math.pi * radius * radius
 end

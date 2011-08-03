@@ -37,12 +37,6 @@ function ENT:Damage()
 	if (self.damaged == 0) then self.damaged = 1 end
 end
 
-function ENT:Repair()
-	self.BaseClass.Repair(self)
-	self.Entity:SetColor(255, 255, 255, 255)
-	self.damaged = 0
-end
-
 function ENT:Destruct()
 	Environments.LSDestruct( self.Entity, true )
 end

@@ -83,7 +83,7 @@ end
 function ENT:DoNormalDraw( bDontDrawModel )
 	if LocalPlayer():GetEyeTrace().Entity == self and EyePos():Distance( self:GetPos() ) < 512 then
 		--overlaysettings
-		local node = self:GetNWEntity("node")
+		local node = self.node --self:GetNWEntity("node")
 		local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] --replace this
 		local HasOOO = OverlaySettings.HasOOO
 		local resnames = OverlaySettings.resnames
@@ -100,8 +100,8 @@ function ENT:DoNormalDraw( bDontDrawModel )
 		if not self.ScreenMode then
 			local OverlayText = self.PrintName.."\n"
 			
-			if not node:IsValid() then
-				OverlayText = OverlayText .. "Not connected to a network\n"
+			if !node or !node:IsValid() then
+				OverlayText = OverlayText .. "Not Connected\n"
 			else
 				OverlayText = OverlayText .. "Network " .. tostring(node:EntIndex()) .."\n"
 			end
@@ -113,7 +113,7 @@ function ENT:DoNormalDraw( bDontDrawModel )
 				OverlayText = OverlayText .. "Mode: " .. runmode .."\n"
 			end
 			OverlayText = OverlayText.."\n"
-			if not node:IsValid() then
+			if !node or !node:IsValid() then
 				if self.resources and table.Count(self.resources) > 0 then
 					for k, v in pairs(self.resources) do
 						OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. v .."/".. self.maxresources[k] .. (ResourceUnits[k] or "") .."\n"

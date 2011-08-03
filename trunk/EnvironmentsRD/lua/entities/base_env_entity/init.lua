@@ -76,7 +76,11 @@ function ENT:Link(ent)
 	end
 	if ent and ent:IsValid() then
 		self.node = ent
-		self:SetNWEntity("node", ent)
+		umsg.Start("Env_SetNodeOnEnt")
+			umsg.Entity(self)
+			umsg.Entity(ent)
+		umsg.End()
+		--self:SetNWEntity("node", ent)
 	end
 end
 
@@ -84,7 +88,10 @@ function ENT:Unlink()
 	if self.node then
 		self.node:Unlink(self)
 		self.node = nil
-		self:SetNWEntity("node", NullEntity())
+		umsg.Start("Env_SetNodeOnEnt")
+			umsg.Entity(self)
+			umsg.Entity(NullEntity())
+		umsg.End()
 	end
 end
 

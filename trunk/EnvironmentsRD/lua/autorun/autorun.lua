@@ -2,6 +2,18 @@
 AddCSLuaFile("autorun/autorun.lua")
 AddCSLuaFile("weapons/gmod_tool/environments_tool_base.lua")
 
+local scripted_ents = scripted_ents
+local table = table
+local util = util
+local timer = timer
+local ents = ents
+local duplicator = duplicator
+local math = math
+local tostring = tostring
+local type = type
+local tonumber = tonumber
+local pairs = pairs
+
 if not Environments then
 	Environments = {}
 end
@@ -360,7 +372,7 @@ if CLIENT then
 		return a0 * y2 + a1 * m0 + a2 * m1 + a3 * y3
 	end
 else
-	function Environments.RDPlayerUpdate(ply)
+	function Environments.RDPlayerUpdate(ply)--CRAPPY!!! FIX!
 		for k,ent in pairs(ents.FindByClass("resource_node_env")) do
 			for name,tab in pairs(ent.resources) do
 				umsg.Start("Env_UpdateResAmt")
@@ -377,6 +389,14 @@ else
 				umsg.End()
 			end
 		end
+		for k,v in pairs(ents.GetAll()) do
+			if v and v.node and v.node:IsValid() then
+				umsg.Start("Env_SetNodeOnEnt")
+					umsg.Entity(v)
+					umsg.Entity(v.node)
+				umsg.End()
+			end
+		end
 	end
 	hook.Add("PlayerInitialSpawn", "EnvRDPlayerUpdate", Environments.RDPlayerUpdate)
 	
@@ -387,13 +407,13 @@ else
 		if (ent:Health() > 0) then
 			local HP = ent:Health() - dam
 			ent:SetHealth( HP )
-			if (ent:Health() <= (ent:GetMaxHealth() / 2)) then
+			if ent:Health() <= (ent:GetMaxHealth() / 2) then
 				if ent.Damage then
 					ent:Damage()
 				end
 			end
 			
-			if (ent:Health() <= 0) then
+			if ent:Health() <= 0 then
 				ent:SetColor(50, 50, 50, 255)
 				if ent.Destruct then
 					ent:Destruct()
@@ -444,7 +464,7 @@ else
 	end
 	
 	function Environments.LSDestruct( ent, Simple )
-		if (Simple) then
+		if Simple then
 			Explode2( ent )
 		else
 			timer.Simple(1, Explode1, ent)

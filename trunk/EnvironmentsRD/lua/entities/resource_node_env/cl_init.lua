@@ -122,3 +122,11 @@ local function RecieveMax(msg)
 	ent.maxresources[msg:ReadString()] = msg:ReadLong()
 end
 usermessage.Hook("Env_UpdateMaxRes", RecieveMax)
+
+local function RecieveNode(msg)
+	--local ent = msg:ReadEntity()
+	--local node = msg:ReadEntity()
+	msg:ReadEntity().node = msg:ReadEntity()
+	--print(ent, "linked to", node)
+end
+usermessage.Hook("Env_SetNodeOnEnt", RecieveNode)

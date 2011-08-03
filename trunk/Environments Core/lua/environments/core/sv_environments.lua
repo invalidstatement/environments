@@ -385,29 +385,29 @@ function Environments.LoadFromMap()
 			planet.noclip = 0
 			planet.spawn = 0
 						
-				planet.radius = tonumber(tab.Case02) --Get Radius
-				planet.gravity = tonumber(tab.Case03) --Get Gravity
-				planet.atm = tonumber(tab.Case04) --What does this mean?
-				planet.pressure = tonumber(tab.Case05)
-				planet.temperature = tonumber(tab.Case06)
-				planet.suntemperature = tonumber(tab.Case07)
-				planet.atmosphere.oxygen = tonumber(tab.Case09)
-				planet.atmosphere.carbondioxide = tonumber(tab.Case10)
-				planet.atmosphere.nitrogen = tonumber(tab.Case11)
-				planet.atmosphere.hydrogen = tonumber(tab.Case12)
-				planet.name = tostring(tab.Case13) --Get Name
-				planet.colorid = tostring(tab.Case15)
-				planet.bloomid = tostring(tab.Case16)
+			planet.radius = tonumber(tab.Case02) --Get Radius
+			planet.gravity = tonumber(tab.Case03) --Get Gravity
+			planet.atm = tonumber(tab.Case04) --What does this mean?
+			planet.pressure = tonumber(tab.Case05)
+			planet.temperature = tonumber(tab.Case06)
+			planet.suntemperature = tonumber(tab.Case07)
+			planet.atmosphere.oxygen = tonumber(tab.Case09)
+			planet.atmosphere.carbondioxide = tonumber(tab.Case10)
+			planet.atmosphere.nitrogen = tonumber(tab.Case11)
+			planet.atmosphere.hydrogen = tonumber(tab.Case12)
+			planet.name = tostring(tab.Case13) --Get Name
+			planet.colorid = tostring(tab.Case15)
+			planet.bloomid = tostring(tab.Case16)
 				
-				planet.originalco2per = planet.atmosphere.carbondioxide
+			planet.originalco2per = planet.atmosphere.carbondioxide
 				
-				if planet.atm == 0 then
-					planet.atm = 1
-				end
+			if planet.atm == 0 then
+				planet.atm = 1
+			end
 						
-				planet.position = ent:GetPos()
+			planet.position = ent:GetPos()
 						
-				i=i+1
+			i=i+1
 			table.insert(planets, planet)
 			print("//     Spacebuild 3 Planet Added   //")
 		elseif Type == "star" then
@@ -466,6 +466,7 @@ function Environments.SaveMap() --plz work :)
 			planet.atm = v.atmosphere
 			planet.suntemperature = v.suntemperature
 			planet.atmosphere = {}
+			--planet.atmosphere = table.Copy(v.air)
 			planet.atmosphere.oxygen = v.air.o2per
 			planet.atmosphere.carbondioxide = v.air.co2per
 			planet.atmosphere.hydrogen = v.air.hper
@@ -633,15 +634,15 @@ local function Logging( ply )
 end
 --concommand.Add("env_get_logs", Logging)
 
-local SFX = {}
+Environments.SFX = {}
 function RegisterWorldSFXEntity(ent, planet)
-	SFX[ent:EntIndex()] = ent
-	SFX[ent:EntIndex()].planet = planet
+	Environments.SFX[ent:EntIndex()] = ent
+	Environments.SFX[ent:EntIndex()].planet = planet
 end
 
 local function SFXManager()
-	if not SFX then return end
-	for k,v in pairs(SFX) do
+	if not Environments.SFX then return end
+	for k,v in pairs(Environments.SFX) do
 		local class = string.lower(v:GetClass())
 		if class == "func_precipitation" then
 
@@ -660,16 +661,16 @@ end
 function Environments.SendInfo(ply)
 	timer.Create("SendPlayerInfoEnvironments", 1, 1, function()
 	for _, v in pairs( environments ) do
-		umsg.Start( "AddPlanet", ply );
+		umsg.Start( "AddPlanet", ply )
 			umsg.Short( v:EntIndex() )
-			umsg.Vector( v:GetPos() );
-			umsg.Short( v.radius );
+			umsg.Vector( v:GetPos() )
+			umsg.Short( v.radius )
 			umsg.String( v.name or "" )
 			if v.colorid then
-				umsg.String( v.colorid );
+				umsg.String( v.colorid )
 			end
 			if v.bloomid then
-				umsg.String( v.bloomid );
+				umsg.String( v.bloomid )
 			end
 		umsg.End();
 	end

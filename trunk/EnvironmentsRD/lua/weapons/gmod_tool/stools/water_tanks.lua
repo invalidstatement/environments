@@ -34,18 +34,15 @@ function TOOL:GetMults(ent)
 	local phys = ent:GetPhysicsObject()
 	local volume = -1
 		
+	local phys = ent:GetPhysicsObject()
 	if phys:IsValid() and phys.GetVolume then
 		local vol = phys:GetVolume()
-		volume = math.Round(vol)
-	end
-		
-	base_volume = 339933 * 3 --3399325  
-	if volume != -1 then
-		volume_mul = volume/base_volume
+		vol = math.Round(vol)
+		volume_mul = vol/base_volume
 	end
 	
 	ent.maxresources = {}
-	ent:AddResource("water", math.Round(volume/10))
+	ent:AddResource("water", math.Round(volume_mul*3600))
 		
 	ent:SetMultiplier(volume_mul)
 	
