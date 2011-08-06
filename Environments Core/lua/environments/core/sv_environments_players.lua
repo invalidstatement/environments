@@ -274,6 +274,13 @@ function Environments.SunCheck(ent)
 	end
 	
 	if lit then
+		if ent.environment.sunburn then
+			if ent:Health() > 0 then
+				ent:TakeDamage( 5, 0 )
+				ent:EmitSound( "HL2Player.BurnPain" )
+			end
+		end
+		
 		if ent.environment.suntemperature then
 			return ent.environment.suntemperature + ((ent.environment.suntemperature * (((ent.environment.air.co2/ent.environment.air.max)*100 - ent.environment.originalco2per)/100))/2)
 		end

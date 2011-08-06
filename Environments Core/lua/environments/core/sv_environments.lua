@@ -167,7 +167,7 @@ local function LoadEnvironments()
 end
 hook.Add("InitPostEntity","EnvLoad", LoadEnvironments)
 
-function Environments.GetMapEntities()
+function Environments.GetMapEntities() --use this rather than whats in Environments.LoadFromMap()
 	local entities = ents.FindByClass( "logic_case" )
 	Environments.MapEntities = {}
 	Environments.MapEntities.Color = {}
@@ -212,7 +212,7 @@ function Environments.RegisterEnvironments()
 		if contents and starscontents then
 			local status, error = pcall(function()
 				Environments.PlanetSaveData = {}
-				Environments.PlanetSaveData = table.DeSanitise(util.KeyValuesToTable(contents))
+				Environments.PlanetSaveData = util.KeyValuesToTable(contents)
 				planets = table.DeSanitise(util.KeyValuesToTable(contents))
 				stars = table.DeSanitise(util.KeyValuesToTable(starscontents))
 				if planets.version == Environments.FileVersion then
@@ -223,6 +223,7 @@ function Environments.RegisterEnvironments()
 					file.Delete("environments/"..map..".txt")
 					file.Delete("environments/"..map.."_stars.txt")
 					Environments.RegisterEnvironments()
+					return
 				end
 			end)
 			if error then --Read Error
@@ -230,15 +231,18 @@ function Environments.RegisterEnvironments()
 				file.Delete("environments/"..map..".txt")
 				file.Delete("environments/"..map.."_stars.txt")
 				Environments.RegisterEnvironments()
+				return
 			end
 		else --Empty File
 			print("//    The File Has No Content       //")
 			file.Delete("environments/"..map..".txt")
 			file.Delete("environments/"..map.."_stars.txt")
 			Environments.RegisterEnvironments()
+			return
 		end
 		planets.version = nil
-		for k,v in pairs(planets) do
+		for k,v in pairs(planets) do --clean this up, the parsing only does atmosphere
+			PrintTable(v)
 			v.air = Environments.ParseSaveData(v).air --get air data from atmosphere data
 			v.atmosphere = v.atm
 			Environments.CreatePlanet(v)
@@ -249,15 +253,7 @@ function Environments.RegisterEnvironments()
 		end
 	else --load it from the map
 		local rawdata, rawstars = Environments.CreateEnvironmentsFromMap()
-		/*rawdata.version = nil
-		for k,v in pairs(rawdata) do
-			local planet = Environments.ParsePlanet(v)
-			Environments.CreatePlanet(planet)
-		end
-		for k,v in pairs(rawstars) do
-			local star = Environments.ParseStar(v)
-			Environments.CreateStar(star)
-		end*/
+
 		file.Write( "environments/" .. map .. "_stars.txt", util.TableToKeyValues( table.Sanitise(rawstars) ) )
 	end
 	if table.Count(environments) > 0 then
@@ -285,35 +281,12 @@ function Environments.LoadFromMap()
 	local i = 0
 	local planets, stars = {}, {}
 	print("//   Loading From Map              //")
-	Environments.MapEntities = {}
-	Environments.MapEntities.Color = {}
-	Environments.MapEntities.Bloom = {}
+	Environments.GetMapEntities()
 	local entities = ents.FindByClass( "logic_case" )
 	for k,ent in pairs(entities) do
 		local values = ent:GetKeyValues()
 		local tab = ent:GetKeyValues()
-			
-		if( tab.Case01 == "planet_color" ) then
-			table.insert( Environments.MapEntities.Color, {
-				addcol = Vector( tab.Case02 ),
-				mulcol = Vector( tab.Case03 ),
-				brightness = tonumber( tab.Case04 ),
-				contrast = tonumber( tab.Case05 ),
-				color = tonumber( tab.Case06 ),
-				id = tab.Case16
-			} );
-		elseif( tab.Case01 == "planet_bloom" ) then
-			table.insert(  Environments.MapEntities.Bloom, {
-				color = Vector( tab.Case02 ),
-				x = tonumber( string.Explode( " ", tab.Case03 )[1] ),
-				y = tonumber( string.Explode( " ", tab.Case03 )[2] ),
-				passes = tonumber( tab.Case04 ),
-				darken = tonumber( tab.Case05 ),
-				multiply = tonumber( tab.Case06 ),
-				colormul = tonumber( tab.Case07 ),
-				id = tab.Case16
-			} );
-		end
+		--PrintTable(tab)
 			
 		local Type = tab.Case01
 		local planet = {}
@@ -391,6 +364,7 @@ function Environments.LoadFromMap()
 			planet.pressure = tonumber(tab.Case05)
 			planet.temperature = tonumber(tab.Case06)
 			planet.suntemperature = tonumber(tab.Case07)
+			planet.flags = tonumber(tab.Case08) --can be 0, 1, 2
 			planet.atmosphere.oxygen = tonumber(tab.Case09)
 			planet.atmosphere.carbondioxide = tonumber(tab.Case10)
 			planet.atmosphere.nitrogen = tonumber(tab.Case11)
@@ -476,6 +450,7 @@ function Environments.SaveMap() --plz work :)
 			planet.bloomid = v.bloomid
 			planet.colorid = v.colorid
 			planet.unstable = v.unstable
+			planet.sunburn = v.sunburn
 			planet.position = v.position
 			planet.originalco2per = v.originalco2per
 			planet.atmosphere.total = v.air.total
@@ -488,6 +463,56 @@ function Environments.SaveMap() --plz work :)
 end
 timer.Create("MapSavesEnv", 120, 0, Environments.SaveMap)
 
+function table.Sanitise(tab)
+	for k,v in pairs(tab) do
+		local t = type(v)
+		if t == "boolean" then
+			tab[k] = {}
+			tab[k].__type = "bool"
+			tab[k]["1"] = tostring(v)
+		elseif t == "table" then
+			tab[k] = table.Sanitise(v)
+		elseif t == "Vector" then
+			tab[k] = {}
+			tab[k].__type = "vector"
+			tab[k].x = v.x
+			tab[k].y = v.y
+			tab[k].z = v.z
+		elseif t == "Angle" then
+			tab[k] = {}
+			tab[k].__type = "angle"
+			tab[k].p = v.p
+			tab[k].y = v.y
+			tab[k].r = v.r
+		end
+	end
+	return tab
+end
+
+function table.DeSanitise(tab)
+	for k,v in pairs(tab) do
+		local t = type(v)
+
+		if t == "table" then
+			if v.__type then
+				if v.__type == "bool" then
+					if v["1"] == "true" then
+						tab[k] = true
+					else
+						tab[k] = false
+					end
+				elseif v.__type == "vector" then
+					tab[k] = Vector(v.x, v.y, v.z)
+				elseif v.__type == "angle" then
+					tab[k] = Angle(a.p, a.y, a.r)
+				end
+			else
+				tab[k] = table.DeSanitise(v)
+			end
+		end
+	end
+	return tab
+end
 //Space Definition
 local space = {}
 space.air = {}

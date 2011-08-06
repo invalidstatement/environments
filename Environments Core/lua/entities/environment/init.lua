@@ -151,9 +151,9 @@ function ENT:Think()
 	if self.Entities then
 		self:Check()
 	
-		if self.unstable == "true" then
-			local rand = math.random(1,50)
-			if rand == 5 then
+		if self.unstable == true or self.unstable == "true" then
+			local rand = math.random(1,20)
+			if rand < 2 then
 				util.ScreenShake(self:GetPos(), 14, 255, 6, self.radius)
 				--self.Shaker:Fire("StartShake")
 			end

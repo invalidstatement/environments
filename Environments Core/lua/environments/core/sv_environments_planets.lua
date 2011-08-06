@@ -49,7 +49,15 @@ local function GetFlags(flags)
 	local habitat = Extract_Bit(1, flags)
 	local unstable = Extract_Bit(2, flags)
 	local sunburn = Extract_Bit(3, flags) 
+	--print(habitat, unstable, sunburn)
 	return habitat, unstable, sunburn
+end
+
+local function GetSB3Flags(flags)
+	if not flags or type(flags) != "number" then return end
+	local unstable = Extract_Bit(1, flags)
+	local sunburn = Extract_Bit(2, flags) 
+	return unstable, sunburn
 end
 
 local function GetVolume(radius)
@@ -175,14 +183,21 @@ function Environments.ParsePlanet(planet)
 	local atmosphere = planet.atm
 	local radius = planet.radius
 	local volume = GetVolume(radius)
+	local unstable =  planet.unstable
+	local sunburn = planet.sunburn
+	
+	if planet.flags then
+		unstable, sunburn = GetSB3Flags(planet.flags)
+	end
 	
 	local self = {}
 	self.radius = radius
 	self.position = planet.position
 	self.typeof = planet.typeof
-	--self.suntemperature = planet.suntemperature
+
 	self.noclip = planet.noclip
-	self.unstable = planet.unstable
+	self.unstable = unstable
+	self.sunburn = sunburn
 	self.bloomid = planet.bloomid
 	self.colorid = planet.colorid
 	
@@ -290,6 +305,7 @@ end
 //Borrowed from SB3
 function Environments.ParseSB2Environment(planet)
 	local habitat, unstable, sunburn = GetFlags(planet.flags)
+	planet.flags = nil
 	local o2 = 0
 	local co2 = 0
 	local n = 0
@@ -313,6 +329,7 @@ function Environments.ParseSB2Environment(planet)
 		planet.atmosphere.nitrogen = 3.5
 		planet.atmosphere.hydrogen = 0
 	end
+	planet.sunburn = sunburn
 	return planet
 end
 //End Borrowed code

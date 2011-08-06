@@ -8,9 +8,9 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 122
+Environments.Version = 123
 Environments.CurrentVersion = 0 --for update checking
-Environments.FileVersion = 5
+Environments.FileVersion = 6
 //User Options
 Environments.ForceLoad = false
 Environments.UseSuit = true
@@ -155,7 +155,7 @@ if SERVER then
 	end)*/
 	
 	hook.Add("GetGameDescription", "EnvironmentsStatus", function() 
-		if Environments.CurrentVersion and Environments.CurrentVersion >= Environments.Version then
+		if Environments.CurrentVersion and Environments.CurrentVersion > Environments.Version then
 			return "ENVIRONMENTS IS OUT OF DATE"
 		else
 			return table.Random(desc)
