@@ -144,12 +144,14 @@ end
 function ENT:Pump_Air()
 	self.energy = self:GetResourceAmount("energy")
 	local mul = 1
-	if self.environment and self.environment:IsSpace() or self.environment:IsStar() then
-		mul = 0 //Make the device still absorb energy, but not produce any gas anymore
-	elseif self.environment and self.environment:IsEnvironment() and not self.environment:IsPlanet() then
-		mul = 0.5
+	if self.environment then
+		if self.environment:IsSpace() or self.environment:IsStar() then
+			mul = 0 //Make the device still absorb energy, but not produce any gas anymore
+		elseif self.environment:IsEnvironment() and !self.environment:IsPlanet() then
+			mul = 0.5
+		end
 	end
-	
+	--print(self.env_extra)
 	local einc = (Energy_Increment + (self.overdrive*Energy_Increment)) * self.Multiplier
 	einc = math.ceil(einc * self:GetMultiplier())
 	if WireAddon then Wire_TriggerOutput(self, "EnergyUsage", math.Round(einc)) end
@@ -164,17 +166,17 @@ function ENT:Pump_Air()
 			ainc = (ainc * self:GetMultiplier()) * self.Multiplier
 			if WireAddon then Wire_TriggerOutput(self, "GasProduction", math.Round(ainc)) end
 			if self.environment then
-				local usage = ainc;
-				if self.caf.custom.resource == "oxygen" then
+				local usage = ainc
+				if self.env_extra == "oxygen" then
 					usage = self.environment:Convert(0, -1, ainc)
-				elseif self.caf.custom.resource == "carbon dioxide" then
+				elseif self.env_extra == "carbon dioxide" then
 					usage = self.environment:Convert(1, -1, ainc)
-				elseif self.caf.custom.resource == "hydrogen" then
+				elseif self.env_extra == "hydrogen" then
 					usage = self.environment:Convert(3, -1, ainc)
-				elseif self.caf.custom.resource == "nitrogen" then
+				elseif self.env_extra == "nitrogen" then
 					usage = self.environment:Convert(2, -1, ainc)
 				end
-				local left = self:SupplyResource(self.caf.custom.resource, usage)
+				local left = self:SupplyResource(self.env_extra, usage)
 				if left then --use this to put back excess when supply resource is fixed to return amount not added
 					/*if self.caf.custom.resource == "oxygen" then
 						self.environment:Convert(-1, 0, left)
@@ -187,7 +189,7 @@ function ENT:Pump_Air()
 					end*/
 				end
 			else
-				self:SupplyResource(self.caf.custom.resource, ainc)
+				self:SupplyResource(self.env_extra, ainc)
 			end
 		end
 	else

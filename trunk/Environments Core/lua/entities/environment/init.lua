@@ -152,7 +152,7 @@ function ENT:Think()
 		self:Check()
 	
 		if self.unstable == true or self.unstable == "true" then
-			local rand = math.random(1,20)
+			local rand = math.random(1,40)
 			if rand < 2 then
 				util.ScreenShake(self:GetPos(), 14, 255, 6, self.radius)
 				--self.Shaker:Fire("StartShake")

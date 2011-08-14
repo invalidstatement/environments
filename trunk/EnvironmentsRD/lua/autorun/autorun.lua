@@ -205,20 +205,11 @@ end
 
 function Environments.BuildDupeInfo( ent )
 	if ent.IsNode then
-		local nettable = ent.connected
-		local info = {}
-		info.resources = table.Copy(ent.maxresources)
-		local entids = {}
-		if table.Count(ent.connected) > 0 then
-			for k, v in pairs(ent.connected) do
-				table.insert(entids, v:EntIndex())
-			end
-		end
-		info.entities = entids
-		info.cons = cons
-		if info.entities then
-			duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
-		end
+		--local nettable = ent.connected
+		--local info = {}
+		--info.resources = table.Copy(ent.maxresources)
+
+		--duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
 	elseif ent:GetClass() == "env_pump" then
 		local info = {}
 		info.pump = ent.pump_active
@@ -227,10 +218,10 @@ function Environments.BuildDupeInfo( ent )
 		duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
 	else --everything else?
 		local info = {}
-		if ent.maxresources then
-			info.maxresources = table.Copy(ent.maxresources)
-			duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
+		if ent.node then
+			info.Node = ent.node:EntIndex()
 		end
+		duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
 	end
 end
 
@@ -239,33 +230,23 @@ function Environments.ApplyDupeInfo( ent, CreatedEntities )
 	if ent.EntityMods and ent.EntityMods.EnvDupeInfo then
 		local DupeInfo = ent.EntityMods.EnvDupeInfo
 		if ent.IsNode then
-			if DupeInfo.resources then
+			/*if DupeInfo.resources then
 				ent.maxresources = DupeInfo.resources
 				ent:Initialize()
 			end
-			if DupeInfo.entities and table.Count(DupeInfo.entities) > 0 then
-				timer.Simple(1, function(ents, CreatedEntities) --wait til the client knows the ents exist
-					for _,ID in pairs(ents) do
-						local ent2 = CreatedEntities[ID]
-						if ent2 and ent2:IsValid() then
-							ent:Link(ent2)
-							ent2:Link(ent)
-						end
-					end
-				end, DupeInfo.entities, CreatedEntities)
-			end
-			ent.EntityMods.EnvDupeInfo = nil //trash this info, we'll never need it again
+			ent.EntityMods.EnvDupeInfo = nil */
 		elseif ent:GetClass() == "env_pump" then
 			ent:Setup( DupeInfo.pump, DupeInfo.rate, DupeInfo.hoselength )
 			ent.EntityMods.EnvDupeInfo = nil
 		else
-			if DupeInfo.maxresources then 
-				ent.maxresources = table.Copy(DupeInfo.maxresources)
-				if ent.node then
-					local node = ent.node
-					ent:Unlink()
-					ent:Link(node)
-				end
+			--if DupeInfo.maxresources then 
+				--ent.maxresources = table.Copy(DupeInfo.maxresources)
+			--end
+			Environments.MakeFunc(ent) --yay
+			if DupeInfo.Node then
+				local node = CreatedEntities[DupeInfo.Node]
+				ent:Link(node)
+				node:Link(ent)
 			end
 			ent.EntityMods.EnvDupeInfo = nil
 		end
@@ -377,6 +358,7 @@ else
 			for name,tab in pairs(ent.resources) do
 				umsg.Start("Env_UpdateResAmt")
 					umsg.Entity(ent)
+					name = Environments.Resources[name] or name
 					umsg.String(name)
 					umsg.Long(tab.value)
 				umsg.End()
@@ -495,6 +477,21 @@ else
 		end
 	end
 end
+
+Environments.Resources = {}
+Environments.Resources2 = {}
+function Environments.RegisterResource(name)
+	Environments.Resources[name] = table.Count(Environments.Resources) + 1
+	Environments.Resources2[table.Count(Environments.Resources)] = name
+end	
+
+Environments.RegisterResource("oxygen")
+Environments.RegisterResource("water")
+Environments.RegisterResource("energy")
+Environments.RegisterResource("nitrogen")
+Environments.RegisterResource("hydrogen")
+Environments.RegisterResource("steam")
+Environments.RegisterResource("carbon dioxide")
 
 print("==============================================")
 print("== Environments Life Support Ents Installed ==")
