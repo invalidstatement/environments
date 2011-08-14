@@ -110,8 +110,11 @@ if Wire_UpdateRenderBounds then
 end
 
 local function RecieveAmts(msg)
-	--local ent = msg:ReadEntity()
-	msg:ReadEntity().resources[msg:ReadString()] = msg:ReadLong()
+	local ent = msg:ReadEntity()
+	local res = tonumber(msg:ReadString())
+	
+	ent.resources[Environments.Resources2[res] or res] = msg:ReadLong()
+	print(ent.resources[res], res, Environments.Resources2[res])
 end
 usermessage.Hook("Env_UpdateResAmt", RecieveAmts)
 

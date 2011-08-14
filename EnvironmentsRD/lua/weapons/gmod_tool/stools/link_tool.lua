@@ -31,9 +31,9 @@ end
 
 function TOOL:LeftClick( trace )
 	//if not valid or player, exit
-	if ( trace.Entity:IsValid() && trace.Entity:IsPlayer() ) then return end
+	if !trace.Entity:IsValid() or trace.Entity:IsPlayer() or trace.HitWorld then return end
 	//if client exit
-	if ( CLIENT ) then return true end
+	if CLIENT then return true end
 	// If there's no physics object then we can't constraint it!
 	if ( !util.IsValidPhysicsObject( trace.Entity, trace.PhysicsBone ) ) then return false end
 

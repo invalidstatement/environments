@@ -28,7 +28,6 @@ function ENT:Initialize()
 		self.WireDebugName = self.PrintName
 		self.Inputs = WireLib.CreateInputs(self, { "On" })
 		self.Outputs = WireLib.CreateOutputs(self, { "On", "Output" })
-		self.Outputs = WireLib.CreateOutputs(self, { "On", "Output" })
 	else
 		self.Inputs = {{Name="On"}}
 	end
@@ -269,7 +268,7 @@ function ENT:Extract_Energy()
 		if (inc > 0) then inc = math.ceil(inc/math.random(12 - math.ceil(8 * ( self:GetResourceAmount("water")/math.ceil(Coolant_Increment * self:GetMultiplier()))),20)) end
 	else
 		local consumed = self:ConsumeResource("water", math.ceil(Coolant_Increment * self:GetMultiplier()))
-		self:SupplyResource("steam", math.ceil(consumed * 0.92))
+		--self:SupplyResource("steam", math.ceil(consumed * 0.92))
 		self:SupplyResource("water", math.ceil(consumed * 0.08))
 	end
 

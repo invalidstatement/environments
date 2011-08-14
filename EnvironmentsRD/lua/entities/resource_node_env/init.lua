@@ -122,8 +122,11 @@ function ENT:Think()
 	if self.updated then
 		for name,v in pairs(self.resources) do
 			if v.haschanged then
-				umsg.Start("Env_UpdateResAmt") --temporary prototype system
+				umsg.Start("Env_UpdateResAmt")
 					umsg.Entity(self)
+					local old = name
+					name = Environments.Resources[name] or name
+					print("Sending "..old.." as "..name)
 					umsg.String(name)
 					umsg.Long(v.value)
 				umsg.End()
