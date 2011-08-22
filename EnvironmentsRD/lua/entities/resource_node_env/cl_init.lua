@@ -114,7 +114,7 @@ local function RecieveAmts(msg)
 	local res = tonumber(msg:ReadString())
 	
 	ent.resources[Environments.Resources2[res] or res] = msg:ReadLong()
-	print(ent.resources[res], res, Environments.Resources2[res])
+	--print(ent.resources[res], res, Environments.Resources2[res])
 end
 usermessage.Hook("Env_UpdateResAmt", RecieveAmts)
 

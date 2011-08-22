@@ -146,11 +146,26 @@ end
 
 //Actually creates it
 function Environments.CreatePlanet(d)
-	local planet = ents.Create("Environment")
-	planet:Spawn()
-	planet:SetPos(d.position)
-	--planet.environment = self
-	planet:Configure(d.radius, d.gravity, d.name, d)
+	local planet = " "
+	
+	//Different Type Support
+	if d.typeof == "SB3" then
+		planet = ents.Create("Environment")
+		planet:Spawn()
+		planet:SetPos(d.position)
+		--planet.environment = self
+		planet:Configure(d.radius, d.gravity, d.name, d)
+	elseif d.typeof == "SB2" then
+		planet = ents.Create("Environment")
+		planet:Spawn()
+		planet:SetPos(d.position)
+		--planet.environment = self
+		planet:Configure(d.radius, d.gravity, d.name, d)
+	else
+		if d.typeof then
+			print("NOT A VALID TYPE: "..d.typeof)
+		end
+	end
 	
 	//stop it from getting removed
 	planet.Delete = planet.Remove
@@ -195,7 +210,6 @@ function Environments.ParsePlanet(planet)
 	self.position = planet.position
 	self.typeof = planet.typeof
 
-	self.noclip = planet.noclip
 	self.unstable = unstable
 	self.sunburn = sunburn
 	self.bloomid = planet.bloomid
@@ -306,11 +320,7 @@ end
 function Environments.ParseSB2Environment(planet)
 	local habitat, unstable, sunburn = GetFlags(planet.flags)
 	planet.flags = nil
-	local o2 = 0
-	local co2 = 0
-	local n = 0
-	local h = 0
-	local pressure = atmosphere
+
 	//set Radius if one is given
 	if planet.radius and type(radius) == "number" then
 		if planet.radius < 0 then
@@ -330,6 +340,7 @@ function Environments.ParseSB2Environment(planet)
 		planet.atmosphere.hydrogen = 0
 	end
 	planet.sunburn = sunburn
+	planet.unstable = unstable
 	return planet
 end
 //End Borrowed code

@@ -164,6 +164,23 @@ local function LoadEnvironments()
 	if Environments.Debug then
 		print("Environments Server Startup Time: "..(SysTime() - start))
 	end
+	
+	local servertags = nil
+	local function AddServerTag(tag)
+		if not servertags then
+			servertags = GetConVarString("sv_tags")
+		end
+		if servertags == nil then
+			RunConsoleCommand("sv_tags", tag)
+		elseif not string.find(servertags, tag) then
+			servertags = servertags .. ","..tag
+			RunConsoleCommand("sv_tags", servertags)
+		end
+	end
+	
+	AddServerTag("SB")
+	AddServerTag("Environments")
+	AddServerTag("Space")
 end
 hook.Add("InitPostEntity","EnvLoad", LoadEnvironments)
 
@@ -211,8 +228,6 @@ function Environments.RegisterEnvironments()
 		local starscontents = file.Read( "environments/" .. map .. "_stars.txt")
 		if contents and starscontents then
 			local status, error = pcall(function()
-				Environments.PlanetSaveData = {}
-				Environments.PlanetSaveData = util.KeyValuesToTable(contents)
 				planets = table.DeSanitise(util.KeyValuesToTable(contents))
 				stars = table.DeSanitise(util.KeyValuesToTable(starscontents))
 				if planets.version == Environments.FileVersion then
@@ -242,11 +257,10 @@ function Environments.RegisterEnvironments()
 		end
 		planets.version = nil
 		for k,v in pairs(planets) do --clean this up, the parsing only does atmosphere
-			PrintTable(v)
 			v.air = Environments.ParseSaveData(v).air --get air data from atmosphere data
 			v.atmosphere = v.atm
 			Environments.CreatePlanet(v)
-		end
+		end  
 		for k,v in pairs(stars) do
 			local star = Environments.ParseStar(v)
 			Environments.CreateStar(star)
@@ -291,8 +305,30 @@ function Environments.LoadFromMap()
 		local Type = tab.Case01
 		local planet = {}
 		planet.position = {}
+		
+		if Type == "env_rectangle" then
+			planet.typeof = "cube"
+
+			//KEYS
+			planet.radius = tonumber(tab.Case02) --Get Radius
+			planet.gravity = tonumber(tab.Case03) --Get Gravity
+			//END KEYS
+	
+			planet.position = ent:GetPos()
 			
-		if Type == "cube" then --need to fix in the future
+			--Add Defaults
+			planet.atmosphere = {}
+			planet.atmosphere = table.Copy(default.atmosphere)
+			planet.unstable = "false"
+			planet.temperature = 288
+			planet.pressure = 1
+	
+			i=i+1
+			planet.name = i
+
+			table.insert(planets, planet)
+			print("//     Spacebuild Cube Added       //")
+		elseif Type == "cube" then --need to fix in the future
 			planet.typeof = "cube"
 			
 			//KEYS
@@ -301,16 +337,14 @@ function Environments.LoadFromMap()
 			//END KEYS
 	
 			planet.position = ent:GetPos()
-						
+			
 			--Add Defaults
 			planet.atmosphere = {}
 			planet.atmosphere = table.Copy(default.atmosphere)
 			planet.unstable = "false"
 			planet.temperature = 288
 			planet.pressure = 1
-			planet.noclip = 0
-			planet.spawn = 0
-						
+			
 			i=i+1
 			planet.name = i
 
@@ -323,9 +357,8 @@ function Environments.LoadFromMap()
 			planet.unstable = "false"
 			planet.temperature = 288
 			planet.pressure = 1
-			planet.noclip = 0
-			planet.spawn = 0
-				
+			planet.typeof = "SB2"
+			
 			//KEYS
 			planet.radius = tonumber(tab.Case02) --Get Radius
 			planet.gravity = tonumber(tab.Case03) --Get Gravity
@@ -344,7 +377,7 @@ function Environments.LoadFromMap()
 			end
 			i=i+1
 			planet.name = i
-						
+			
 			local planet = Environments.ParseSB2Environment(planet)
 			table.insert(planets, planet)
 			print("//     Spacebuild 2 Planet Added   //")
@@ -355,9 +388,9 @@ function Environments.LoadFromMap()
 			planet.unstable = "false"
 			planet.temperature = 288
 			planet.pressure = 1
-			planet.noclip = 0
-			planet.spawn = 0
-						
+			
+			planet.typeof = "SB3"
+			
 			planet.radius = tonumber(tab.Case02) --Get Radius
 			planet.gravity = tonumber(tab.Case03) --Get Gravity
 			planet.atm = tonumber(tab.Case04) --What does this mean?
@@ -434,6 +467,7 @@ function Environments.SaveMap() --plz work :)
 			planet.gravity = v.gravity
 			--print("Pressure: "..v.pressure)
 			planet.pressure = v.pressure
+			planet.typeof = v.typeof
 			planet.radius = v.radius
 			planet.name = v.name 
 			planet.temperature = v.temperature
