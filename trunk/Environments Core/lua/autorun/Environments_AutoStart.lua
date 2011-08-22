@@ -8,9 +8,9 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 123
+Environments.Version = 125
 Environments.CurrentVersion = 0 --for update checking
-Environments.FileVersion = 6
+Environments.FileVersion = 7
 //User Options
 Environments.ForceLoad = false
 Environments.UseSuit = true
@@ -117,43 +117,11 @@ GetOnlineVersion()
 //server messages
 local desc = {}
 desc[1] = "Environments"
-desc[2] = "Sandbox"
-desc[3] = "Environments Spacebuild"
+desc[2] = "Spacebuild"
+--desc[3] = "Environments Spacebuild"
 
 //Add The Server Tag
 if SERVER then
-	timer.Create("SetTagsEnvironments", 10, 0, function()
-		local servertags = GetConVarString("sv_tags")
-		if !servertags then
-			RunConsoleCommand("sv_tags", "environments")
-		elseif not string.find(servertags, "environments", 1, true) then
-			servertags = servertags .. ",environments"
-			RunConsoleCommand("sv_tags", servertags)        
-		end
-	end)
-	/*function AddTag(tag)
-		local servertags = GetConVarString("sv_tags")
-		if !servertags then
-			RunConsoleCommand("sv_tags", tag)
-		elseif not string.find(servertags, tag, 1, true) then
-			servertags = servertags .. ","..tag
-			RunConsoleCommand("sv_tags", servertags)
-		end
-	end
-	timer.Create("alsdjalksdja", 20, 0, function()
-		AddTag("environments")
-		AddTag("space")
-		AddTag("sb")
-	end)*/
-	
-	/*local cvar = GetConVar("sv_tags")
-	timer.Create("Environments_Tags",1,0,function()
-		local tags = cvar:GetString()
-		if !tags:find( "environments" ) then
-			RunConsoleCommand( "sv_tags", tags .. ",environments,sb,space")
-		end	
-	end)*/
-	
 	hook.Add("GetGameDescription", "EnvironmentsStatus", function() 
 		if Environments.CurrentVersion and Environments.CurrentVersion > Environments.Version then
 			return "ENVIRONMENTS IS OUT OF DATE"

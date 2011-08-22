@@ -126,7 +126,7 @@ function ENT:Think()
 					umsg.Entity(self)
 					local old = name
 					name = Environments.Resources[name] or name
-					print("Sending "..old.." as "..name)
+					--print("Sending "..old.." as "..name)
 					umsg.String(name)
 					umsg.Long(v.value)
 				umsg.End()
