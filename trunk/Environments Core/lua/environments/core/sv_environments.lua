@@ -27,7 +27,7 @@ local Environments = Environments
 SRP = {} --Backup Compatability from when this was gonna be a gamemode
 UseEnvironments = false
 
-local AllowNoClip = CreateConVar( "env_allow_noclip", "1", FCVAR_NOTIFY )
+local AllowNoClip = CreateConVar( "env_noclip", "0", FCVAR_NOTIFY )
 
 environments = {}
 stars = {}
@@ -663,10 +663,12 @@ function Environments.Hooks.NoClip( ply, on )
 	--end*/
     if ply:GetMoveType() == MOVETYPE_NOCLIP then return true end
     if ply:IsAdmin() then return true end
-        
-	if not ply.environment then return false end --double check     
 	
-	if ply.environment.IsSpace and ply.environment:IsSpace() then return false end --not in space you don't
+    if GetConVarNumber("env_noclip") != 1 then
+		if not ply.environment then return false end --double check     
+		
+		if ply.environment.IsSpace and ply.environment:IsSpace() then return false end --not in space you don't
+	end
 	
     return true            
 end

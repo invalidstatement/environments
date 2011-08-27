@@ -16,6 +16,8 @@ local function AddToolTab()
 	spawnmenu.AddToolCategory("Environments","Config"," Config");
 	-- Add the entry for config
 	spawnmenu.AddToolMenuOption("Environments","Config","Settings","Settings","","",Environments.ConfigMenu,{});
+	
+	spawnmenu.AddToolMenuOption("Environments","Config","Admin","Admin","","",Environments.AdminMenu,{});
 	-- Add the entry for Credits and Bugreporting!
 	--spawnmenu.AddToolMenuOption("Environments","Config","Credits","Credits and Bugs","","",Environments.Credits);
 	-- Add our tools to the tab
@@ -46,6 +48,18 @@ SuitModels = {
 	["models/Combine_Soldier_PrisonGuard.mdl"] = {},
 	["models/Combine_Soldier.mdl"] = {}
 }
+
+function Environments.AdminMenu(Panel)
+	Panel:ClearControls()
+	if LocalPlayer():IsAdmin() then
+		Panel:Button("Reset Environments", "env_server_reload")
+		
+		Panel:Help("Enable Noclip For Everyone?")
+		Panel:AddControl("CheckBox", {Label = "Enable Noclip?", Command = "env_noclip"} )
+	else
+		Panel:Help("You are not an admin!")
+	end
+end
 
 function Environments.ConfigMenu(Panel)
 	Panel:ClearControls()

@@ -78,17 +78,26 @@ function ENT:AddResource(name,amt)--adds to storage
 	self.maxresources[name] = (self.maxresources[name] or 0) + amt
 end
 
-function ENT:Link(ent)
+function ENT:Link(ent, delay)
 	if self.node then
 		self:Unlink()
 	end
 	if ent and ent:IsValid() then
 		self.node = ent
 		--self:SetNWEntity("node", ent)
-		umsg.Start("Env_SetNodeOnEnt")
-			umsg.Entity(self)
-			umsg.Entity(ent)
-		umsg.End()
+		if delay then
+			timer.Simple(0.1, function(self, ent)
+				umsg.Start("Env_SetNodeOnEnt")
+					umsg.Entity(self)
+					umsg.Entity(ent)
+				umsg.End()
+			end, self, ent)
+		else
+			umsg.Start("Env_SetNodeOnEnt")
+				umsg.Entity(self)
+				umsg.Entity(ent)
+			umsg.End()
+		end
 	end
 end
 

@@ -6,6 +6,8 @@ include('shared.lua')
 
 ENT.NoSpaceAfterEndTouch = true
 
+ENT.IsNode = true
+
 function ENT:SpawnFunction(ply, tr) -- Spawn function needed to make it appear on the spawn menu
 	local ent = ents.Create("resource_node_env") -- Create the entity
 	ent:SetPos(tr.HitPos + Vector(0, 0, 50) ) -- Set it to spawn 50 units over the spot you aim at when spawning it
@@ -36,7 +38,7 @@ function ENT:TriggerInput(iname, value)
 	
 end
 
-function ENT:Link(ent)
+function ENT:Link(ent, delay)
 	if ent == self then return end
 	
 	self.connected[ent:EntIndex()] = ent
@@ -48,11 +50,21 @@ function ENT:Link(ent)
 			else
 				self.maxresources[name] = max
 			end
-			umsg.Start("Env_UpdateMaxRes")
-				umsg.Entity(self)
-				umsg.String(name)
-				umsg.Long(self.maxresources[name])
-			umsg.End()
+			if delay then
+				timer.Simple(0.1, function(self, ent, name)
+					umsg.Start("Env_UpdateMaxRes")
+						umsg.Entity(self)
+						umsg.String(name)
+						umsg.Long(self.maxresources[name])
+					umsg.End()
+				end, self, ent)
+			else
+				umsg.Start("Env_UpdateMaxRes")
+					umsg.Entity(self)
+					umsg.String(name)
+					umsg.Long(self.maxresources[name])
+				umsg.End()
+			end
 		end
 	end
 	if ent.resources then
@@ -119,7 +131,7 @@ function ENT:Think()
 		self:LinkCheck()
 		self.nextcheck = CurTime() + 5
 	end
-	if self.updated then
+	/*if self.updated then --for new method
 		for name,v in pairs(self.resources) do
 			if v.haschanged then
 				umsg.Start("Env_UpdateResAmt")
@@ -134,9 +146,42 @@ function ENT:Think()
 			end
 		end
 		self.updated = false
-	end
+	end*/
 	self:NextThink(CurTime() + 1)
 	return true
+end
+
+function ENT:DoUpdate(res1, res2, ply) --todo make cheaper
+	for k,name in pairs(res1) do
+		local v = self.resources[name]
+		if v and v.haschanged then
+			umsg.Start("Env_UpdateResAmt")
+				umsg.Entity(self)
+				local old = name
+				name = Environments.Resources[name] or name
+					--print("Sending "..old.." as "..name)
+				umsg.String(name)
+				umsg.Long(v.value)
+			umsg.End()
+			v.haschanged = false
+		end
+	end
+	
+	if !res2 then return end
+	for k,name in pairs(res2) do
+		local v = self.resources[name]
+		if v and v.haschanged then
+			umsg.Start("Env_UpdateResAmt")
+				umsg.Entity(self)
+				local old = name
+				name = Environments.Resources[name] or name
+					--print("Sending "..old.." as "..name)
+				umsg.String(name)
+				umsg.Long(v.value)
+			umsg.End()
+			v.haschanged = false
+		end
+	end
 end
 
 function ENT:GenerateResource(name, amt)
