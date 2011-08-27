@@ -28,7 +28,7 @@ default.basemass = 200
 function Environments.MakeFunc(ent)
 	local data = ""
 	if !Environments.MakeData[ent:GetClass()] then
-		ErrorNoHalt("MakeFunc ERROR: No MakeData found for "..ent:GetClass().."! Defaulting!\n") 
+		ErrorNoHalt("MakeFunc WARNING: No MakeData found for "..ent:GetClass().."! Defaulting!\n") 
 		data = default
 	else
 		data = Environments.MakeData[ent:GetClass()]
@@ -206,7 +206,7 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 	print("Storage Registered "..class)
 end
 
-function Environments.RegisterTool(name, filename, category, description, cleanupgroup)
+function Environments.RegisterTool(name, filename, category, description, cleanupgroup, limit)
 	local TOOL = ToolObj:Create()
 	
 	TOOL.Mode = filename
@@ -231,7 +231,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 		Angle=Angle(90,0,0), -- Angle offset?
 		Keys={}, -- These keys will be saved by the duplicator on a copy, NOT!
 		Class=class, -- Default SENT to spawn
-		Limit=20, -- Limits?
+		Limit=limit or 20, -- Limits?
 	};
 
 	TOOL.Topic = {}
@@ -306,9 +306,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 				ent:SetSkin(info.skin)
 			end
 			
-			--ccccccccccccccccccccccccPrintTable(info)
 			if info.extra then
-				--print("info.extra exists!")
 				ent.env_extra = info.extra
 			end
 			
@@ -475,7 +473,6 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 				icon.devtype = cat
 				icon:SetTooltip(k)
 				icon.DoClick = function(self)
-					--print("Selected "..self.devname)
 					self.tool.Model = self.model
 					RunConsoleCommand( ccv_type, self.devtype )
 					RunConsoleCommand( ccv_sub_type, self.devname )
@@ -525,9 +522,13 @@ Environments.RegisterDevice("Generators", "Fusion Generator", "Small Fusion Reac
 Environments.RegisterDevice("Generators", "Fusion Generator", "Small SBEP Reactor", "generator_fusion", "models/Punisher239/punisher239_reactor_small.mdl")
 Environments.RegisterDevice("Generators", "Fusion Generator", "Large SBEP Reactor", "generator_fusion", "models/Punisher239/punisher239_reactor_big.mdl")
 
-
-Environments.RegisterDevice("Generators", "Solar Panel", "Large Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_giant.mdl")
-Environments.RegisterDevice("Generators", "Solar Panel", "Huge Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_c_huge.mdl")
+Environments.RegisterDevice("Generators", "Solar Panel", "Huge Circular Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_c_huge.mdl")
+Environments.RegisterDevice("Generators", "Solar Panel", "Large Circular Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_c_large.mdl")
+Environments.RegisterDevice("Generators", "Solar Panel", "Medium Circular Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_c_medium.mdl")
+Environments.RegisterDevice("Generators", "Solar Panel", "Giant Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_giant.mdl")
+Environments.RegisterDevice("Generators", "Solar Panel", "Huge Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_huge.mdl")
+Environments.RegisterDevice("Generators", "Solar Panel", "Large Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_large.mdl")
+Environments.RegisterDevice("Generators", "Solar Panel", "Medium Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_medium.mdl")
 
 Environments.RegisterDevice("Generators", "Water Pump", "Large Water Pump", "generator_water", "models/chipstiks_ls3_models/LargeH2OPump/largeh2opump.mdl")
 Environments.RegisterDevice("Generators", "Water Pump", "Small Water Pump", "generator_water", "models/props_phx/life_support/gen_water.mdl")
@@ -549,16 +550,20 @@ Environments.RegisterDevice("Generators", "Water Splitter", "Electrolysis Genera
 
 Environments.RegisterDevice("Generators", "Hydrogen Fuel Cell", "Small Fuel Cell", "generator_hydrogen_fuel_cell", "models/Slyfo/electrolysis_gen.mdl")
 
+Environments.RegisterDevice("Generators", "Water Heater", "Water Heater", "env_water_heater", "models/ce_ls3additional/water_heater/water_heater.mdl")
+
 //Storage Tool
+Environments.RegisterDevice("Storages", "Water Storage", "Massive Water Tank", "env_water_storage", "models/props/de_nuke/storagetank.mdl")
 Environments.RegisterDevice("Storages", "Water Storage", "Large Water Tank", "env_water_storage", "models/ce_ls3additional/resource_tanks/resource_tank_large.mdl")
 Environments.RegisterDevice("Storages", "Water Storage", "Medium Water Tank", "env_water_storage", "models/ce_ls3additional/resource_tanks/resource_tank_medium.mdl")
 Environments.RegisterDevice("Storages", "Water Storage", "Small Water Tank", "env_water_storage", "models/ce_ls3additional/resource_tanks/resource_tank_small.mdl")
 Environments.RegisterDevice("Storages", "Water Storage", "Tiny Water Tank", "env_water_storage", "models/ce_ls3additional/resource_tanks/resource_tank_tiny.mdl")
-Environments.RegisterDevice("Storages", "Water Storage", "Massive Water Tank", "env_water_storage", "models/props/de_nuke/storagetank.mdl")
 
 Environments.RegisterDevice("Storages", "Energy Storage", "Large Battery", "env_energy_storage", "models/props_phx/life_support/battery_large.mdl")
 Environments.RegisterDevice("Storages", "Energy Storage", "Medium Battery", "env_energy_storage", "models/props_phx/life_support/battery_medium.mdl")
 Environments.RegisterDevice("Storages", "Energy Storage", "Small Battery", "env_energy_storage", "models/props_phx/life_support/battery_small.mdl")
+Environments.RegisterDevice("Storages", "Energy Storage", "Substation Capacitor", "env_energy_storage", "models/props_c17/substation_stripebox01a.mdl")
+Environments.RegisterDevice("Storages", "Energy Storage", "Substation Backup Battery", "env_energy_storage", "models/props_c17/substation_transformer01a.mdl")
 
 Environments.RegisterDevice("Storages", "Oxygen Storage", "Large Oxygen Storage", "env_oxygen_storage", "models/props_wasteland/coolingtank02.mdl")
 
@@ -568,6 +573,8 @@ Environments.RegisterDevice("Storages", "Hydrogen Storage", "Large Hydrogen Stor
 
 Environments.RegisterDevice("Storages", "CO2 Storage", "Large CO2 Storage", "env_co2_storage", "models/props_wasteland/coolingtank02.mdl")
 
+Environments.RegisterDevice("Storages", "Steam Storage", "Large Steam Tank", "env_steam_storage", "models/chipstiks_ls3_models/LargeSteamTank/largesteamtank.mdl")
+
 
 //Life Support Tool
 Environments.RegisterDevice("Life Support", "Suit Dispenser", "Suit Dispenser", "suit_dispenser", "models/props_combine/combine_emitter01.mdl")
@@ -575,24 +582,9 @@ Environments.RegisterDevice("Life Support", "LS Core", "LS Core", "env_lscore", 
 Environments.RegisterDevice("Life Support", "Atmospheric Probe", "Atmospheric Probe", "env_probe", "models/props_combine/combine_mine01.mdl")
 
 hook.Add("AddTools", "environments tool hax", function()
-	Environments.RegisterTool("Steam Storages", "Steam_Storage", "Storages", "asdajldkjad", "env_steam_storage", {["models/chipstiks_ls3_models/LargeSteamTank/largesteamtank.mdl"] = {}}, "storage")
-	Environments.RegisterTool("Water Tanks", "Water_Takns", "Storages", "asdajldkjad", "env_water_storage", {
-		["models/ce_ls3additional/resource_tanks/resource_tank_large.mdl"] = {},
-		["models/ce_ls3additional/resource_tanks/resource_tank_medium.mdl"] = {},
-		["models/ce_ls3additional/resource_tanks/resource_tank_small.mdl"] = {},
-		["models/ce_ls3additional/resource_tanks/resource_tank_tiny.mdl"] = {}, 
-		["models/props/de_port/tankoil01.mdl"] = {},
-		["models/props/de_nuke/storagetank.mdl"] = {},
-		["models/props_wasteland/coolingtank02.mdl"] = {},
-		["models/props_c17/oildrum001.mdl"] = {} 
-	}, "storage")
-	
-	//Real Tools
-	Environments.RegisterTool("Generators", "Energy_Gens", "Life Support", "Used to spawn various LS devices", "generator")
-	Environments.RegisterTool("Storages", "Storage_Tanks", "Life Support", "Used to spawn various resource storages", "storage")
-	Environments.RegisterTool("Life Support", "Life_Support", "Life Support", "Used to spawn various devices designed to keep you alive in space.", "life support")
-	
-	Environments.RegisterTool("Water Heaters", "Water_Heater", "Generators", "asdajldkjad", "env_water_heater", {["models/ce_ls3additional/water_heater/water_heater.mdl"] = {}}, "generator")
+	Environments.RegisterTool("Generators", "Energy_Gens", "Life Support", "Used to spawn various LS devices", "generator", 30)
+	Environments.RegisterTool("Storages", "Storage_Tanks", "Life Support", "Used to spawn various resource storages", "storage", 20)
+	Environments.RegisterTool("Life Support", "Life_Support", "Life Support", "Used to spawn various devices designed to keep you alive in space.", "lifesupport", 15)
 end)
 
 Environments.RegisterLSStorage("Steam Storage", "env_steam_storage", {[3600] = "steam"}, 4084, 400, 300)
@@ -601,7 +593,7 @@ Environments.RegisterLSStorage("Energy Storage", "env_energy_storage", {[3600] =
 Environments.RegisterLSStorage("Oxygen Storage", "env_oxygen_storage", {[4600] = "oxygen"}, 4084, 100, 10)
 Environments.RegisterLSStorage("Hydrogen Storage", "env_hydrogen_storage", {[4600] = "hydrogen"}, 4084, 100, 10)
 Environments.RegisterLSStorage("Nitrogen Storage", "env_nitrogen_storage", {[4600] = "nitrogen"}, 4084, 100, 10)
-Environments.RegisterLSStorage("CO2 Storage", "env_co2_storage", {[4600] = "co2"}, 4084, 100, 10)
+Environments.RegisterLSStorage("CO2 Storage", "env_co2_storage", {[4600] = "carbon dioxide"}, 4084, 100, 10)
 
 Environments.RegisterLSEntity("Water Heater","env_water_heater",{"water","energy"},{"steam"},function(self) local mult = self:GetMultiplier() local amt = self:ConsumeResource("water", 200) amt = self:ConsumeResource("energy",amt*1.5)  self:SupplyResource("steam", amt) end, 70000, 300, 300)
 

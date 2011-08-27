@@ -203,6 +203,40 @@ scripted_ents.Register = function(...)
 	o(...)
 end
 
+if SERVER then
+	local function CheckRD() --make not call for update all the time
+		for k,ply in pairs(player.GetAll()) do
+			local ent = ply:GetEyeTrace().Entity
+			if ent and ent:IsValid() then
+				if ent.node and ent.node:IsValid() then --its a RD entity, send the message!
+					--list.Set( "LSEntOverlayText" , class, {HasOOO = true, resnames = In, genresnames = Out} )
+					local dat = list.Get("LSEntOverlayText")[ent:GetClass()] --get the resources
+					--this is tricky, how do I avoid updating everything?
+					
+					ent.node:DoUpdate(dat.resnames, dat.genresnames, ply)
+				elseif ent.maxresources and !ent.IsNode then
+					if !ent.client_updated then
+						for res,amt in pairs(ent.maxresources) do
+							umsg.Start("EnvStorageUpdate")
+								umsg.Entity(ent)
+								umsg.String(res)
+								if ent.resources then
+									umsg.Long(ent.resources[res] or 0)
+								else
+									umsg.Long(0)
+								end
+								umsg.Long(amt)
+							umsg.End()
+						end
+						ent.client_updated = true
+					end
+				end
+			end
+		end
+	end
+	timer.Create("RDChecker", 0.5, 0, CheckRD) --adjust rate
+end
+
 function Environments.BuildDupeInfo( ent )
 	if ent.IsNode then
 		--local nettable = ent.connected
@@ -245,8 +279,8 @@ function Environments.ApplyDupeInfo( ent, CreatedEntities )
 			Environments.MakeFunc(ent) --yay
 			if DupeInfo.Node then
 				local node = CreatedEntities[DupeInfo.Node]
-				ent:Link(node)
-				node:Link(ent)
+				ent:Link(node, true)
+				node:Link(ent, true)
 			end
 			ent.EntityMods.EnvDupeInfo = nil
 		end

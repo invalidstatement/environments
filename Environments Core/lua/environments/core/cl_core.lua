@@ -94,6 +94,88 @@ local function RenderEffects()
 end
 hook.Add("RenderScreenspaceEffects","EnvironmentsRenderPlanetEffects", RenderEffects) 
 
+    local iris = surface.GetTextureID("effects/lensflare/iris");
+    local flare = surface.GetTextureID("effects/lensflare/flare");
+    local color_ring = surface.GetTextureID("effects/lensflare/color_ring");
+    local bar = surface.GetTextureID("effects/lensflare/bar");
+    local sDrawTexturedRect = surface.DrawTexturedRect;
+    local sSetDrawColor = surface.SetDrawColor;
+    local sSetTexture = surface.SetTexture;
+     
+    local ScrW, ScrH = ScrW, ScrH;
+     
+    function DrawLensFlare(mul,sunx,suny,colr,colg,colb,cola)
+            if mul == 0 then return end
+            local w,h = ScrW(), ScrH();
+            local w2, h2 = w/2, h/2;
+            mul = mul +math.Rand(0,0.0001);
+            local sz = w * 0.15*mul;
+           
+            local val = sunx - w2;
+            local val2 = suny - h2;
+     
+            local alpha = 255 * math.pow(cola,3);
+           
+            sSetTexture(flare);
+            sSetDrawColor(255*colr,230*colg,180*colb,255 * cola);
+            local csz, csz2 = sz*25, sz*12.5;
+            sDrawTexturedRect(sunx - csz2, suny - csz2, csz, csz);
+     
+            sSetTexture(color_ring);
+            sSetDrawColor(255*colr,255*colg,255*colb,alpha * 3.137);
+            csz, csz2 = sz*1.5, sz* 0.75;
+            sDrawTexturedRect(val*0.5+w2-csz2, val2*0.5+h2 - csz2,csz,csz);
+     
+            sSetTexture(bar);
+            sSetDrawColor(255*colr,230*colg,180*colb,alpha);
+            csz, csz2 = sz*10, sz* 0.5;
+            sDrawTexturedRect(val*-0.5+w2-csz2,val2*-0.5+h2-csz2,csz,csz);
+           
+            sSetTexture(iris);
+            sSetDrawColor(255*colr,230*colg,180*colb,alpha)
+            csz, csz2 = sz*1.5, sz* 0.75;
+            sDrawTexturedRect(val*1.8+w2-csz2,val2*1.8+h2-csz2,csz,csz);
+            csz, csz2 = sz*0.15, sz* 0.075;
+            sDrawTexturedRect(val*1.82+w2-csz2,val2*1.82+h2-csz2,csz,csz);
+            csz, csz2 = sz*0.1, sz* 0.5;
+            sDrawTexturedRect(val*1.5+w2-csz2,val2*1.5+h2-csz2,csz,csz);
+            csz, csz2 = sz*0.05, sz* 0.025;
+            sDrawTexturedRect(val*0.6+w2-csz2,val2*0.6+h2-csz2,csz,csz);
+            csz, csz2 = sz*0.05, sz* 0.025;
+            sDrawTexturedRect(val*0.59+w2-csz2,val2*0.59+h2-csz2,csz,csz);
+            csz, csz2 = sz*0.15, sz* 0.075;
+            sDrawTexturedRect(val*0.3+w2-csz2,val2*0.3+h2-csz2,csz,csz);
+            csz, csz2 = sz*0.1, sz* 0.05;
+            sDrawTexturedRect(val*-0.7+w2-csz2,val2*-0.7+h2-csz2,csz,csz);
+            csz, csz2 = sz*0.1, sz* 0.05;
+            sDrawTexturedRect(val*-0.72+w2-csz2,val2*-0.72+h2-csz2,csz,csz);
+            csz, csz2 = sz*0.15, sz* 0.075;
+            sDrawTexturedRect(val*-0.73+w2-csz2,val2*-0.73+h2-csz2,csz,csz);
+            csz, csz2 = sz*0.05, sz* 0.025;
+            sDrawTexturedRect(val*-0.9+w2-csz2,val2*-0.9+h2-csz2,csz,csz);
+            csz, csz2 = sz*0.1, sz* 0.05;
+            sDrawTexturedRect(val*-0.92+w2-csz2,val2*-0.92+h2-csz2,csz,csz);
+            csz, csz2 = sz*0.05, sz* 0.025;
+            sDrawTexturedRect(val*-1.3+w2-csz2,val2*-1.3+h2-csz2,csz,csz);
+            csz2 = sz* 0.5;
+            sDrawTexturedRect(val*-1.5+w2-csz2,val2*-1.5+h2-csz2,sz,sz);
+            csz, csz2 = sz*0.15, sz* 0.075;
+            sDrawTexturedRect(val*-1.7+w2-csz2,val2*-1.7+h2-csz2,csz,csz);
+    end
+
+
+hook.Add("RenderScreenspaceEffects","LensFlare",function()
+	--if(enabled:GetBool() == false) then return end
+	local sun = util.GetSunInfo();
+	if(sun == nil) then return end
+	local obs = sun.obstruction;
+	local dir = sun.direction;
+	if obs == 0 then return end
+	local sunpos = (EyePos() + dir * 4096):ToScreen();
+	DrawLensFlare(math.Clamp((dir:Dot(EyeVector()) - 0.4) * (1 - math.pow(1 - obs,2)),0,1) * 0.5,sunpos.x,sunpos.y,255/255,200/255,200/255,240/255);
+end);
+
+
 function Space()
 	local hash = {}
 	hash.oxygen = 0

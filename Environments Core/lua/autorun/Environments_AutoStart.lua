@@ -8,11 +8,11 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 125
+Environments.Version = 126
 Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 7
 //User Options
-Environments.ForceLoad = false
+Environments.ForceLoad = true
 Environments.UseSuit = true
 Environments.Debug = true
 

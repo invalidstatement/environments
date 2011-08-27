@@ -70,16 +70,26 @@ function ENT:SupplyResource(resource, amount)
 	end
 end
 
-function ENT:Link(ent)
+function ENT:Link(ent, delay)
 	if self.node then
 		self.node:Unlink(self)
 	end
 	if ent and ent:IsValid() then
 		self.node = ent
-		umsg.Start("Env_SetNodeOnEnt")
-			umsg.Entity(self)
-			umsg.Entity(ent)
-		umsg.End()
+		
+		if delay then
+			timer.Simple(0.1, function(self, ent)
+				umsg.Start("Env_SetNodeOnEnt")
+					umsg.Entity(self)
+					umsg.Entity(ent)
+				umsg.End()
+			end, self, ent)
+		else
+			umsg.Start("Env_SetNodeOnEnt")
+				umsg.Entity(self)
+				umsg.Entity(ent)
+			umsg.End()
+		end
 		--self:SetNWEntity("node", ent)
 	end
 end

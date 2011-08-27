@@ -80,10 +80,12 @@ function ENT:EndTouch(ent)
 	if ent.environment == self then
 		if ent:IsPlayer() then
 			ent:SetGravity( 0.00001 )
-			if not ent:IsAdmin() then
-				ent:SetMoveType( MOVETYPE_WALK )
-				if math.abs(ent:GetVelocity():Length()) > 50 then
-					ent:SetLocalVelocity(Vector(0,0,0))
+			if GetConVarNumber("env_noclip") != 1 then
+				if not ent:IsAdmin() then
+					ent:SetMoveType( MOVETYPE_WALK )
+					if math.abs(ent:GetVelocity():Length()) > 50 then
+						ent:SetLocalVelocity(Vector(0,0,0))
+					end
 				end
 			end
 			
@@ -120,10 +122,12 @@ function ENT:Check()
 				if ent.environment == self then
 					if ent:IsPlayer() then
 						ent:SetGravity( 0.00001 )
-						if not ent:IsAdmin() then
-							ent:SetMoveType( MOVETYPE_WALK )
-							if math.abs(ent:GetVelocity():Length()) > 50 then
-								ent:SetLocalVelocity(Vector(0,0,0))
+						if GetConVarNumber("env_noclip") != 1 then
+							if not ent:IsAdmin() then
+								ent:SetMoveType( MOVETYPE_WALK )
+								if math.abs(ent:GetVelocity():Length()) > 50 then
+									ent:SetLocalVelocity(Vector(0,0,0))
+								end
 							end
 						end
 
