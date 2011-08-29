@@ -46,13 +46,10 @@ function ENT:DoNormalDraw( bDontDrawModel )
 		local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()]
 		local HasOOO = OverlaySettings.HasOOO
 		local num = OverlaySettings.num or 0
-		local strings = OverlaySettings.strings
 		local resnames = OverlaySettings.resnames
 		--End overlaysettings
 		local trace = LocalPlayer():GetEyeTrace()
 		if ( !bDontDrawModel ) then self:DrawModel() end
-		local nettable = {} --CAF.GetAddon("Resource Distribution").GetEntityTable(self)
-		--if table.Count(nettable) <= 0 then return end
 		local playername = self:GetPlayerName()
 		if playername == "" then
 			playername = "World"
@@ -111,10 +108,9 @@ end
 
 local function RecieveAmts(msg)
 	local ent = msg:ReadEntity()
-	local res = tonumber(msg:ReadString())
-	
+	local res = msg:ReadString()
+	if tonumber(res) then res = tonumber(res) end
 	ent.resources[Environments.Resources2[res] or res] = msg:ReadLong()
-	--print(ent.resources[res], res, Environments.Resources2[res])
 end
 usermessage.Hook("Env_UpdateResAmt", RecieveAmts)
 
@@ -127,9 +123,6 @@ end
 usermessage.Hook("Env_UpdateMaxRes", RecieveMax)
 
 local function RecieveNode(msg)
-	--local ent = msg:ReadEntity()
-	--local node = msg:ReadEntity()
 	msg:ReadEntity().node = msg:ReadEntity()
-	--print(ent, "linked to", node)
 end
 usermessage.Hook("Env_SetNodeOnEnt", RecieveNode)

@@ -719,6 +719,20 @@ local function SFXManager()
 end
 --timer.Create("SFXCHECKER", 10, 0, SFXManager)
 
+function Environments.AdminCommand(ply, cmd, args)
+	if !ply:IsAdmin() then return end
+	local cmd = args[1]
+	local value = args[2]
+	
+	print("Admin Command Recieved From "..ply:Nick()..": ", cmd, value)
+	if cmd == "noclip" then
+		RunConsoleCommand("env_noclip", value)
+	elseif cmd == "laksdj" then
+	
+	end
+end
+concommand.Add("environments_admin", Environments.AdminCommand)
+
 function Environments.SendInfo(ply)
 	timer.Create("SendPlayerInfoEnvironments", 1, 1, function()
 	for _, v in pairs( environments ) do
@@ -733,7 +747,7 @@ function Environments.SendInfo(ply)
 			if v.bloomid then
 				umsg.String( v.bloomid )
 			end
-		umsg.End();
+		umsg.End()
 	end
 
 	for _, v in pairs( Environments.MapEntities.Color ) do

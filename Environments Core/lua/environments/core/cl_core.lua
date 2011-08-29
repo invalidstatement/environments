@@ -164,7 +164,7 @@ hook.Add("RenderScreenspaceEffects","EnvironmentsRenderPlanetEffects", RenderEff
     end
 
 
-hook.Add("RenderScreenspaceEffects","LensFlare",function()
+/*hook.Add("RenderScreenspaceEffects","LensFlare",function()
 	--if(enabled:GetBool() == false) then return end
 	local sun = util.GetSunInfo();
 	if(sun == nil) then return end
@@ -173,7 +173,7 @@ hook.Add("RenderScreenspaceEffects","LensFlare",function()
 	if obs == 0 then return end
 	local sunpos = (EyePos() + dir * 4096):ToScreen();
 	DrawLensFlare(math.Clamp((dir:Dot(EyeVector()) - 0.4) * (1 - math.pow(1 - obs,2)),0,1) * 0.5,sunpos.x,sunpos.y,255/255,200/255,200/255,240/255);
-end);
+end);*/
 
 
 function Space()

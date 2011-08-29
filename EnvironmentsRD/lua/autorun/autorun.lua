@@ -28,8 +28,8 @@ scripted_ents.Register = function(...)
 			StarGate.LifeSupportAndWire = function(ENT) 
 				ENT.WireDebugName = ENT.WireDebugName or "No Name";
 				ENT.HasWire = StarGate.HasWire;
-				ENT.HasResourceDistribution = StarGate.HasResourceDistribution;
-				ENT.HasRD = StarGate.HasResourceDistribution; -- Quick reference
+				ENT.HasResourceDistribution = true --StarGate.HasResourceDistribution;
+				ENT.HasRD = true --StarGate.HasResourceDistribution; -- Quick reference
 				
 				-- General handlers
 				ENT.OnRemove = function(self)
@@ -37,12 +37,12 @@ scripted_ents.Register = function(...)
 						self.node:Unlink(self)
 					end
 					if(WireAddon and (self.Outputs or self.Inputs)) then
-						Wire_Remove(self.Entity);
+						Wire_Remove(self);
 					end
 				end
 				ENT.OnRestore = function(self)
-					if(WireAddon) then
-						Wire_Restored(self.Entity)
+					if WireAddon then
+						Wire_Restored(self)
 					end
 				end
 
@@ -60,7 +60,7 @@ scripted_ents.Register = function(...)
 							end
 						end
 						--self.Outputs = Wire_CreateOutputs(self.Entity,{...}); -- Old way, kept if I need to revert
-						self.Outputs = WireLib.CreateSpecialOutputs(self.Entity,data,types);
+						self.Outputs = WireLib.CreateSpecialOutputs(self,data,types);
 					end
 				end
 				ENT.CreateWireInputs = function(self,...)
@@ -76,7 +76,7 @@ scripted_ents.Register = function(...)
 							end
 						end
 						--self.Inputs = Wire_CreateInputs(self.Entity,{...}); -- Old way, kept if I need to revert
-						self.Inputs = WireLib.CreateSpecialInputs(self.Entity,data,types);
+						self.Inputs = WireLib.CreateSpecialInputs(self,data,types);
 					end
 				end
 				ENT.SetWire = function(self,key,value)
@@ -98,7 +98,7 @@ scripted_ents.Register = function(...)
 							end
 						end
 						if(value ~= nil) then
-							WireLib.TriggerOutput(self.Entity,key,value);
+							WireLib.TriggerOutput(self,key,value);
 							if(self.WireOutput) then
 								self:WireOutput(key,value);
 							end
@@ -183,9 +183,9 @@ scripted_ents.Register = function(...)
 				ENT.PreEntityCopy = function(self)
 					--if(RD_BuildDupeInfo) then RD_BuildDupeInfo(self.Entity) end;
 					if(WireAddon) then
-						local data = WireLib.BuildDupeInfo(self.Entity);
+						local data = WireLib.BuildDupeInfo(self)
 						if(data) then
-							duplicator.StoreEntityModifier(self.Entity,"WireDupeInfo",data);
+							duplicator.StoreEntityModifier(self,"WireDupeInfo",data);
 						end
 					end
 				end
@@ -212,8 +212,11 @@ if SERVER then
 					--list.Set( "LSEntOverlayText" , class, {HasOOO = true, resnames = In, genresnames = Out} )
 					local dat = list.Get("LSEntOverlayText")[ent:GetClass()] --get the resources
 					--this is tricky, how do I avoid updating everything?
+					if dat then
+						ent.node:DoUpdate(dat.resnames, dat.genresnames, ply)
+					else --no data? SG? CAP?
 					
-					ent.node:DoUpdate(dat.resnames, dat.genresnames, ply)
+					end
 				elseif ent.maxresources and !ent.IsNode then
 					if !ent.client_updated then
 						for res,amt in pairs(ent.maxresources) do
