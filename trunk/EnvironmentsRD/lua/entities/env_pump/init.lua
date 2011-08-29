@@ -121,9 +121,9 @@ function ENT:Think()
 			for key, plug in pairs(local_ents) do
 				// If we find a plug, try to attach it to us
 				if ( plug:IsValid() and plug.is_plug) and (plug.MySocket == nil) then --found a plug and not it's not in another socket
-					if plug:GetPos():Distance(self) < 2048 then
+					--if plug:GetPos():Distance(self) < 2048 then
 						self:AttachPlug(plug)
-					end
+					--end
 				end
 			end
 		end

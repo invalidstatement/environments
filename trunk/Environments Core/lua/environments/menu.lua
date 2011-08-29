@@ -49,13 +49,30 @@ SuitModels = {
 	["models/Combine_Soldier.mdl"] = {}
 }
 
+local function Bool2Num(b)
+	if b == true then
+		return "1"
+	else
+		return "0"
+	end
+end
+
 function Environments.AdminMenu(Panel)
 	Panel:ClearControls()
 	if LocalPlayer():IsAdmin() then
 		Panel:Button("Reset Environments", "env_server_reload")
 		
 		Panel:Help("Enable Noclip For Everyone?")
-		Panel:AddControl("CheckBox", {Label = "Enable Noclip?", Command = "env_noclip"} )
+		local box = Panel:AddControl("CheckBox", {Label = "Enable Noclip?", Command = ""} )
+		box:SetValue(tobool(GetConVarNumber("env_noclip")))
+		box.Button.Toggle = function()
+			if box.Button:GetChecked() == nil or not box.Button:GetChecked() then 
+				box.Button:SetValue( true ) 
+			else 
+				box.Button:SetValue( false ) 
+			end 
+			RunConsoleCommand("environments_admin", "noclip", Bool2Num(box.Button:GetChecked()))
+		end
 	else
 		Panel:Help("You are not an admin!")
 	end
