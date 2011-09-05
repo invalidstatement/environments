@@ -152,18 +152,20 @@ function ENT:Think()
 end
 
 function ENT:DoUpdate(res1, res2, ply) --todo make cheaper
-	for k,name in pairs(res1) do
-		local v = self.resources[name]
-		if v and v.haschanged then
-			umsg.Start("Env_UpdateResAmt")
-				umsg.Entity(self)
-				local old = name
-				name = Environments.Resources[name] or name
-					--print("Sending "..old.." as "..name)
-				umsg.String(name)
-				umsg.Long(v.value)
-			umsg.End()
-			v.haschanged = false
+	if res1 then
+		for k,name in pairs(res1) do
+			local v = self.resources[name]
+			if v and v.haschanged then
+				umsg.Start("Env_UpdateResAmt")
+					umsg.Entity(self)
+					local old = name
+					name = Environments.Resources[name] or name
+						--print("Sending "..old.." as "..name)
+					umsg.String(name)
+					umsg.Long(v.value)
+				umsg.End()
+				v.haschanged = false
+			end
 		end
 	end
 	

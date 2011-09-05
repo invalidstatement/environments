@@ -24,11 +24,11 @@ local SysTime = SysTime
 //Custom Locals
 local Environments = Environments
 
-SRP = {} --Backup Compatability from when this was gonna be a gamemode
 UseEnvironments = false
 
 local AllowNoClip = CreateConVar( "env_noclip", "0", FCVAR_NOTIFY )
 
+//Table of all Environments
 environments = {}
 stars = {}
 
@@ -75,6 +75,9 @@ local function LoadEnvironments()
 	print("// Adding Environments..           //")
 	local status, error = pcall(function() --log errors
 	--Get All Planets Loaded
+	if INFMAP then print("INFINITE MAP SYSTEM DETECTED!") --detect our map/system
+		print("LOADING ENVIRONMENTS AS SUCH") 
+	end
 	Environments.RegisterEnvironments() 
 	if UseEnvironments then --It is a spacebuild map
 		//Add Hooks
@@ -117,12 +120,7 @@ local function LoadEnvironments()
 		end
 			
 		print("// Registering Sun..               //")
-		local status, error = pcall(Environments.RegisterSun)
-		if error then
-			print("//   No Sun Found, Defaulting      //")
-			TrueSun = {}
-			TrueSun[1] = Vector(0,0,0)
-		end
+		Environments.RegisterSun()
 			
 		print("// Starting Periodicals..          //")
 		timer.Create("EnvEvents", 30, 0, Environments.EventChecker)
@@ -153,7 +151,6 @@ local function LoadEnvironments()
 		print("/////////////////////////////////////")
 		print("//       Environments Loaded       //")
 		print("/////////////////////////////////////")
-		--Environments.Log("Successful Startup")
 	else
 		print("/////////////////////////////////////")
 		print("//    Environments Load Failed     //")
@@ -273,7 +270,6 @@ function Environments.RegisterEnvironments()
 	if table.Count(environments) > 0 then
 		UseEnvironments = true
 	end
-	--save it all :D
 	Environments.SaveMap()
 end
 
@@ -300,7 +296,6 @@ function Environments.LoadFromMap()
 	for k,ent in pairs(entities) do
 		local values = ent:GetKeyValues()
 		local tab = ent:GetKeyValues()
-		--PrintTable(tab)
 			
 		local Type = tab.Case01
 		local planet = {}
@@ -626,15 +621,23 @@ end
 //End Space Definition
 
 function Environments.RegisterSun()
-	TrueSun = {}
-	if table.Count(stars) > 0 then
-		--set as core radiation source, and sun angle(needed for solar planels) and other sun effects
-		TrueSun[1] = table.Random(stars).position
-		print("//   Sun Registered                //")
-	else
-		TrueSun[1] = ents.FindByClass("env_sun")[1]:GetPos()
-		print("//   No Stars Found                //")
-		print("//   Registered Env_Sun            //")
+	local status, error = pcall(function()
+		TrueSun = {}
+		if table.Count(stars) > 0 then
+			--set as core radiation source, and sun angle(needed for solar planels) and other sun effects
+			TrueSun[1] = table.Random(stars).position
+			print("//   Sun Registered                //")
+		else
+			TrueSun[1] = ents.FindByClass("env_sun")[1]:GetPos()
+			print("//   No Stars Found                //")
+			print("//   Registered Env_Sun            //")
+		end
+	end)
+
+	if error then
+		print("//   No Sun Found, Defaulting      //")
+		TrueSun = {}
+		TrueSun[1] = Vector(0,0,0)
 	end
 end
 
@@ -684,13 +687,11 @@ end
 
 local function Logging( ply )
 	logrecs1 = {}
-	--logrecs2 = {}
+
 	for logrecs in (file.Read("env_log.txt") or ""):gmatch("[^\n\r]+") do
 		table.insert(logrecs1,logrecs)
 	end
-	/*for logrecs in (file.Read("env_log.txt") or ""):gmatch("[^\n\r]+") do
-		table.insert(logrecs2,logrecs)
-	end*/
+
 	datastream.StreamToClients(ply,"sendEnvLogs",{logrecs1})
 end
 --concommand.Add("env_get_logs", Logging)
@@ -719,22 +720,41 @@ local function SFXManager()
 end
 --timer.Create("SFXCHECKER", 10, 0, SFXManager)
 
+local function bool(b)
+	if b == "true" then 
+		return true
+	end
+	if b == "false" then 
+		return false
+	end
+end
+
 function Environments.AdminCommand(ply, cmd, args)
 	if !ply:IsAdmin() then return end
 	local cmd = args[1]
 	local value = args[2]
 	
-	print("Admin Command Recieved From "..ply:Nick()..": ", cmd, value)
-	if cmd == "noclip" then
+	print("Admin Command Recieved From "..ply:Nick().." Command: "..cmd..", Value: "..value)
+	if cmd == "noclip" then --noclip blocking
 		RunConsoleCommand("env_noclip", value)
-	elseif cmd == "laksdj" then
-	
+	elseif cmd == "planetconfig" then --planet editing
+		local k = value
+		local v = args[3]
+		if tonumber(v) then 
+			v = tonumber(v) 
+		elseif v == "true" or v == "false" then
+			v = bool(v)
+		end
+		if ply.environment and ply.environment != Space() then
+			print("Planet Var: '"..k.."', Set to: '"..tostring(v).."', Type: "..type(v))
+			ply.environment[k] = v
+		end
 	end
 end
 concommand.Add("environments_admin", Environments.AdminCommand)
 
 function Environments.SendInfo(ply)
-	timer.Create("SendPlayerInfoEnvironments", 1, 1, function()
+	timer.Simple(1, function()
 	for _, v in pairs( environments ) do
 		umsg.Start( "AddPlanet", ply )
 			umsg.Short( v:EntIndex() )
@@ -802,3 +822,40 @@ local function Reload(ply,cmd,args)
 	ply:ChatPrint("Environments Has Been Reset!")
 end
 concommand.Add("env_server_reload", Reload)
+
+local function ComReload(ply,cmd,args)
+	if not ply:IsAdmin() then return end
+	
+	local map = game.GetMap()
+	file.Delete("environments/"..map..".txt")
+	file.Delete("environments/"..map.."_stars.txt")
+	
+	for k,v in pairs(environments) do
+		if v and v:IsValid() then
+			v:Remove()
+			v = nil
+		else
+			v = nil
+		end
+	end
+	environments = {}
+	Environments.RegisterEnvironments()
+	Environments.Log("Planets Reloaded From Map")
+	ply:ChatPrint("Environments Has Been Reloaded From Map!")
+end
+concommand.Add("env_server_full_reload", ComReload)
+
+local function SendPlanetData(ply, cmd, args)
+	local env = ply.environment
+	--if string.lower(type(ply.environment)) == "entity" then
+		umsg.Start("env_planet_data", ply)
+			umsg.String(env.name)
+			umsg.Float(env.gravity)
+			umsg.Bool(env.unstable)
+			umsg.Bool(env.sunburn)
+			umsg.Float(env.temperature)
+			umsg.Float(env.suntemperature or 0)
+		umsg.End()
+	--end
+end
+concommand.Add("request_planet_data", SendPlanetData)

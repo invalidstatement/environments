@@ -8,7 +8,7 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 127
+Environments.Version = 128
 Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 7
 //User Options
@@ -17,6 +17,7 @@ Environments.UseSuit = true
 Environments.Debug = true
 
 local start = SysTime()
+function Environments.Load()
 if CLIENT then
 	include("environments/core/cl_logging.lua")
 	include("environments/menu.lua")
@@ -78,6 +79,8 @@ else
 	resource.AddFile( "materials/models/null.vmt" )
 	resource.AddFile( "materials/models/null.vtf" )
 end
+end
+Environments.Load()
 print("==============================================")
 print("==    Environments Revision "..Environments.Version.." Installed   ==")
 print("==============================================")
@@ -129,6 +132,26 @@ if SERVER then
 			return table.Random(desc)
 		end
 	end)
+	
+	local function Reload(ply, cmd, args)
+		if !ply:IsAdmin() then return end
+		if environments then
+			for k,v in pairs(environments) do
+				if v and v:IsValid() then
+					v:Remove()
+					v = nil
+				else
+					v = nil
+				end
+			end
+		end
+		Environments.Load()
+		environments = {}
+		hook.GetTable().InitPostEntity.EnvLoad() --load
+		Environments.Log("Environments Reloaded")
+		ply:ChatPrint("Environments Has Been Reloaded!")
+	end
+	concommand.Add("env_reload", Reload) --reloads everything, mainly for dev'ing
 end
 
 //Fixes the crazy death notices
