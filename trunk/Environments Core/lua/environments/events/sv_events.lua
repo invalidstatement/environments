@@ -123,7 +123,7 @@ function Environments.EventChecker()
 				event(planet)
 			end
 		end	
-		MsgN("A " .. eventname .. " Started at " .. tostring(os.date("%H:%M:%S")).." on planet ".. (planet.name or "Unnamed Planet"))
+		MsgN("A " .. (eventname or "invalid event name") .. " Started at " .. tostring(os.date("%H:%M:%S")).." on planet ".. (planet.name or "Unnamed Planet"))
 	end
 end
 

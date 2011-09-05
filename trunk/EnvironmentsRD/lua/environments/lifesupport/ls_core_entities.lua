@@ -9,7 +9,7 @@ Environments.RegisterLSStorage("Nitrogen Storage", "env_nitrogen_storage", {[460
 Environments.RegisterLSStorage("CO2 Storage", "env_co2_storage", {[4600] = "carbon dioxide"}, 4084, 100, 10)
 Environments.RegisterLSStorage("Resource Cache", "env_cache_storage", {[4601] = "carbon dioxide",[4600] = "oxygen",[4602] = "hydrogen",[4603] = "nitrogen",[4599] = "water",[4598] = "steam",[4604] = "energy"}, 4084, 100, 10)
 
-Environments.RegisterLSEntity("Water Heater","env_water_heater",{"water","energy"},{"steam"},function(self) local mult = self:GetMultiplier() local amt = self:ConsumeResource("water", 200) amt = self:ConsumeResource("energy",amt*1.5)  self:SupplyResource("steam", amt) end, 70000, 300, 300)
+Environments.RegisterLSEntity("Water Heater","env_water_heater",{"water","energy"},{"steam"},function(self) local mult = self:GetMultiplier()*self.multiplier local amt = self:ConsumeResource("water", 200) or 0 amt = self:ConsumeResource("energy",amt*1.5)  self:SupplyResource("steam", amt) end, 70000, 300, 300)
 
 //Generator Tool
 Environments.RegisterDevice("Generators", "Fusion Generator", "Huge Fusion Reactor", "generator_fusion", "models/ce_ls3additional/fusion_generator/fusion_generator_huge.mdl")
@@ -63,12 +63,24 @@ Environments.RegisterDevice("Storages", "Energy Storage", "Substation Capacitor"
 Environments.RegisterDevice("Storages", "Energy Storage", "Substation Backup Battery", "env_energy_storage", "models/props_c17/substation_transformer01a.mdl")
 
 Environments.RegisterDevice("Storages", "Oxygen Storage", "Large Oxygen Storage", "env_oxygen_storage", "models/props_wasteland/coolingtank02.mdl")
+Environments.RegisterDevice("Storages", "Oxygen Storage", "Large Oxygen Canister", "env_oxygen_storage", "models/props_phx/life_support/canister_large.mdl")
+Environments.RegisterDevice("Storages", "Oxygen Storage", "Medium Oxygen Canister", "env_oxygen_storage", "models/props_phx/life_support/canister_medium.mdl")
+Environments.RegisterDevice("Storages", "Oxygen Storage", "Small Oxygen Canister", "env_oxygen_storage", "models/props_phx/life_support/canister_small.mdl")
 
 Environments.RegisterDevice("Storages", "Nitrogen Storage", "Large Nitrogen Storage", "env_nitrogen_storage", "models/props_wasteland/coolingtank02.mdl")
+Environments.RegisterDevice("Storages", "Nitrogen Storage", "Large Oxygen Canister", "env_nitrogen_storage", "models/props_phx/life_support/canister_large.mdl", 1)
+Environments.RegisterDevice("Storages", "Nitrogen Storage", "Medium Oxygen Canister", "env_nitrogen_storage", "models/props_phx/life_support/canister_medium.mdl", 1)
+Environments.RegisterDevice("Storages", "Nitrogen Storage", "Small Oxygen Canister", "env_nitrogen_storage", "models/props_phx/life_support/canister_small.mdl", 1)
 
 Environments.RegisterDevice("Storages", "Hydrogen Storage", "Large Hydrogen Storage", "env_hydrogen_storage", "models/props_wasteland/coolingtank02.mdl")
+Environments.RegisterDevice("Storages", "Hydrogen Storage", "Large Oxygen Canister", "env_hydrogen_storage", "models/props_phx/life_support/canister_large.mdl", 2)
+Environments.RegisterDevice("Storages", "Hydrogen Storage", "Medium Oxygen Canister", "env_hydrogen_storage", "models/props_phx/life_support/canister_medium.mdl", 2)
+Environments.RegisterDevice("Storages", "Hydrogen Storage", "Small Hydrogen Canister", "env_hydrogen_storage", "models/props_phx/life_support/canister_small.mdl", 2)
 
 Environments.RegisterDevice("Storages", "CO2 Storage", "Large CO2 Storage", "env_co2_storage", "models/props_wasteland/coolingtank02.mdl")
+Environments.RegisterDevice("Storages", "CO2 Storage", "Large Oxygen Canister", "env_co2_storage", "models/props_phx/life_support/canister_large.mdl", 3)
+Environments.RegisterDevice("Storages", "CO2 Storage", "Medium Oxygen Canister", "env_co2_storage", "models/props_phx/life_support/canister_medium.mdl", 3)
+Environments.RegisterDevice("Storages", "CO2 Storage", "Small Oxygen Canister", "env_co2_storage", "models/props_phx/life_support/canister_small.mdl", 3)
 
 Environments.RegisterDevice("Storages", "Steam Storage", "Large Steam Tank", "env_steam_storage", "models/chipstiks_ls3_models/LargeSteamTank/largesteamtank.mdl")
 

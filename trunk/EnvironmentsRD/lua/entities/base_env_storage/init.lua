@@ -52,6 +52,10 @@ function ENT:OnTakeDamage(DmgInfo)
 		return
 	end
 	Environments.DamageLS(self, DmgInfo:GetDamage())
+	local hitpos = DmgInfo:GetDamagePosition()
+	if DmgInfo:GetDamage() > 50 then
+		--leak perhaps?
+	end
 end
 
 function ENT:OnRemove()

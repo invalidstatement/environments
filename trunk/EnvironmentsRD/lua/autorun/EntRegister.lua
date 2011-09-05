@@ -52,6 +52,8 @@ function Environments.MakeFunc(ent)
 	ent:SetMaxHealth(data.basehealth*volume_mul)
 	ent:SetHealth(data.basehealth*volume_mul)
 	
+	ent:SetMultiplier(volume_mul)
+	
 	ent:GetPhysicsObject():SetMass(data.basemass*volume_mul)
 end
 
@@ -104,9 +106,11 @@ function Environments.RegisterLSEntity(name,class,In,Out,generatefunc,basevolume
 			self:SetMoveType( MOVETYPE_VPHYSICS )
 			self:SetSolid( SOLID_VPHYSICS )
 			self.Active = 0
+			self.multiplier = 1
 			if WireAddon then
 				self.WireDebugName = self.PrintName
-				self.Outputs = Wire_CreateOutputs(self, { "Out" })
+				self.Inputs = WireLib.CreateInputs(self, { "On", "Multiplier" })
+				self.Outputs = WireLib.CreateOutputs(self, { "On" })
 			end
 		end
 		
@@ -114,6 +118,35 @@ function Environments.RegisterLSEntity(name,class,In,Out,generatefunc,basevolume
 			if self.Active == 0 then
 				self.Active = 1
 				self:SetOOO(1)
+				if WireLib then 
+					WireLib.TriggerOutput(self, "On", 1)
+				end
+			end
+		end
+		
+		function ENT:TriggerInput(iname, value)
+			if (iname == "On") then
+				if (value > 0) then
+					if ( self.Active == 0 ) then
+						self:TurnOn()
+						if (self.overdrive == 1) then
+							self:OverdriveOn()
+						end
+					end
+				else
+					if ( self.Active == 1 ) then
+						self:TurnOff()
+						if self.overdrive > 0 then
+							self:OverdriveOff()
+						end
+					end
+				end
+			elseif (iname == "Multiplier") then
+				if value > 0 then
+					self.multiplier = value
+				else
+					self.multiplier = 1
+				end
 			end
 		end
 
@@ -121,7 +154,9 @@ function Environments.RegisterLSEntity(name,class,In,Out,generatefunc,basevolume
 			if self.Active == 1 then
 				self.Active = 0
 				self:SetOOO(0)
-				if WireAddon then Wire_TriggerOutput(self, "Out", 0) end
+				if WireLib then 
+					WireLib.TriggerOutput(self, "On", 0)
+				end
 			end
 		end
 
@@ -272,7 +307,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 	end
 	
 	function TOOL:GetDeviceInfo()
-		return Environments.Tooldata[self.Name][self:GetClientInfo("type")][self:GetClientInfo("sub_type")]
+		return Environments.Tooldata[self.Name][self:GetClientInfo("type")][self:GetClientInfo("sub_type")] or {}
 	end
 
 	if SERVER then
@@ -404,12 +439,12 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 			model = self:GetDeviceModel()
 			if !self.GhostEntity or !self.GhostEntity:IsValid() or self.GhostEntity:GetModel() != model then
 				local trace = self:GetOwner():GetEyeTrace()
-				self:MakeGhostEntity( model, trace.HitPos, trace.HitNormal:Angle() + self.Entity.Angle )
+				self:MakeGhostEntity( model, trace.HitPos, trace.HitNormal:Angle() + self.Entity.Angle, self:GetDeviceInfo().skin )
 			end
 			self:UpdateGhostEntity( self.GhostEntity, self:GetOwner() )
 		end
 		
-		function TOOL:MakeGhostEntity( model, pos, angle )
+		function TOOL:MakeGhostEntity( model, pos, angle, skin )
 			util.PrecacheModel( model )
 			
 			// Release the old ghost entity
@@ -430,6 +465,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 			self.GhostEntity:SetPos( pos )
 			self.GhostEntity:SetAngles( angle )
 			self.GhostEntity:Spawn()
+			if skin then self.GhostEntity:SetSkin(skin) end
 			
 			self.GhostEntity:SetSolid( SOLID_VPHYSICS )
 			self.GhostEntity:SetMoveType( MOVETYPE_NONE )
@@ -484,7 +520,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 				local icon = vgui.Create("SpawnIcon")
 				
 				util.PrecacheModel(v.model)
-				icon:SetModel(v.model)
+				icon:SetModel(v.model, v.skin or 0)
 				icon.tool = self
 				icon.model = v.model
 				icon.class = v.class

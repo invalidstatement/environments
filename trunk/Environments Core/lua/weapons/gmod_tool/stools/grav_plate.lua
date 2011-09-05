@@ -1,10 +1,9 @@
 
-TOOL.Category = 'Life Support'
+TOOL.Category = 'Tools'
 TOOL.Name = '#Gravity Plating'
 TOOL.Command = nil
 TOOL.ConfigName = ''
-if CLIENT then TOOL.Tab = "Environments" end
---if (CLIENT and GetConVarNumber("CAF_UseTab") == 1) then TOOL.Tab = "Custom Addon Framework" end
+TOOL.Tab = "Environments"
 
 // Add Default Language translation (saves adding it to the txt files)
 if ( CLIENT ) then

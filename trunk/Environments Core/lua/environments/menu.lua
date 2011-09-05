@@ -10,13 +10,13 @@ Environments.EffectsCvar = CreateClientConVar("env_effects_enable","1",true,true
 local function AddToolTab()
 	-- Add Tab
 	local logo;
-	--if(file.Exists("../materials/gui/stargate_logo.vmt")) then logo = "gui/stargate_logo" end;
+	--if(file.Exists("..logo")) then logo = "logo" end;
 	spawnmenu.AddToolTab("Environments","Environments",logo);
 	-- Add Config Category
 	spawnmenu.AddToolCategory("Environments","Config"," Config");
 	-- Add the entry for config
 	spawnmenu.AddToolMenuOption("Environments","Config","Settings","Settings","","",Environments.ConfigMenu,{});
-	
+	-- Add the admin menu
 	spawnmenu.AddToolMenuOption("Environments","Config","Admin","Admin","","",Environments.AdminMenu,{});
 	-- Add the entry for Credits and Bugreporting!
 	--spawnmenu.AddToolMenuOption("Environments","Config","Credits","Credits and Bugs","","",Environments.Credits);
@@ -57,6 +57,23 @@ local function Bool2Num(b)
 	end
 end
 
+local Menu = {}
+local PlanetData = {}
+local function GetData(msg)
+	PlanetData["name"] = msg:ReadString()
+	PlanetData["gravity"] = msg:ReadFloat()
+	PlanetData["unstable"] = msg:ReadBool()
+	PlanetData["sunburn"] = msg:ReadBool()
+	PlanetData["temperature"] = msg:ReadFloat()
+	PlanetData["suntemperature"] = msg:ReadFloat()
+	
+	Menu.List:Clear()
+	for k,v in pairs(PlanetData) do
+		Menu.List:AddLine(k,tostring(v))
+	end
+end
+usermessage.Hook("env_planet_data", GetData)
+
 function Environments.AdminMenu(Panel)
 	Panel:ClearControls()
 	if LocalPlayer():IsAdmin() then
@@ -73,6 +90,77 @@ function Environments.AdminMenu(Panel)
 			end 
 			RunConsoleCommand("environments_admin", "noclip", Bool2Num(box.Button:GetChecked()))
 		end
+		
+		local planetmod =  vgui.Create("DCollapsibleCategory", DermaPanel)
+		planetmod:SetSize( 100, 50 ) -- Keep the second number at 50
+		planetmod:SetExpanded( 0 ) -- Expanded when popped up
+		planetmod:SetLabel( "Planet Modification" )
+		
+		local p = vgui.Create( "DPanelList" )
+		p:SetAutoSize( true )
+		p:SetSpacing( 5 )
+		p:EnableHorizontal( false )
+		p:EnableVerticalScrollbar( true )
+		 
+		planetmod:SetContents( p )
+		
+		local List = vgui.Create("DListView")
+		List:SetSize(100, 100)
+		List:SetMultiSelect(false)
+		List:AddColumn("Setting")
+		List:AddColumn("Value")
+		Menu.List = List
+		
+		for k,v in pairs(PlanetData) do
+			List:AddLine(k,v)
+		end
+		
+		List.OnRowSelected = function(self, line)
+			line = self:GetLine(line)
+			local setting = line:GetValue(1)
+			local value = line:GetValue(2)
+			Menu.Entry.line = line
+			Menu.Entry:SetValue(value)
+		end	
+
+		local entry = vgui.Create( "DTextEntry" )
+		entry:SetTall( 20 )
+		entry:SetWide( 160 )
+		entry:SetEnterAllowed( false )
+		entry:SetMultiline(false)
+		entry.OnTextChanged = function(self) -- Passes a single argument, the text entry object.
+			if self.line then
+				self.line:SetValue(2, self:GetValue())
+			end
+		end
+		Menu.Entry = entry
+
+		local send = vgui.Create( "DButton" )
+		send:SetSize( 100, 30 )
+		send:SetText( "Set Value" )
+		send.DoClick = function( self )
+			if Menu.Entry.line then
+				RunConsoleCommand("environments_admin", "planetconfig", Menu.Entry.line:GetValue(1), Menu.Entry.line:GetValue(2))
+			else
+				LocalPlayer():ChatPrint("Select a value to set first!")
+			end
+		end
+		 
+		local get = vgui.Create( "DButton" )
+		get:SetSize( 100, 30 )
+		get:SetText( "Get Planet Info" )
+		get.DoClick = function( self )
+			RunConsoleCommand("request_planet_data")
+		end
+		
+		p:AddItem(List)
+		p:AddItem(entry)
+		p:AddItem(send)
+		p:AddItem(get)
+		Panel:AddPanel(planetmod)
+		
+		Panel:Help("WARNING: Resets Saved Data!"):SetTextColor(Color(255,0,0,255))
+		Panel:Button("Reload Environments From Map", "env_server_full_reload")
 	else
 		Panel:Help("You are not an admin!")
 	end
@@ -123,7 +211,7 @@ function Environments.ConfigMenu(Panel)
 	Panel:Help("Use Cool HUD?")
 	local check = Panel:AddControl("CheckBox", {Label = "Use Cool HUD?", Command = "env_hud_mode"} )
 	
-	check.OnChange = function()
+	check.OnChange = function(self)
 		LoadHud()
 	end
 	
