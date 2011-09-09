@@ -125,23 +125,17 @@ function Environments.RegisterLSEntity(name,class,In,Out,generatefunc,basevolume
 		end
 		
 		function ENT:TriggerInput(iname, value)
-			if (iname == "On") then
-				if (value > 0) then
-					if ( self.Active == 0 ) then
+			if iname == "On" then
+				if value > 0 then
+					if self.Active == 0 then
 						self:TurnOn()
-						if (self.overdrive == 1) then
-							self:OverdriveOn()
-						end
 					end
 				else
-					if ( self.Active == 1 ) then
+					if self.Active == 1 then
 						self:TurnOff()
-						if self.overdrive > 0 then
-							self:OverdriveOff()
-						end
 					end
 				end
-			elseif (iname == "Multiplier") then
+			elseif iname == "Multiplier" then
 				if value > 0 then
 					self.multiplier = value
 				else
@@ -215,7 +209,7 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 			self.damaged = 0
 			if WireAddon then
 				self.WireDebugName = self.PrintName
-				self.Outputs = Wire_CreateOutputs(self.Entity, { "Out" })
+				--self.Outputs = Wire_CreateOutputs(self.Entity, { "Out" })
 			end
 		end
 		
@@ -294,7 +288,6 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 	function TOOL:GetDeviceModel()
 		local mdl = self:GetClientInfo("model")
 
-		--/*do I really need this?*/ if (!util.IsValidModel(mdl) or !util.IsValidProp(mdl)) then return "models/ce_ls3additional/solar_generator/solar_generator_giant.mdl" end
 		return mdl
 	end
 	

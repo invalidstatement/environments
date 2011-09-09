@@ -35,12 +35,12 @@ stars = {}
 //Planet Default Atmospheres
 default = {}
 default.atmosphere = {}
-default.atmosphere.oxygen = 30
-default.atmosphere.carbondioxide = 5
-default.atmosphere.methane = 0
-default.atmosphere.nitrogen = 40
-default.atmosphere.hydrogen = 22
-default.atmosphere.argon = 0
+default.atmosphere.o2 = 30
+default.atmosphere.co2 = 5
+default.atmosphere.ch4 = 0
+default.atmosphere.n = 40
+default.atmosphere.h = 22
+default.atmosphere.ar = 0
 
 //Overwrite CAF to fix issues with tools
 timer.Create("registerCAFOverwrites", 5, 1, function()
@@ -393,10 +393,10 @@ function Environments.LoadFromMap()
 			planet.temperature = tonumber(tab.Case06)
 			planet.suntemperature = tonumber(tab.Case07)
 			planet.flags = tonumber(tab.Case08) --can be 0, 1, 2
-			planet.atmosphere.oxygen = tonumber(tab.Case09)
-			planet.atmosphere.carbondioxide = tonumber(tab.Case10)
-			planet.atmosphere.nitrogen = tonumber(tab.Case11)
-			planet.atmosphere.hydrogen = tonumber(tab.Case12)
+			planet.atmosphere.o2 = tonumber(tab.Case09)
+			planet.atmosphere.co2 = tonumber(tab.Case10)
+			planet.atmosphere.n = tonumber(tab.Case11)
+			planet.atmosphere.h = tonumber(tab.Case12)
 			planet.name = tostring(tab.Case13) --Get Name
 			planet.colorid = tostring(tab.Case15)
 			planet.bloomid = tostring(tab.Case16)
@@ -470,12 +470,12 @@ function Environments.SaveMap() --plz work :)
 			planet.suntemperature = v.suntemperature
 			planet.atmosphere = {}
 			--planet.atmosphere = table.Copy(v.air)
-			planet.atmosphere.oxygen = v.air.o2per
-			planet.atmosphere.carbondioxide = v.air.co2per
-			planet.atmosphere.hydrogen = v.air.hper
-			planet.atmosphere.nitrogen = v.air.nper
-			planet.atmosphere.argon = v.air.arper
-			planet.atmosphere.methane = v.air.ch4per
+			planet.atmosphere.o2 = v.air.o2per
+			planet.atmosphere.co2 = v.air.co2per
+			planet.atmosphere.h = v.air.hper
+			planet.atmosphere.n = v.air.nper
+			planet.atmosphere.ar = v.air.arper
+			planet.atmosphere.ch4 = v.air.ch4per
 			planet.bloomid = v.bloomid
 			planet.colorid = v.colorid
 			planet.unstable = v.unstable
@@ -859,3 +859,31 @@ local function SendPlanetData(ply, cmd, args)
 	--end
 end
 concommand.Add("request_planet_data", SendPlanetData)
+
+
+/*function getStartPosition( p, d, angle, radius )
+	ang = d:Angle():Right():Angle()
+	ang:RotateAroundAxis( d, angle )
+	return p + (ang:Forward() * radius)
+end
+	--http://puu.sh/5fTo
+function RingPoint(position, up, right, angle, radius) --use radians for angle
+	return position + (up * math.cos(angle) * radius) + (right * math.sin(angle) * radius )--returns local unit vector
+end
+
+local start = SysTime()
+local vec = Vector(37, 23, 273)
+local vec2 = Vector(55,2251,3548)
+for i = 1, 10000 do
+	res = (vec2 - vec):LengthSqr()
+end
+print("no sqrt", SysTime()- start)
+
+local start = SysTime()
+local vec = Vector(37, 23, 273)
+local vec2 = Vector(55,2251,3548)
+for i = 1, 10000 do
+	res = vec:Distance(vec2)
+end
+print("vctor ", SysTime()- start)*/
+

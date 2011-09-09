@@ -314,15 +314,15 @@ function Environments.PlayerCheck(ent)
 	
 	local tr = util.TraceLine( trace )
 	
-	if tr.Hit and tr.Entity.env then
+	if tr.Hit and tr.Entity:IsValid() then
 		trace = {}
 		trace.start = pos
 		trace.endpos = pos + Vector(0,0,512)
 		trace.filter = { ent, veh }
 	
 		local tr2 = util.TraceLine( trace )
-		
-		if tr2.Entity.env then
+
+		if tr2.Entity.env and tr.Entity.env then
 			if tr.Entity.env.Active == 1 then
 				ent.environment = tr.Entity.env
 				tr.Entity.env:Breathe()
