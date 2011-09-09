@@ -64,23 +64,14 @@ local function GetVolume(radius)
 	return (4/3) * math.pi * radius * radius
 end
 
-function Environments.ParseSaveData(planet)
-	local compounds = {}
-	--compounds = table.Copy(planet.atmosphere)
-	compounds["o2"] = planet.atmosphere.oxygen
-	compounds["co2"] = planet.atmosphere.carbondioxide
-	compounds["h"] = planet.atmosphere.hydrogen
-	compounds["n"] = planet.atmosphere.nitrogen
-	compounds["ch4"] = planet.atmosphere.methane
-	compounds["ar"] = planet.atmosphere.argon
-	
+function Environments.ParseSaveData(planet)	
 	local gravity = planet.gravity
-	local o2 = tonumber(planet.atmosphere.oxygen)
-	local co2 = tonumber(planet.atmosphere.carbondioxide)
-	local n = tonumber(planet.atmosphere.nitrogen)
-	local h = tonumber(planet.atmosphere.hydrogen)
-	local ch4 = tonumber(planet.atmosphere.methane)
-	local ar = planet.atmosphere.argon
+	local o2 = tonumber(planet.atmosphere.o2)
+	local co2 = tonumber(planet.atmosphere.co2)
+	local n = tonumber(planet.atmosphere.n)
+	local h = tonumber(planet.atmosphere.h)
+	local ch4 = tonumber(planet.atmosphere.ch4)
+	local ar = tonumber(planet.atmosphere.ar)
 	local temperature = planet.temperature
 	local suntemperature = planet.suntemperature
 	local atmosphere = planet.atm
@@ -94,16 +85,15 @@ function Environments.ParseSaveData(planet)
 	self.air.max = math.Round(100 * 5 * (volume/1000) * self.atmosphere)
 	self.air.total = planet.atmosphere.total
 	
-	for k,v in pairs(compounds) do
+	for k,v in pairs(planet.atmosphere) do
 		if v and type(v) == "number" and v > 0 then
 			if v < 0 then v = 0 end
 			if v > 100 then v = 100 end
 			self.air[k.."per"] = v
 			self.air[k] = math.Round((v/100)*self.air.total)
 		else
-			v = 0
-			self.air[k.."per"] = v
-			self.air[k] = v
+			self.air[k.."per"] = 0
+			self.air[k] = 0
 		end
 	end
 	
@@ -140,7 +130,7 @@ function Environments.ParseSaveData(planet)
 		self.air.emptyper = 0
 	end
 	
-	self.originalco2per = self.air.co2per
+	self.originalco2per = self.air.co2per --oh noes, breaks terraforming and saving a bit
 	return self
 end
 
@@ -153,46 +143,42 @@ function Environments.CreatePlanet(d)
 		planet = ents.Create("Environment")
 		planet:Spawn()
 		planet:SetPos(d.position)
-		--planet.environment = self
 		planet:Configure(d.radius, d.gravity, d.name, d)
 	elseif d.typeof == "SB2" then
 		planet = ents.Create("Environment")
 		planet:Spawn()
 		planet:SetPos(d.position)
-		--planet.environment = self
 		planet:Configure(d.radius, d.gravity, d.name, d)
 	else
 		if d.typeof then
 			print("NOT A VALID TYPE: "..d.typeof)
+		else
+			print("ENVIRONMENT TYPE IS NIL!")
 		end
 	end
 	
-	//stop it from getting removed
-	planet.Delete = planet.Remove
-	planet.Remove = function() 
-		Environments.Log("Something Attempted to Remove Planet "..d.name)
+	if planet then
+		//stop it from getting removed
+		planet.Delete = planet.Remove
+		planet.Remove = function() 
+			Environments.Log("Something Attempted to Remove Planet "..d.name)
+		end
+		
+		table.insert(environments, planet)
+	else
+		print("CREATED PLANET WAS NIL, OR PLANET WAS NOT CREATED!")
 	end
-	
-	table.insert(environments, planet)
 end
 
 //parses the data from the map loading
 function Environments.ParsePlanet(planet)
-	local compounds = {}
-	compounds["o2"] = planet.atmosphere.oxygen
-	compounds["co2"] = planet.atmosphere.carbondioxide
-	compounds["h"] = planet.atmosphere.hydrogen
-	compounds["n"] = planet.atmosphere.nitrogen
-	compounds["ch4"] = planet.atmosphere.methane
-	compounds["ar"] = planet.atmosphere.argon
-	
 	local gravity = planet.gravity
-	local o2 = planet.atmosphere.oxygen
-	local co2 = planet.atmosphere.carbondioxide
-	local n = planet.atmosphere.nitrogen
-	local h = planet.atmosphere.hydrogen
-	local ch4 = planet.atmosphere.methane
-	local ar = planet.atmosphere.argon
+	local o2 = planet.atmosphere.o2
+	local co2 = planet.atmosphere.co2
+	local n = planet.atmosphere.n
+	local h = planet.atmosphere.h
+	local ch4 = planet.atmosphere.ch4
+	local ar = planet.atmosphere.ar
 	local temperature = planet.temperature
 	local suntemperature = planet.suntemperature
 	local atmosphere = planet.atm
@@ -251,11 +237,10 @@ function Environments.ParsePlanet(planet)
 		self.suntemperature = suntemperature
 	end
 	
-	
 	self.air = {}
 	self.air.max = math.Round(100 * 5 * (volume/1000) * self.atmosphere)
 	self.air.total = self.air.max
-	for k,v in pairs(compounds) do
+	for k,v in pairs(planet.atmosphere) do
 		if v and type(v) == "number" and v > 0 then
 			if v < 0 then v = 0 end
 			if v > 100 then v = 100 end
@@ -329,15 +314,15 @@ function Environments.ParseSB2Environment(planet)
 	end
 	//set temperature2 if given
 	if habitat then //Based on values for earth
-		planet.atmosphere.oxygen = 21
-		planet.atmosphere.carbondioxide = 0.45
-		planet.atmosphere.nitrogen = 78
-		planet.atmosphere.hydrogen = 0.55
+		planet.atmosphere.o2 = 21
+		planet.atmosphere.co2 = 0.45
+		planet.atmosphere.n = 78
+		planet.atmosphere.h = 0.55
 	else //Based on values for Venus
-		planet.atmosphere.oxygen = 0
-		planet.atmosphere.carbondioxide = 96.5
-		planet.atmosphere.nitrogen = 3.5
-		planet.atmosphere.hydrogen = 0
+		planet.atmosphere.o2 = 0
+		planet.atmosphere.co2 = 96.5
+		planet.atmosphere.n = 3.5
+		planet.atmosphere.h = 0
 	end
 	planet.sunburn = sunburn
 	planet.unstable = unstable

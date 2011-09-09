@@ -50,7 +50,7 @@ end
 function ENT:Draw( bDontDrawModel )
 	self:DoNormalDraw()
 	
-	local node = self:GetNWEntity("node")
+	local node = self.node
 	if node and node:IsValid() and self:GetNWVector("CablePos") != Vector(0,0,0) then
 		if self:GetPos() != self.LastPos or node:GetPos() != node.LastPos then
 			Environments.DrawCable(self, self:LocalToWorld(self:GetNWVector("CablePos", Vector(0,0,0))), self:LocalToWorld(self:GetNWVector("CableForward", Vector(0,1,0))):Normalize(), node:GetPos(), node:GetAngles():Forward())

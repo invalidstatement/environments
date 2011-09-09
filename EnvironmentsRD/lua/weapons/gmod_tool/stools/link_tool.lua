@@ -150,9 +150,9 @@ function TOOL.BuildCPanel( panel )
 	panel:AddControl("CheckBox", { Label = "Use Cables? DO NOT USE ON MOVING STRUCTURES", Command = "link_tool_cable" })
 
 	panel:AddControl( "MatSelect", {
-		Height = "1",
+		Height = "5",
 		Label = "#link_tool_material",
-		ItemWidth = 24,
+		ItemWidth = 64,
 		ItemHeight = 64,
 		ConVar = "link_tool_material",
 		Options = list.Get( "OverrideMaterials" )

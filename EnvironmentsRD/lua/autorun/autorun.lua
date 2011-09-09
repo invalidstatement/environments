@@ -18,6 +18,8 @@ if not Environments then
 	Environments = {}
 end
 
+local Environments = Environments
+
 //Stargate Overrides --Plz Work
 local loaded = false
 local o = scripted_ents.Register
@@ -146,14 +148,31 @@ scripted_ents.Register = function(...)
 					end
 					if ent and ent:IsValid() then
 						self.node = ent
-						self:SetNWEntity("node", ent)
+						
+						if delay then
+							timer.Simple(0.1, function(self, ent)
+								umsg.Start("Env_SetNodeOnEnt")
+									umsg.Entity(self)
+									umsg.Entity(ent)
+								umsg.End()
+							end, self, ent)
+						else
+							umsg.Start("Env_SetNodeOnEnt")
+								umsg.Entity(self)
+								umsg.Entity(ent)
+							umsg.End()
+						end
+						--self:SetNWEntity("node", ent)
 					end
 				end
 				ENT.Unlink = function(self)
 					if self.node then
 						self.node:Unlink(self)
 						self.node = nil
-						self:SetNWEntity("node", NullEntity())
+						umsg.Start("Env_SetNodeOnEnt")
+							umsg.Entity(self)
+							umsg.Entity(NullEntity())
+						umsg.End()
 					end
 				end
 				ENT.SupplyResource = function(self,resource, amount)
@@ -181,7 +200,7 @@ scripted_ents.Register = function(...)
 				
 				-- For LifeSupport and Resource Distribution and Wire - Makes all connections savable with Duplicator
 				ENT.PreEntityCopy = function(self)
-					--if(RD_BuildDupeInfo) then RD_BuildDupeInfo(self.Entity) end;
+					Environments.BuildDupeInfo( self )
 					if(WireAddon) then
 						local data = WireLib.BuildDupeInfo(self)
 						if(data) then
@@ -190,7 +209,7 @@ scripted_ents.Register = function(...)
 					end
 				end
 				ENT.PostEntityPaste = function(self,Player,Ent,CreatedEntities)
-					--if(RD_ApplyDupeInfo) then RD_ApplyDupeInfo(Ent,CreatedEntities) end;
+					Environments.ApplyDupeInfo( self, CreatedEntities )
 					if(WireAddon) then
 						if(Ent.EntityMods and Ent.EntityMods.WireDupeInfo) then
 							WireLib.ApplyDupeInfo(Player,Ent,Ent.EntityMods.WireDupeInfo,function(id) return CreatedEntities[id] end);
@@ -276,9 +295,6 @@ function Environments.ApplyDupeInfo( ent, CreatedEntities )
 			ent:Setup( DupeInfo.pump, DupeInfo.rate, DupeInfo.hoselength )
 			ent.EntityMods.EnvDupeInfo = nil
 		else
-			--if DupeInfo.maxresources then 
-				--ent.maxresources = table.Copy(DupeInfo.maxresources)
-			--end
 			Environments.MakeFunc(ent) --yay
 			if DupeInfo.Node then
 				local node = CreatedEntities[DupeInfo.Node]
@@ -319,17 +335,17 @@ Environments.RegisterModelScreenData("models/punisher239/punisher239_reactor_sma
 if CLIENT then
 	local resolution = 0.1
 	local startpos, endpos, endpos2, cyl
-	function Environments.DrawCable(ent, p1, p1f, p2, p2f)--FIX THIS!!! the cable is FLAT!
+	function Environments.DrawCable(ent, p1, p1f, p2, p2f)
 		ent.mesh = NewMesh()
 		local tab = {}
 		for mu = 0, 1 - resolution, resolution do
-			startpos =  Vector( ( p2.x - p1.x ) * mu + p1.x, hermiteInterpolate( p2.y - p1f.y * 100, p1.y, p2.y, p1.y - p2f.y * 100, 0, 0, mu ), hermiteInterpolate( p2.z - p1f.z * 100, p1.z, p2.z, p1.z - p2f.z * 100, 0, 0, mu ) )
-			endpos = Vector( ( p2.x - p1.x ) * ( mu + resolution ) + p1.x, hermiteInterpolate( p2.y - p1f.y * 100, p1.y, p2.y, p1.y - p2f.y * 100, 0, 0, mu + resolution ), hermiteInterpolate( p2.z - p1f.z * 100, p1.z, p2.z, p1.z - p2f.z * 100, 0, 0, mu + resolution ) )
+			startpos =  Vector( ( p2.x - p1.x ) * mu + p1.x, hermiteInterpolate( p2.y - p1f.y * 100, p1.y, p2.y, p1.y - p2f.y * 100, 0.5, 0, mu ), hermiteInterpolate( p2.z - p1f.z * 100, p1.z, p2.z, p1.z - p2f.z * 100, 0.5, 0, mu ) )
+			endpos = Vector( ( p2.x - p1.x ) * ( mu + resolution ) + p1.x, hermiteInterpolate( p2.y - p1f.y * 100, p1.y, p2.y, p1.y - p2f.y * 100, 0.5, 0, mu + resolution ), hermiteInterpolate( p2.z - p1f.z * 100, p1.z, p2.z, p1.z - p2f.z * 100, 0.5, 0, mu + resolution ) )
 			
 			if ( mu + resolution >= 1 ) then
 				endpos2 = p2 - p1f * 100
 			else
-				endpos2 = Vector( ( p2.x - p1.x ) * ( mu + resolution*2 ) + p1.x, hermiteInterpolate( p2.y - p1f.y * 100, p1.y, p2.y, p1.y - p2f.y * 100, 0, 0, mu + resolution*2 ), hermiteInterpolate( p2.z - p1f.z * 100, p1.z, p2.z, p1.z - p2f.z * 100, 0, 0, mu + resolution*2 ) )
+				endpos2 = Vector( ( p2.x - p1.x ) * ( mu + resolution*2 ) + p1.x, hermiteInterpolate( p2.y - p1f.y * 100, p1.y, p2.y, p1.y - p2f.y * 100, 0.5, 0, mu + resolution*2 ), hermiteInterpolate( p2.z - p1f.z * 100, p1.z, p2.z, p1.z - p2f.z * 100, 0.5, 0, mu + resolution*2 ) )
 			end
 			
 			cyl = GenerateCylinder( startpos, endpos - startpos, endpos, endpos2 - endpos, 1.3 )
@@ -346,7 +362,14 @@ if CLIENT then
 		ang:RotateAroundAxis( d, angle )
 		return p + (ang:Forward() * radius)
 	end
+	--http://puu.sh/5fTo
+	function RingPoint(p, up, right, angle, radius) --use radians for angle
+		return position + (up * math.cos(angle) * radius) + (right * math.sin(angle) * radius )--returns local unit vector
+	end
+	--right = angle:Right()
+	--up = angle:Up()
 
+	--http://puu.sh/5fT1
 	local ang
 	function getEndPosition( p, d, angle, radius )
 		ang = d:Angle():Right():Angle()
@@ -358,6 +381,8 @@ if CLIENT then
 	function GenerateCylinder( p1, d1, p2, d2, radius, segments )
 		segments = segments or 10
 		angle = 360 / segments
+		d1:Normalize()
+		d2:Normalize()
 		local tab = {}	
 		for i = 0, segments - 1 do
 			ang = i * angle
@@ -378,8 +403,8 @@ if CLIENT then
 	local m0, m1, mu2, mu3
 	local a0, a1, a2, a3
 	function hermiteInterpolate( y1, y2, y3, y4, tension, bias, mu )	
-		mu2 = mu * mu
-		mu3 = mu2 * mu
+		mu2 = mu * mu --mu^2
+		mu3 = mu2 * mu --mu^3
 		m0 = ( y2 - y1 ) * ( 1 + bias ) * ( 1 - tension ) / 2 + ( y3 - y2 ) * ( 1 - bias ) * ( 1 - tension ) / 2
 		m1 = ( y3 - y2 ) * ( 1 + bias ) * ( 1 - tension ) / 2 + ( y4 - y3 ) * ( 1 - bias ) * ( 1 - tension ) / 2
 		a0 = 2 * mu3 - 3 * mu2 + 1

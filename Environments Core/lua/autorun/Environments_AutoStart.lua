@@ -8,9 +8,9 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 128
+Environments.Version = 129
 Environments.CurrentVersion = 0 --for update checking
-Environments.FileVersion = 7
+Environments.FileVersion = 8
 //User Options
 Environments.ForceLoad = true
 Environments.UseSuit = true
@@ -103,7 +103,7 @@ function VersionCheck(rev, contents, size)
 	if Environments.Version >= rev then
 		print("Environments Is Up To Date, Latest Version: "..rev)
 	else
-		print("A newer version of Environments is availible! Version: "..rev.." You have Version: "..Environments.Version)
+		print("A newer version of Environments is availible! Version: "..rev..", You have Version: "..Environments.Version)
 		print("Please update!")
 	end
 	Environments.CurrentVersion = rev
