@@ -9,8 +9,10 @@ LS = {}
 CreateConVar( "LS_AllowNukeEffect", "1" ) //Update to something changeable later on 
 
 local function LS_Reg_Veh(ply, ent)
-	local RD = CAF.GetAddon("Resource Distribution")
-	RD.RegisterNonStorageDevice(ent)
+	if CAF then
+		local RD = CAF.GetAddon("Resource Distribution")
+		RD.RegisterNonStorageDevice(ent)
+	end
 end
 hook.Add( "PlayerSpawnedVehicle", "LS_vehicle_spawn", LS_Reg_Veh )
 

@@ -192,7 +192,7 @@ function Environments.RegisterLSEntity(name,class,In,Out,generatefunc,basevolume
 	print("Entity Registered "..class)
 end
 
-function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth, basemass)
+function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth, basemass) --in process of adding venting
 	local ENT = {}
 	ENT.Type = "anim"
 	ENT.Base = "base_env_storage"
@@ -207,9 +207,10 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 			self:SetMoveType( MOVETYPE_VPHYSICS )
 			self:SetSolid( SOLID_VPHYSICS )
 			self.damaged = 0
+			self.ventamt = 1000
 			if WireAddon then
 				self.WireDebugName = self.PrintName
-				--self.Outputs = Wire_CreateOutputs(self.Entity, { "Out" })
+				self.Inputs = WireLib.CreateInputs(self, { "Vent", "Vent Amount" })
 			end
 		end
 		
@@ -220,6 +221,63 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 
 		function ENT:Damage()
 			if (self.damaged == 0) then self.damaged = 1 end
+		end
+		
+		function ENT:TriggerInput(iname, value)
+			if iname == "Vent" then
+				if value > 0 then
+					self.Vent = 1
+				else
+					self.Vent = 0
+				end
+			elseif iname == "Vent Amount" then
+				if value > 0 then
+					self.ventamt = value
+				else
+					self.ventamt = 1000
+				end
+			end
+		end
+		
+		function ENT:OnRemove()
+			if self.environment then
+				for k,v in pairs(self.maxresources) do
+					if k == "oxygen" or k == "nitrogen" or k == "hydrogen" or k == "carbon dioxide" then
+						self.environment:Convert(nil, k, self:GetResourceAmount(k) or self.resources[k])
+					end
+				end
+			end
+		end
+		
+		function ENT:Think()
+			if self.Vent == 1 and self.environment then
+				if self.node then
+					for k,v in pairs(self.node.maxresources) do
+						if k == "oxygen" then
+							local amt = self:ConsumeResource(k, self.ventamt)
+							self.environment:Convert(nil, "o2", amt)
+						elseif k == "nitrogen" then
+							local amt = self:ConsumeResource(k, self.ventamt)
+							self.environment:Convert(nil, "n", amt)
+						elseif k == "hydrogen" then
+							local amt = self:ConsumeResource(k, self.ventamt)
+							self.environment:Convert(nil, "h", amt)
+						elseif k == "carbon dioxide" then
+							local amt = self:ConsumeResource(k, self.ventamt)
+							self.environment:Convert(nil, "co2", amt)
+						end
+					end
+				else --no node
+					--for k,v in pairs(self.maxresources) do
+						--if k == "oxygen" then
+							--self.environment:Convert(nil, k, self:GetResourceAmount(k) or self.resources[k])
+						--end
+					--end
+				end
+			end
+			
+			self:NextThink(CurTime() + 1)
+			return true
 		end
 	else
 	
@@ -428,11 +486,12 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 		end
 			
 		function TOOL:Think()
-			local model = ""
-			model = self:GetDeviceModel()
-			if !self.GhostEntity or !self.GhostEntity:IsValid() or self.GhostEntity:GetModel() != model then
-				local trace = self:GetOwner():GetEyeTrace()
-				self:MakeGhostEntity( model, trace.HitPos, trace.HitNormal:Angle() + self.Entity.Angle, self:GetDeviceInfo().skin )
+			local model = self:GetDeviceModel()
+			if model then
+				if !self.GhostEntity or !self.GhostEntity:IsValid() or self.GhostEntity:GetModel() != model then
+					local trace = self:GetOwner():GetEyeTrace()
+					self:MakeGhostEntity( model, trace.HitPos, trace.HitNormal:Angle() + self.Entity.Angle, self:GetDeviceInfo().skin )
+				end
 			end
 			self:UpdateGhostEntity( self.GhostEntity, self:GetOwner() )
 		end

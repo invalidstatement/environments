@@ -64,73 +64,38 @@ local function GetVolume(radius)
 	return (4/3) * math.pi * radius * radius
 end
 
-function Environments.ParseSaveData(planet)	
-	local gravity = planet.gravity
-	local o2 = tonumber(planet.atmosphere.o2)
-	local co2 = tonumber(planet.atmosphere.co2)
-	local n = tonumber(planet.atmosphere.n)
-	local h = tonumber(planet.atmosphere.h)
-	local ch4 = tonumber(planet.atmosphere.ch4)
-	local ar = tonumber(planet.atmosphere.ar)
-	local temperature = planet.temperature
-	local suntemperature = planet.suntemperature
-	local atmosphere = planet.atm
-	local radius = planet.radius
-	local volume = GetVolume(radius)
-	
+local function GetTotalPercent(atm)
+	local total = 0
+	for k,v in pairs(atm) do
+		if k != "total" then
+			total = total + v
+		end
+	end
+	return total
+end
+
+function Environments.ParseSaveData(planet)	--only really checks the atmosphere
 	local self = {}
 	self.atmosphere = planet.atm
 	self.air = {}
 	
-	self.air.max = math.Round(100 * 5 * (volume/1000) * self.atmosphere)
-	self.air.total = planet.atmosphere.total
+	self.total = planet.atmosphere.total
 	
 	for k,v in pairs(planet.atmosphere) do
-		if v and type(v) == "number" and v > 0 then
-			if v < 0 then v = 0 end
-			if v > 100 then v = 100 end
-			self.air[k.."per"] = v
-			self.air[k] = math.Round((v/100)*self.air.total)
-		else
-			self.air[k.."per"] = 0
-			self.air[k] = 0
-		end
+		self.air[k] = math.Round(tonumber(v) or 0, 2)
 	end
 	
-	if o2 + co2 + n + h + ch4 + ar < 1 then
-		--local tmp = 100 - (o2 + co2 + n + h + ch4 + ar)
-		self.air.total = 0
-		self.air.empty = 0
-		self.air.emptyper = 0
-	elseif o2 + co2 + n + h + ch4 + ar > 100 then
-		local tmp = (o2 + co2 + n + h + ch4 + ar) - 100
-		if co2 > tmp then
-			self.air.co2 = math.Round((co2 - tmp) * 5 * (volume/1000) * self.atmosphere)
-			self.air.co2per = co2 + tmp
-		elseif n > tmp then
-			self.air.n = math.Round((n - tmp) * 5 * (volume/1000) * self.atmosphere)
-			self.air.nper = n + tmp
-		elseif h > tmp then
-			self.air.h = math.Round((h - tmp) * 5 * (volume/1000) * self.atmosphere)
-			self.air.hper = h + tmp
-		elseif o2 > tmp then
-			self.air.o2 = math.Round((o2 - tmp) * 5 * (volume/1000) * self.atmosphere)
-			self.air.o2per = o2 - tmp
-		elseif ar > tmp then
-			self.air.ar = math.Round((ar - tmp) * 5 * (volume/1000) * self.atmosphere)
-			self.air.arper = ar - tmp
-		elseif ch4 > tmp then
-			self.air.ch4 = math.Round((ch4 - tmp) * 5 * (volume/1000) * self.atmosphere)
-			self.air.ch4per = ch4 - tmp
-		end
-		self.air.empty = 0
-		self.air.emptyper = 0
+	local total = GetTotalPercent(self.air)
+	if total < 1 then --use to point out fails
+		print("LESS THAN 1% on "..planet.name)
+	elseif total > 100 then
+		print("MORE THAN 100% on "..planet.name)
+	elseif total < 100 then
+		print("LESS THAN 100% on "..planet.name)
 	else
-		self.air.empty = 0
-		self.air.emptyper = 0
+		print("OK on "..planet.name)
 	end
 	
-	self.originalco2per = self.air.co2per --oh noes, breaks terraforming and saving a bit
 	return self
 end
 
@@ -144,11 +109,13 @@ function Environments.CreatePlanet(d)
 		planet:Spawn()
 		planet:SetPos(d.position)
 		planet:Configure(d.radius, d.gravity, d.name, d)
+		planet:Create(d.gravity, d.atmosphere, d.pressure, d.temperature, d.air, d.name, d.total, d.originalco2per)
 	elseif d.typeof == "SB2" then
 		planet = ents.Create("Environment")
 		planet:Spawn()
 		planet:SetPos(d.position)
 		planet:Configure(d.radius, d.gravity, d.name, d)
+		planet:Create(d.gravity, d.atmosphere, d.pressure, d.temperature, d.air, d.name, d.total, d.originalco2per)
 	else
 		if d.typeof then
 			print("NOT A VALID TYPE: "..d.typeof)
@@ -160,7 +127,7 @@ function Environments.CreatePlanet(d)
 	if planet then
 		//stop it from getting removed
 		planet.Delete = planet.Remove
-		planet.Remove = function() 
+		planet.Remove = function(d) 
 			Environments.Log("Something Attempted to Remove Planet "..d.name)
 		end
 		
@@ -238,59 +205,21 @@ function Environments.ParsePlanet(planet)
 	end
 	
 	self.air = {}
-	self.air.max = math.Round(100 * 5 * (volume/1000) * self.atmosphere)
-	self.air.total = self.air.max
+
 	for k,v in pairs(planet.atmosphere) do
-		if v and type(v) == "number" and v > 0 then
-			if v < 0 then v = 0 end
-			if v > 100 then v = 100 end
-			self.air[k.."per"] = v
-			self.air[k] = math.Round((v/100)*self.air.total)
-		else
-			v = 0
-			self.air[k.."per"] = v
-			self.air[k] = v
-		end
+		self.air[k] = v
 	end
 	
-	if o2 + co2 + n + h + ch4 + ar < 1 then
-		//This is perfectly ok, it just means something isnt perfect
-		--local tmp = 100 - (o2 + co2 + n + h + ch4 + ar)
-		self.air.total = 0
-		self.air.empty = 0
-		self.air.emptyper = 0
+	if o2 + co2 + n + h + ch4 + ar < 1 then --barren planets, what to do here? this breaks venting
+		print("LESS THAN 1% on "..planet.name)
 	elseif o2 + co2 + n + h + ch4 + ar > 100 then
-		local tmp = (o2 + co2 + n + h + ch4 + ar) - 100
-		if co2 > tmp then
-			self.air.co2 = math.Round((co2 - tmp) * 5 * (volume/1000) * self.atmosphere)
-			self.air.co2per = co2 + tmp
-		elseif n > tmp then
-			self.air.n = math.Round((n - tmp) * 5 * (volume/1000) * self.atmosphere)
-			self.air.nper = n + tmp
-		elseif h > tmp then
-			self.air.h = math.Round((h - tmp) * 5 * (volume/1000) * self.atmosphere)
-			self.air.hper = h + tmp
-		elseif o2 > tmp then
-			self.air.o2 = math.Round((o2 - tmp) * 5 * (volume/1000) * self.atmosphere)
-			self.air.o2per = o2 - tmp
-		elseif ar > tmp then
-			self.air.ar = math.Round((ar - tmp) * 5 * (volume/1000) * self.atmosphere)
-			self.air.arper = ar - tmp
-		elseif ch4 > tmp then
-			self.air.ch4 = math.Round((ch4 - tmp) * 5 * (volume/1000) * self.atmosphere)
-			self.air.ch4per = ch4 - tmp
-		end
-		self.air.empty = 0
-		self.air.emptyper = 0
+		print("MORE THAN 100% on "..planet.name)
 	elseif o2 + co2 + n + h + ch4 + ar < 100 then
-		local total = o2 + co2 + n + h + ch4 + ar
-		local needed = 100 - total
-		self.air.nper = n + needed
-		self.air.n = math.Round((self.air.nper/100)*self.air.total)
+		print("LESS THAN 100% on "..planet.name)
 	else
-		self.air.empty = 0
-		self.air.emptyper = 0
+		print("OK on "..planet.name)
 	end
+	
 	if planet.name then
 		self.name = planet.name
 	end

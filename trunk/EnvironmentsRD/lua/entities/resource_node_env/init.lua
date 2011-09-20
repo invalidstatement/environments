@@ -22,14 +22,10 @@ function ENT:Initialize()
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 	
-	self.nextcheck = CurTime() + 5
-	
 	//rd table
 	self.resources = {}
 	self.connected = {}
 	self.maxresources = {}
-	
-	self.vent = false
 	
 	self:Think()
 end
@@ -57,7 +53,7 @@ function ENT:Link(ent, delay)
 						umsg.String(name)
 						umsg.Long(self.maxresources[name])
 					umsg.End()
-				end, self, ent)
+				end, self, ent, name)
 			else
 				umsg.Start("Env_UpdateMaxRes")
 					umsg.Entity(self)
@@ -114,40 +110,22 @@ end
 function ENT:LinkCheck()
 	local curpos = self:GetPos()
 	for k,v in pairs(self.connected) do
-		if !v or !v:IsValid() then
+		if v and v:IsValid() then
+			if v:GetPos():Distance(curpos) > 2048 then
+				v:Unlink()
+				self:EmitSound( Sound( "weapons/stunstick/spark" .. tostring( math.random( 1, 3 ) ) .. ".wav" ) )
+				v:EmitSound( Sound( "weapons/stunstick/spark" .. tostring( math.random( 1, 3 ) ) .. ".wav" ) )
+			end
+		else
 			self.connected[k] = nil
-			continue
-		end
-		if v:GetPos():Distance(curpos) > 2048 then
-			v:Unlink()
-			self:EmitSound( Sound( "weapons/stunstick/spark" .. tostring( math.random( 1, 3 ) ) .. ".wav" ) )
-			v:EmitSound( Sound( "weapons/stunstick/spark" .. tostring( math.random( 1, 3 ) ) .. ".wav" ) )
 		end
 	end
 end
 
 function ENT:Think()
-	if self.nextcheck < CurTime() then
-		self:LinkCheck()
-		self.nextcheck = CurTime() + 5
-	end
-	/*if self.updated then --for new method
-		for name,v in pairs(self.resources) do
-			if v.haschanged then
-				umsg.Start("Env_UpdateResAmt")
-					umsg.Entity(self)
-					local old = name
-					name = Environments.Resources[name] or name
-					--print("Sending "..old.." as "..name)
-					umsg.String(name)
-					umsg.Long(v.value)
-				umsg.End()
-				v.haschanged = false
-			end
-		end
-		self.updated = false
-	end*/
-	self:NextThink(CurTime() + 1)
+	self:LinkCheck()
+	
+	self:NextThink(CurTime() + 5)
 	return true
 end
 
@@ -223,8 +201,9 @@ function ENT:ConsumeResource(name, amt)
 			self.updated = true
 			self.resources[name].haschanged = true
 			return amt
-		elseif not res == 0 then
-			res = 0
+		elseif res != 0 then
+			res = self.resources[name].value
+			self.resources[name].value = 0
 			self.resources[name].haschanged = true
 			self.updated = true
 			return res

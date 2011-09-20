@@ -9,9 +9,8 @@ TOOL.Tab = "Environments"
 if ( CLIENT ) then
 	language.Add( "Tool_link_tool_name", "Link Tool" )
 	language.Add( "Tool_link_tool_desc", "Links Resource-Carrying Devices together to a Resource Node." )
-	language.Add( "Tool_link_tool_0", "Left Click: Link Devices.  Right Click: Unlink Two Devices.  Reload: Unlink Device from All." )
+	language.Add( "Tool_link_tool_0", "Left Click: Link Devices. Reload: Unlink Device from All." )
 	language.Add( "Tool_link_tool_1", "Click on another Resource-Carrying Device" )
-	language.Add( "Tool_link_tool_2", "Right-Click on another Resource-Carrying Device(or the same one to unlink ALL)" )
 	language.Add( "rd3_dev_link_width", "Width:" )
 	language.Add( "link_tool_material", "Material:" )
 	language.Add( "rd3_dev_link_colour", "Color:")
@@ -51,7 +50,7 @@ function TOOL:LeftClick( trace )
 		local length = ( self:GetPos(1) - self:GetPos(iNum)):Length()
 
 		if Ent1.IsNode or Ent2.IsNode then
-			if Ent1.Link and Ent2.Link then
+			if Ent1.Link and Ent2.Link then --only let LS ents, need to fix, lets all ents with a Link() function
 				Ent1:Link(Ent2)
 				Ent2:Link(Ent1)
 				if tonumber(self:GetClientInfo("cable")) == 1 then
@@ -94,36 +93,6 @@ end
 function TOOL:RightClick( trace )
 	//if not valid or player, exit
 	if ( trace.Entity:IsValid() && trace.Entity:IsPlayer() ) then return end
-	//if client exit
-	if ( CLIENT ) then return true end
-	// If there's no physics object then we can't constraint it!
-	if ( SERVER && !util.IsValidPhysicsObject( trace.Entity, trace.PhysicsBone ) ) then return false end
-
-	//how many objects stored
-	local iNum = self:NumObjects() + 1
-
-	//save clicked postion
-	self:SetObject( iNum, trace.Entity, trace.HitPos, trace.Entity:GetPhysicsObjectNum( trace.PhysicsBone ), trace.PhysicsBone, trace.HitNormal )
-
-	if ( iNum > 1 ) then
-		// Get information we're about to use
-		local Ent1, Ent2 = self:GetEnt(1), self:GetEnt(2)
-
-		/*if Ent1.Link and Ent2.Link then
-			if 
-			
-			else
-				self:GetOwner():SendLua( "GAMEMODE:AddNotify('Invalid Combination!', NOTIFY_GENERIC, 7);" )
-			end
-		else
-			self:GetOwner():SendLua( "GAMEMODE:AddNotify('Invalid Combination!', NOTIFY_GENERIC, 7);" )
-		end*/
-
-		// Clear the objects so we're ready to go again
-		self:ClearObjects()
-	else
-		self:SetStage( iNum )
-	end
 
 	return true
 end
@@ -150,7 +119,7 @@ function TOOL.BuildCPanel( panel )
 	panel:AddControl("CheckBox", { Label = "Use Cables? DO NOT USE ON MOVING STRUCTURES", Command = "link_tool_cable" })
 
 	panel:AddControl( "MatSelect", {
-		Height = "5",
+		Height = "7",
 		Label = "#link_tool_material",
 		ItemWidth = 64,
 		ItemHeight = 64,

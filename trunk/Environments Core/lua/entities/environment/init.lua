@@ -181,22 +181,15 @@ function ENT:Configure(rad, gravity, name, env)
 	end
 	self:SetNotSolid( true )
 	
+	self.OldData = {}
 	for k,v in pairs(env) do
 		self[k] = v
+		self.OldData[k] = v
 	end
 	
 	self.radius = rad
 	self.Enabled = true
 	self.gravity = gravity
-	
-	if self.Debugging then
-		Msg("Initialized a new entity env: ", self, "\n")
-		Msg("ID is: ", self.name, "\n")
-		Msg("Dumping stats:\n")
-		Msg("------------ START DUMP ------------\n")
-		PrintTable(self.air)
-		Msg("------------- END DUMP -------------\n\n")
-	end
 	
 	//Fill World Entity Table
 	for k,ent in pairs(ents.FindInSphere(self:GetPos(), self.radius)) do

@@ -60,10 +60,10 @@ end
 //End Resolution Stuff
 
 //Define your resolutions here
-AddResolution(1920, 1080, Vector(1.53,1.53,1.5), Vector(-2,55,-41), Vector(-2,44,-41))
+AddResolution(1920, 1080, Vector(2,2,1.9), Vector(-2,55,-55), Vector(-2,44,-41))
 AddResolution(1920, 1200, Vector(1.53,1.53,1.5), Vector(-2,55,-41), Vector(-2,44,-41))--untested
 AddResolution(1680, 1050, Vector(1.3,1.3,1.5), Vector(-2,55,-41), Vector(-2,44,-41))--untested
-AddResolution(1600, 900, Vector(1.53,1.53,1.5), Vector(-2,55,-41), Vector(-2,44,-41)) --untested
+AddResolution(1600, 900, Vector(1.3,1.3, 1.72), Vector(-2.222, 56.04,-49.91), Vector(-2.222, 46.04,-49.91))
 AddResolution(1440, 900, Vector(1,1,1.8), Vector(-2,55,-53), Vector(-2,44,-53)) --untested
 AddResolution(1280, 1024, Vector(1,1,1.8), Vector(-2,55,-53), Vector(-2,44,-53))
 AddResolution(1280, 960, Vector(1,1,1.7), Vector(-2,55,-50), Vector(-2,44,-50))

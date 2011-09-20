@@ -8,11 +8,12 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 129
+Environments.Version = 130
 Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 8
+
 //User Options
-Environments.ForceLoad = true
+Environments.ForceLoad = false
 Environments.UseSuit = true
 Environments.Debug = true
 
@@ -22,7 +23,6 @@ if CLIENT then
 	include("environments/core/cl_logging.lua")
 	include("environments/menu.lua")
 	function Load(msg)
-		include("vgui/lsinfo.lua")
 		include("vgui/HUD.lua")
 		include("environments/core/cl_core.lua")
 		if Environments.UseSuit then
@@ -31,7 +31,6 @@ if CLIENT then
         
 		local function Reload()
 			include("vgui/HUD.lua")
-			include("vgui/lsinfo.lua")
 			LoadHud()
 		end
 		concommand.Add("env_reload_hud", Reload)
@@ -47,9 +46,6 @@ if CLIENT then
 		if Environments.Suit then return end --has it already loaded?
 		if CAF and CAF.GetAddon("Spacebuild") then --load in case of SB
 			Load()
-		end
-		if SinglePlayer then
-			--Load()
 		end
 	end)
         
@@ -71,7 +67,6 @@ else
 	AddCSLuaFile("environments/spawn_menu.lua")
 	AddCSLuaFile("vgui/HUD.lua")
 	AddCSLuaFile("environments/menu.lua")
-	AddCSLuaFile("vgui/lsinfo.lua")
 	AddCSLuaFile("environments/spacesuits/cl_suit.lua")
 	AddCSLuaFile("environments/core/cl_logging.lua")
         
