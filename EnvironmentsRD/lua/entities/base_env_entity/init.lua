@@ -52,7 +52,7 @@ function ENT:OnTakeDamage(DmgInfo)//should make the damage go to the shield if t
 end
 
 function ENT:OnRemove()
-	if self.node then
+	if self.node and self.node:IsValid() then
 		self.node:Unlink(self)
 	end
 	if WireLib then WireLib.Remove(self) end

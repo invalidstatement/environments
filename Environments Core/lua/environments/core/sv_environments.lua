@@ -4,6 +4,7 @@
 ------------------------------------------
 
 --localize
+--looser xD http://steamcommunity.com/id/AlauraLoveless/
 local math = math
 local hook = hook
 local game = game
@@ -256,6 +257,7 @@ function Environments.RegisterEnvironments()
 		for k,v in pairs(planets) do --clean this up, the parsing only does atmosphere
 			v.air = Environments.ParseSaveData(v).air --get air data from atmosphere data
 			v.atmosphere = v.atm
+			v.total = v.air.total
 			Environments.CreatePlanet(v)
 		end  
 		for k,v in pairs(stars) do
@@ -366,7 +368,7 @@ function Environments.LoadFromMap()
 			//END KEY
 
 			planet.position = ent:GetPos()
-						
+		
 			if planet.atm == 0 then
 				planet.atm = 1
 			end
@@ -400,28 +402,28 @@ function Environments.LoadFromMap()
 			planet.name = tostring(tab.Case13) --Get Name
 			planet.colorid = tostring(tab.Case15)
 			planet.bloomid = tostring(tab.Case16)
-				
-			planet.originalco2per = planet.atmosphere.carbondioxide
-				
+			
+			planet.originalco2per = planet.atmosphere.co2
+			
 			if planet.atm == 0 then
 				planet.atm = 1
 			end
-						
+		
 			planet.position = ent:GetPos()
-						
+		
 			i=i+1
 			table.insert(planets, planet)
 			print("//     Spacebuild 3 Planet Added   //")
 		elseif Type == "star" then
 			planet.radius = tonumber(tab.Case02) --Get Radius
 			planet.gravity = tonumber(tab.Case03) --Get Gravity
-						
+		
 			planet.position = ent:GetPos()
-						
+		
 			planet.temperature = 10000
 			planet.solaractivity = "med"
 			planet.baseradiation = "1000"
-						
+		
 			i=i+1	
 			table.insert(stars, planet)
 			print("//     Spacebuild 2 Star Added     //")
@@ -429,13 +431,13 @@ function Environments.LoadFromMap()
 			planet.radius = tonumber(tab.Case02) --Get Radius
 			planet.gravity = tonumber(tab.Case03) --Get Gravity
 			planet.name = tostring(tab.Case06)
-				
+			
 			if not planet.name then
 				planet.name = "Star"
 			end
-				
+			
 			planet.position = ent:GetPos()
-						
+			
 			planet.temperature = 5000
 			planet.solaractivity = "med"
 			planet.baseradiation = "1000"
@@ -469,7 +471,7 @@ function Environments.SaveMap() --plz work :)
 			planet.atm = v.atmosphere
 			planet.suntemperature = v.suntemperature
 			planet.atmosphere = {}
-			--planet.atmosphere = table.Copy(v.air)
+			--planet.atmosphere = table.Copy(v.air) --need to get only percentage values
 			planet.atmosphere.o2 = v.air.o2per
 			planet.atmosphere.co2 = v.air.co2per
 			planet.atmosphere.h = v.air.hper
@@ -859,6 +861,17 @@ local function SendPlanetData(ply, cmd, args)
 	--end
 end
 concommand.Add("request_planet_data", SendPlanetData)
+
+local function PrintData(ply, cmd, args)
+	local self = ply.environment
+	if !self then return end
+	Msg("ID is: ", self.name, "\n")
+	Msg("Dumping stats:\n")
+	Msg("------------ START DUMP ------------\n")
+	PrintTable(self.OldData)
+	Msg("------------- END DUMP -------------\n\n")
+end
+concommand.Add("print_planet", PrintData)
 
 
 /*function getStartPosition( p, d, angle, radius )

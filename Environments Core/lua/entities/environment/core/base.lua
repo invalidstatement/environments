@@ -23,6 +23,69 @@ local print = print
 local pairs = pairs
 local tostring = tostring
 
+local function GetTotalPercent(atm)
+	local total = 0
+	for k,v in pairs(atm) do
+		if k != "total" and k != "totalper" and k != "max" then
+			total = total + v
+		end
+	end
+	return total
+end
+
+function ENT:Create(gravity, atmosphere, pressure, temperature, gasses, name, total, originalco2per)
+	//set Gravity if one is given
+	self.gravity = gravity or 0
+	
+	//set atmosphere if given
+	self.atmosphere = atmosphere or 1
+
+	//set pressure if given
+	self.pressure = pressure or math.Round(self.atmosphere * self.gravity)
+	
+	//set temperature if given
+	self.temperature = temperature or 15
+	
+	local volume = (4/3) * math.pi * self.radius * self.radius
+	self.atmosphere = atmosphere
+	self.air = {}
+	
+	self.air.max = math.Round(100 * 5 * (volume/1000) * self.atmosphere)
+	if !total then
+		self.air.total = math.Round(self.air.max * (GetTotalPercent(gasses)/100)) --should set the total as the percent of max full, to fix empty planets from SB3
+	else
+		self.air.total = total
+	end
+	
+	for k,v in pairs(gasses) do
+		if v and type(v) == "number" and v > 0 then
+			if v < 0 then v = 0 end
+			if v > 100 then v = 100 end
+			self.air[k.."per"] = v
+			self.air[k] = math.Round((v/100)*self.air.total)
+		else
+			self.air[k.."per"] = 0
+			self.air[k] = 0
+		end
+	end
+	
+	self.originalco2per = originalco2per or self.air.co2per
+	
+	self.name = name or "un-named"
+	self.OldData.air = self.air
+	self.OldData.originalco2per = self.originalco2per
+	
+	if self.Debugging then
+		Msg("Initialized a new entity env: ", self, "\n")
+		Msg("ID is: ", self.name, "\n")
+		Msg("Dumping stats:\n")
+		Msg("------------ START DUMP ------------\n")
+		PrintTable(self.OldData)
+		Msg("------------- END DUMP -------------\n\n")
+	end
+end
+
+
 --self.air.max = total volume
 --self.air.total = amount filled
 function ENT:Convert(res1, res2, value)
@@ -41,8 +104,8 @@ function ENT:Convert(res1, res2, value)
 		res2 = Conversions[tostring(res2)]
 	end
 	
-	--local before1 = self.air[res1]
-	--local before2 = self.air[res2]
+	--local before1 = self.air[res1] or 0
+	--local before2 = self.air[res2] or 0
 	
 	if res1 != "empty" then
 		if self.air[res1] < value then
@@ -53,7 +116,7 @@ function ENT:Convert(res1, res2, value)
 			value = self.air.max - self.air.total
 		end
 	end
-	--print("Value: "..value)
+	--print("\nValue: "..value)
 	
 	//take out
 	local ResourcePer1 = res1.."per"
@@ -77,8 +140,8 @@ function ENT:Convert(res1, res2, value)
 			self.air[k.."per"] = self:GetResourcePercentage(k)
 		end
 	end
-	--print(tostring(res1).." "..tostring(before1).." ===> "..tostring(self.air[res1]), "Difference: "..(self.air[res1] - before1))
-	--print(tostring(res2).." "..tostring(before2).." ===> "..tostring(self.air[res2]), "Difference: "..(self.air[res2] - before2))
+	--print(tostring(res1).." "..tostring(before1).." ===> "..tostring(self.air[res1] or 0), "Difference: "..((self.air[res1] or 0) - before1))
+	--print(tostring(res2).." "..tostring(before2).." ===> "..tostring(self.air[res2] or 0), "Difference: "..((self.air[res2] or 0) - before2))
 	
 	//Get Value Calculations
 	self.pressure = self.atmosphere * self.gravity * (self.air.total/self.air.max)
@@ -87,165 +150,6 @@ function ENT:Convert(res1, res2, value)
 	return value
 end
 
-/*function ENT:Convert(air1, air2, value) --old one
-	--print(air1,air2,value)
-	--if not air1 or not air2 or not value then return 0 end
-	--if type(air1) != "number" or type(air2) != "number" or type(value) != "number" then return 0 end 
-	air1 = math.Round(air1)
-	air2 = math.Round(air2)
-	value = math.Round(value)
-	if air1 < -1 or air1 > 5 then return 0 end
-	if air2 < -1 or air2 > 5 then return 0 end
-	if air1 == air2 then return 0 end
-	if value < 1 then return 0 end
-
-	if air1 == -1 then
-		--print("empty")
-		if self.air.empty < value then
-			value = self.air.empty
-		end
-		self.air.empty = self.air.empty - value
-		if air2 == SB_AIR_CO2 then
-			self.air.co2 = self.air.co2 + value
-		elseif air2 == SB_AIR_N then
-			self.air.n = self.air.n + value
-		elseif air2 == SB_AIR_H then
-			self.air.h = self.air.h + value
-		elseif air2 == SB_AIR_CH4 then
-			self.air.ch4 = self.air.ch4 + value
-		elseif air2 == SB_AIR_AR then
-			self.air.ar = self.air.ar + value
-		elseif air2 == SB_AIR_O2 then
-			self.air.o2 = self.air.o2 + value
-		end
-	elseif air1 == SB_AIR_O2 then
-		--print("o2")
-		if self.air.o2 < value then
-			value = self.air.o2
-		end
-		self.air.o2 = self.air.o2 - value
-		if air2 == SB_AIR_CO2 then
-			self.air.co2 = self.air.co2 + value
-		elseif air2 == SB_AIR_N then
-			self.air.n = self.air.n + value
-		elseif air2 == SB_AIR_H then
-			self.air.h = self.air.h + value
-		elseif air2 == SB_AIR_CH4 then
-			self.air.ch4 = self.air.ch4 + value
-		elseif air2 == SB_AIR_AR then
-			self.air.ar = self.air.ar + value
-		elseif air2 == -1 then
-			self.air.empty = self.air.empty + value
-		end
-	elseif air1 == SB_AIR_CO2 then
-		--print("co2")
-		if self.air.co2 < value then
-			value = self.air.co2
-		end
-		self.air.co2 = self.air.co2 - value
-		if air2 == SB_AIR_O2 then
-			self.air.o2 = self.air.o2 + value
-		elseif air2 == SB_AIR_N then
-			self.air.n = self.air.n + value
-		elseif air2 == SB_AIR_H then
-			self.air.h = self.air.h + value
-		elseif air2 == SB_AIR_AR then
-			self.air.ar = self.air.ar + value
-		elseif air2 == SB_AIR_CH4 then
-			self.air.ch4 = self.air.ch4 + value
-		elseif air2 == -1 then
-			self.air.empty = self.air.empty + value
-		end
-	elseif air1 == SB_AIR_N then
-		--print("n")
-		if self.air.n < value then
-			value = self.air.n
-		end
-		self.air.n = self.air.n - value
-		if air2 == SB_AIR_O2 then
-			self.air.o2 = self.air.o2 + value
-		elseif air2 == SB_AIR_CO2 then
-			self.air.co2 = self.air.co2 + value
-		elseif air2 == SB_AIR_H then
-			self.air.h = self.air.h + value
-		elseif air2 == SB_AIR_AR then
-			self.air.ar = self.air.ar + value
-		elseif air2 == SB_AIR_CH4 then
-			self.air.ch4 = self.air.ch4 + value
-		elseif air2 == -1 then
-			self.air.empty = self.air.empty + value
-		end
-	elseif air1 == SB_AIR_CH4 then
-		print("Ch4")
-		if self.air.ch4 < value then
-			value = self.air.ch4
-		end
-		self.air.ch4 = self.air.ch4 - value
-		if air2 == SB_AIR_O2 then
-			self.air.o2 = self.air.o2 + value
-		elseif air2 == SB_AIR_CO2 then
-			self.air.co2 = self.air.co2 + value
-		elseif air2 == SB_AIR_H then
-			self.air.h = self.air.h + value
-		elseif air2 == SB_AIR_N then
-			self.air.n = self.air.n + value
-		elseif air2 == SB_AIR_AR then
-			self.air.ar = self.air.ar + value
-		elseif air2 == -1 then
-			self.air.empty = self.air.empty + value
-		end
-	elseif air1 == SB_AIR_AR then
-		--print("AR")
-		if self.air.ar < value then
-			value = self.air.ar
-		end
-		self.air.ar = self.air.ar - value
-		if air2 == SB_AIR_O2 then
-			self.air.o2 = self.air.o2 + value
-		elseif air2 == SB_AIR_CO2 then
-			self.air.co2 = self.air.co2 + value
-		elseif air2 == SB_AIR_H then
-			self.air.h = self.air.h + value
-		elseif air2 == SB_AIR_N then
-			self.air.n = self.air.n + value
-		elseif air2 == SB_AIR_AR then
-			self.air.ar = self.air.ar + value
-		elseif air2 == -1 then
-			self.air.empty = self.air.empty + value
-		end
-	else
-		--print("else")
-		if self.air.h < value then
-			value = self.air.h
-		end
-		self.air.h = self.air.h - value
-		if air2 == SB_AIR_O2 then
-			self.air.o2 = self.air.o2 + value
-		elseif air2 == SB_AIR_CO2 then
-			self.air.co2 = self.air.co2 + value
-		elseif air2 == SB_AIR_N then
-			self.air.n = self.air.n + value
-		elseif air2 == SB_AIR_CH4 then
-			self.air.ch4 = self.air.ch4 + value
-		elseif air2 == SB_AIR_AR then
-			self.air.ar = self.air.ar + value
-		elseif air2 == -1 then
-			self.air.empty = self.air.empty + value
-		end
-	end
-	for k,v in pairs(self.air) do
-		if k == "o2per" or k == "co2per" or k == "emptyper" or k == "nper" or k == "hper" or k == "max" or k =="ch4per" or k=="arper" then
-		else
-			self.air[k.."per"] = self:GetResourcePercentage(k)
-		end
-	end
-	self.pressure = self.atmosphere * self.gravity * (1 - (self.air.emptyper/100))
-
-	--self:GetBreathable()
-	--print(value)
-	return value
-end*/
-
 /*function ENT:GetBreathable()
 	if self.air.arper >= 5 then
 		self.breathable = false
@@ -253,16 +157,6 @@ end*/
 	end
 	self.breathable = true
 	return true
-end*/
-
-/*function ENT:GetResourcePercentage(res) --old
-	--if not res or type(res) == "number" then return 0 end
-	if self.air.max == 0 then
-		return 0
-	end
-	--local ignore = {"o2per", "co2per", "nper", "hper", "emptyper", "max", "nhper"}
-	--if table.HasValue(ignore, res) then return 0 end
-	return ((self.air[res] / self.air.max) * 100)
 end*/
 
 function ENT:GetResourcePercentage(res)

@@ -10,6 +10,8 @@ local ents = ents
 local duplicator = duplicator
 local math = math
 local tostring = tostring
+local MeshQuad = MeshQuad
+local Vector = Vector
 local type = type
 local tonumber = tonumber
 local pairs = pairs
@@ -256,33 +258,33 @@ if SERVER then
 			end
 		end
 	end
-	timer.Create("RDChecker", 0.5, 0, CheckRD) --adjust rate
+	timer.Create("RDChecker", 0.5, 0, CheckRD) --adjust rate perhaps?
 end
 
-function Environments.BuildDupeInfo( ent )
+function Environments.BuildDupeInfo( ent ) --need to add duping for cables
+	local info = {}
 	if ent.IsNode then
 		--local nettable = ent.connected
 		--local info = {}
 		--info.resources = table.Copy(ent.maxresources)
 
 		--duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
+		return
 	elseif ent:GetClass() == "env_pump" then
 		local info = {}
 		info.pump = ent.pump_active
 		info.rate = ent.pump_rate
 		info.hoselength = ent.hose_length
-		duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
-	else --everything else?
-		local info = {}
-		if ent.node then
-			info.Node = ent.node:EntIndex()
-		end
-		duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
 	end
+	
+	if ent.node then
+		info.Node = ent.node:EntIndex()
+	end
+	duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
 end
 
 //apply the DupeInfo
-function Environments.ApplyDupeInfo( ent, CreatedEntities )
+function Environments.ApplyDupeInfo( ent, CreatedEntities ) --add duping for cables
 	if ent.EntityMods and ent.EntityMods.EnvDupeInfo then
 		local DupeInfo = ent.EntityMods.EnvDupeInfo
 		if ent.IsNode then
@@ -291,18 +293,18 @@ function Environments.ApplyDupeInfo( ent, CreatedEntities )
 				ent:Initialize()
 			end
 			ent.EntityMods.EnvDupeInfo = nil */
+			return
 		elseif ent:GetClass() == "env_pump" then
 			ent:Setup( DupeInfo.pump, DupeInfo.rate, DupeInfo.hoselength )
-			ent.EntityMods.EnvDupeInfo = nil
-		else
-			Environments.MakeFunc(ent) --yay
-			if DupeInfo.Node then
-				local node = CreatedEntities[DupeInfo.Node]
-				ent:Link(node, true)
-				node:Link(ent, true)
-			end
-			ent.EntityMods.EnvDupeInfo = nil
 		end
+		Environments.MakeFunc(ent) --yay
+		if DupeInfo.Node then
+			local node = CreatedEntities[DupeInfo.Node]
+			ent:Link(node, true)
+			node:Link(ent, true)
+		end
+		--Environments.Create_Beam(ent, pos, forward, mat) --make work
+		ent.EntityMods.EnvDupeInfo = nil
 	end
 end
 
@@ -362,19 +364,24 @@ if CLIENT then
 		ang:RotateAroundAxis( d, angle )
 		return p + (ang:Forward() * radius)
 	end
-	--http://puu.sh/5fTo
-	function RingPoint(p, up, right, angle, radius) --use radians for angle
-		return position + (up * math.cos(angle) * radius) + (right * math.sin(angle) * radius )--returns local unit vector
-	end
-	--right = angle:Right()
-	--up = angle:Up()
 
-	--http://puu.sh/5fT1
 	local ang
 	function getEndPosition( p, d, angle, radius )
 		ang = d:Angle():Right():Angle()
 		ang:RotateAroundAxis( d, angle )
 		return p + (ang:Forward() * radius)
+	end
+	
+	local function MeshQuad( v1, v2, v3, v4, t ) --s = 0
+		return
+		{        
+			Vertex( v1, 0, 0 ),
+			Vertex( v2, (v1-v2):Length() * t, 0 ),
+			Vertex( v4, 0, (v1-v4):Length() * t ),
+			Vertex( v2, (v1-v2):Length() * t, 0 ),
+			Vertex( v3, (v3-v4):Length() * t, (v2-v3):Length() * t),
+			Vertex( v4, 0, (v1-v4):Length() * t ),
+		}    
 	end
 	
 	local angle, ang
@@ -388,7 +395,7 @@ if CLIENT then
 			ang = i * angle
 			--local inside = MeshQuad(getStartPosition( p1, d1, ang, radius ),getStartPosition( p1, d1, ang + angle, radius ),getEndPosition( p2, d2, ang + angle, radius ),getEndPosition( p2, d2, ang, radius ), 1)
 			-- Outside
-			local outside = MeshQuad(getEndPosition( p2, d2, ang, radius ),getEndPosition( p2, d2, ang + angle, radius ),getStartPosition( p1, d1, ang + angle, radius ),getStartPosition( p1, d1, ang, radius ), 1)
+			local outside = MeshQuad(getEndPosition( p2, d2, ang, radius ),getEndPosition( p2, d2, ang + angle, radius ),getStartPosition( p1, d1, ang + angle, radius ),getStartPosition( p1, d1, ang, radius ), 0.1)--i*0.1, (i + 1)*0.1)
 
 			--for k,v in pairs(inside) do
 			--	table.insert(tab, v)
@@ -540,13 +547,14 @@ else
 	end
 end
 
-Environments.Resources = {}
-Environments.Resources2 = {}
+Environments.Resources = {} --string to short
+Environments.Resources2 = {} --short to string
 function Environments.RegisterResource(name)
 	Environments.Resources[name] = table.Count(Environments.Resources) + 1
 	Environments.Resources2[table.Count(Environments.Resources)] = name
 end	
 
+//Adding Main Resources For Optimization
 Environments.RegisterResource("oxygen")
 Environments.RegisterResource("water")
 Environments.RegisterResource("energy")
