@@ -86,7 +86,7 @@ function Environments.ParseSaveData(planet)	--only really checks the atmosphere
 	end
 	
 	local total = GetTotalPercent(self.air)
-	if total < 1 then --use to point out fails
+	if total < 1 then --bug fixed, should get rid of
 		print("LESS THAN 1% on "..planet.name)
 	elseif total > 100 then
 		print("MORE THAN 100% on "..planet.name)
@@ -210,7 +210,7 @@ function Environments.ParsePlanet(planet)
 		self.air[k] = v
 	end
 	
-	if o2 + co2 + n + h + ch4 + ar < 1 then --barren planets, what to do here? this breaks venting
+	if o2 + co2 + n + h + ch4 + ar < 1 then --FIXED :D (barren planets, what to do here? this breaks venting)
 		print("LESS THAN 1% on "..planet.name)
 	elseif o2 + co2 + n + h + ch4 + ar > 100 then
 		print("MORE THAN 100% on "..planet.name)

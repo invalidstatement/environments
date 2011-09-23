@@ -45,7 +45,7 @@ function Environments.MakeFunc(ent)
 	
 	if data.resources then
 		for k,v in pairs(data.resources) do
-			ent:AddResource(v, k*volume_mul)
+			ent:AddResource(v, math.Round(k*volume_mul))
 		end
 	end
 	
@@ -84,7 +84,7 @@ function Environments.RegisterEnt(class, basevolume, basehealth, basemass)
 	Environments.MakeData[class].basemass = basemass
 end
 
-Environments.RegisterEnt("generator_fusion", 339933 * 3, 1000, 1000)
+Environments.RegisterEnt("generator_fusion", 339933 * 3, 600, 1000)
 Environments.RegisterEnt("generator_solar", 1982, 50, 10)
 Environments.RegisterEnt("generator_water", 18619, 200, 60)
 Environments.RegisterEnt("env_air_compressor", 284267, 600, 200)
@@ -207,10 +207,20 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 			self:SetMoveType( MOVETYPE_VPHYSICS )
 			self:SetSolid( SOLID_VPHYSICS )
 			self.damaged = 0
+			self.res = res
 			self.ventamt = 1000
 			if WireAddon then
 				self.WireDebugName = self.PrintName
 				self.Inputs = WireLib.CreateInputs(self, { "Vent", "Vent Amount" })
+
+				/*local tab = {}
+				for i = 1,2 in pairs(self.res) do
+					local v = self.res[i]
+					tab[i] = res
+					tab[i+1] = "Max "..res
+					i = i + 1
+				end*/
+				self.Outputs = Wire_CreateOutputs(self, { "Storage", "Max Storage" })
 			end
 		end
 		
@@ -276,6 +286,16 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 				end
 			end
 			
+			if WireAddon then
+				for k,v in pairs(self.res) do
+					local air = self:GetResourceAmount(v)
+					local maxair = self:GetNetworkCapacity(v)
+					Wire_TriggerOutput(self.Entity, "Storage", air)
+					Wire_TriggerOutput(self.Entity, "Max Storage", maxair)
+					break
+				end
+			end
+			
 			self:NextThink(CurTime() + 1)
 			return true
 		end
@@ -323,6 +343,11 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 
 	TOOL.Topic = {}
 	TOOL.Language = {}
+	
+	TOOL.Language["Undone"] = cleanupgroup.." Removed"
+	TOOL.Language["Cleanup"] = cleanupgroup
+	TOOL.Language["Cleaned"] = "Removed all "..cleanupgroup
+	TOOL.Language["SBoxLimit"] = "Hit the "..cleanupgroup.." limit"
 
 	function TOOL:Register()
 		-- Register language clientside
@@ -528,11 +553,6 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 	end
 	
 	local name = TOOL.Mode
-
-	TOOL.Language["Undone"] = "Generator Removed";
-	TOOL.Language["Cleanup"] = "Generators";
-	TOOL.Language["Cleaned"] = "Removed all generators";
-	TOOL.Language["SBoxLimit"] = "Hit the generator limit";
 	
 	local self = TOOL
 	function TOOL.BuildCPanel( CPanel )
