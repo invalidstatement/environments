@@ -226,9 +226,7 @@ function ENT:Extract_Energy()
 	end
 	
 	if (self:GetResourceAmount("water") < math.ceil(Coolant_Increment * self:GetMultiplier())) then
-		if CAF.GetAddon("Life Support") then
-			Environments.DamageLS(self, math.Round(15 - (15 * ( self:GetResourceAmount("water")/math.ceil(Coolant_Increment * self:GetMultiplier())))))
-		end
+		Environments.DamageLS(self, math.Round(15 - (15 * ( self:GetResourceAmount("water")/math.ceil(Coolant_Increment * self:GetMultiplier())))))
 		/*local Smoke = ents.Create("env_smoketrail")
 			Smoke:SetKeyValue("opacity", 1)
 			Smoke:SetKeyValue("spawnrate", 10)

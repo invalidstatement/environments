@@ -282,9 +282,11 @@ function Environments.CreateEnvironmentsFromMap()
 		local planet = Environments.ParsePlanet(v)
 		Environments.CreatePlanet(planet)
 	end
+	Stars = {}
 	for k,v in pairs(rawstars) do
 		local star = Environments.ParseStar(v)
 		Environments.CreateStar(star)
+		table.insert(stars, star)
 	end
 	return rawdata, rawstars
 end
@@ -628,16 +630,48 @@ function Environments.RegisterSun()
 		if table.Count(stars) > 0 then
 			--set as core radiation source, and sun angle(needed for solar planels) and other sun effects
 			TrueSun[1] = table.Random(stars).position
-			print("//   Sun Registered                //")
+			print("//   Star Registered               //")
 		else
-			TrueSun[1] = ents.FindByClass("env_sun")[1]:GetPos()
-			print("//   No Stars Found                //")
-			print("//   Registered Env_Sun            //")
+			local suns = ents.FindByClass("env_sun")
+			for k,ent in pairs(suns) do
+				if ent:IsValid() then
+					local values = ent:GetKeyValues()
+					if values.target and string.len(values.target) > 0 then
+						local targets = ents.FindByName( "sun_target" )
+						for _, target in pairs( targets ) do
+							SunAngle = (target:GetPos() - ent:GetPos()):Normalize()
+							print("target found: ".. tostring(target))
+							break //Sunangle set, all that was needed
+						end
+					end
+					
+					if !SunAngle then //Sun angle still not set, but sun found
+						local ang = ent:GetAngles()
+						ang.p = ang.p - 180
+						ang.y = ang.y - 180
+						--get within acceptable angle values no matter what...
+						ang.p = math.NormalizeAngle( ang.p )
+						ang.y = math.NormalizeAngle( ang.y )
+						ang.r = math.NormalizeAngle( ang.r )
+						SunAngle = ang:Forward()
+					end
+					break
+                end
+			end
+			
+			if SunAngle then
+				print("//   Registered Env_Sun Entity     //")
+			else
+				print("//   No Stars Found, Defaulting    //")
+				TrueSun = {}
+				TrueSun[1] = Vector(0,0,0)
+			end
 		end
 	end)
 
 	if error then
-		print("//   No Sun Found, Defaulting      //")
+		print("Star Register Error: "..error)
+		print("//   No Stars Found, Defaulting      //")
 		TrueSun = {}
 		TrueSun[1] = Vector(0,0,0)
 	end
