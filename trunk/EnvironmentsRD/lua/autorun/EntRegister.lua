@@ -137,9 +137,9 @@ function Environments.RegisterLSEntity(name,class,In,Out,generatefunc,basevolume
 				end
 			elseif iname == "Multiplier" then
 				if value > 0 then
-					self.multiplier = value
+					self:SetMultiplier(value)
 				else
-					self.multiplier = 1
+					self:SetMultiplier(1)
 				end
 			end
 		end
