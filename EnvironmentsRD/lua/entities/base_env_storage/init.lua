@@ -29,9 +29,12 @@ function ENT:SetOOO(value)
 	self:SetNetworkedInt( "OOO", value )
 end
 
-AccessorFunc( ENT, "LSMULTIPLIER", "Multiplier", FORCE_NUMBER )
 function ENT:GetMultiplier()
-	return self.LSMULTIPLIER or 1
+	return self.MULTIPLIER or 1
+end
+
+function ENT:SetMultiplier(num)
+	self.MULTIPLIER = tonumber(num) or 1
 end
 
 function ENT:Repair()
@@ -163,6 +166,7 @@ function ENT:GetNetworkCapacity(resource)
 	if self.node then
 		return self.node.maxresources[resource] or 0
 	end
+	return 0
 end
 
 function ENT:OnRestore()

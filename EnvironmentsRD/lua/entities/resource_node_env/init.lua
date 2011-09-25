@@ -238,9 +238,8 @@ end
 function ENT:GetResourceAmount(resource)
 	if self.resources[resource] then
 		return self.resources[resource].value
-	else
-		return 0
 	end
+	return 0
 end
 
 function ENT:OnRestore()

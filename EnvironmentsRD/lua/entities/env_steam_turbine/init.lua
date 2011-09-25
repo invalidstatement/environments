@@ -22,6 +22,7 @@ function ENT:Initialize()
 	self.thinkcount = 0
 	if not (WireAddon == nil) then
 		self.WireDebugName = self.PrintName
+		self.Inputs = WireLib.CreateInputs(self, { "On", "Multiplier" })
 		self.Outputs = Wire_CreateOutputs(self.Entity, { "Out" })
 	end
 end
@@ -53,6 +54,26 @@ function ENT:SetActive(value) --disable use, lol
 			self:TurnOn()
 		else
 			self:TurnOff()
+		end
+	end
+end
+
+function ENT:TriggerInput(iname, value)
+	if iname == "On" then
+		if value > 0 then
+			if self.Active == 0 then
+				self:TurnOn()
+			end
+		else
+			if self.Active == 1 then
+				self:TurnOff()
+			end
+		end
+	elseif iname == "Multiplier" then
+		if value > 0 then
+			self:SetMultiplier(value)
+		else
+			self:SetMultiplier(1)
 		end
 	end
 end

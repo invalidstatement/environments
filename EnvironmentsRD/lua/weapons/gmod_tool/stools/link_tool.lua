@@ -50,24 +50,28 @@ function TOOL:LeftClick( trace )
 		local length = ( self:GetPos(1) - self:GetPos(iNum)):Length()
 
 		if Ent1.IsNode or Ent2.IsNode then
-			if Ent1.Link and Ent2.Link then --only let LS ents, need to fix, lets all ents with a Link() function
-				Ent1:Link(Ent2)
-				Ent2:Link(Ent1)
-				if tonumber(self:GetClientInfo("cable")) == 1 then
-					if Ent1.IsNode then
-						Environments.Create_Beam(Ent2, self:GetLocalPos(iNum), self.Objects[iNum].Normal, self:GetClientInfo("material"))
+			if Ent1.IsNode and Ent2.IsNode then
+				self:GetOwner():SendLua( "GAMEMODE:AddNotify('You can't link two nodes!', NOTIFY_GENERIC, 7);" )
+			else
+				if Ent1.Link and Ent2.Link then --only let LS ents, need to fix, lets all ents with a Link() function
+					Ent1:Link(Ent2)
+					Ent2:Link(Ent1)
+					if tonumber(self:GetClientInfo("cable")) == 1 then
+						if Ent1.IsNode then
+							Environments.Create_Beam(Ent2, self:GetLocalPos(iNum), self.Objects[iNum].Normal, self:GetClientInfo("material"))
+						else
+							Environments.Create_Beam(Ent1, self:GetLocalPos(1), self.Objects[1].Normal, self:GetClientInfo("material"))
+						end
 					else
-						Environments.Create_Beam(Ent1, self:GetLocalPos(1), self.Objects[1].Normal, self:GetClientInfo("material"))
+						if Ent1.IsNode then
+							Ent2:SetNWVector("CablePos", Vector(0,0,0))
+						else
+							Ent1:SetNWVector("CablePos", Vector(0,0,0))
+						end
 					end
 				else
-					if Ent1.IsNode then
-						Ent2:SetNWVector("CablePos", Vector(0,0,0))
-					else
-						Ent1:SetNWVector("CablePos", Vector(0,0,0))
-					end
+					self:GetOwner():SendLua( "GAMEMODE:AddNotify('Invalid Combination!', NOTIFY_GENERIC, 7);" )
 				end
-			else
-				self:GetOwner():SendLua( "GAMEMODE:AddNotify('Invalid Combination!', NOTIFY_GENERIC, 7);" )
 			end
 		elseif Ent1.node or Ent2.node then
 			if Ent1.node then
