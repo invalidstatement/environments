@@ -44,8 +44,11 @@ function ENT:Initialize()
 		self.ScreenAngles = info.Angle
 		self.ScreenPos = info.Offset
 	end
-	self.resources = {}
-	self.maxresources = {}
+	
+	local tab = Environments.GetEntTable(self:EntIndex())
+	self.maxresources = tab.maxresources
+	self.resources = tab.resources
+	self.node = Entity(tab.network) or NULL
 end
 
 function ENT:Draw( bDontDrawModel )
