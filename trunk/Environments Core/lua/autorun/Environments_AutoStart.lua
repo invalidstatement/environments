@@ -8,7 +8,7 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 131
+Environments.Version = 134
 Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 8
 
@@ -121,11 +121,11 @@ desc[2] = "Spacebuild"
 //Add The Server Tag
 if SERVER then
 	hook.Add("GetGameDescription", "EnvironmentsStatus", function() 
-		if Environments.CurrentVersion and Environments.CurrentVersion > Environments.Version then
-			return "ENVIRONMENTS IS OUT OF DATE"
-		else
+		--if Environments.CurrentVersion and Environments.CurrentVersion > Environments.Version then
+			--return "ENVIRONMENTS IS OUT OF DATE"
+		--else
 			return table.Random(desc)
-		end
+		--end
 	end)
 	
 	local function Reload(ply, cmd, args)

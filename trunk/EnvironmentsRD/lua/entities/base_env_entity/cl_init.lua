@@ -50,6 +50,10 @@ function ENT:Initialize()
 	self.node = Entity(tab.network) or NULL
 end
 
+function ENT:OnRemove()
+	Environments.GetEntTable()[self:EntIndex()] = nil
+end
+
 function ENT:Draw( bDontDrawModel )
 	self:DoNormalDraw()
 	

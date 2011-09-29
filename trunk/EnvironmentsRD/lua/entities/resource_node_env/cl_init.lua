@@ -35,6 +35,10 @@ function ENT:Draw( bDontDrawModel )
 	end
 end
 
+function ENT:OnRemove()
+	Environments.GetNetTable()[self:EntIndex()] = nil
+end
+
 function ENT:DrawTranslucent( bDontDrawModel )
 	if bDontDrawModel then return end
 	self:Draw()
