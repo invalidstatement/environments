@@ -79,6 +79,10 @@ function ENT:DrawTranslucent( bDontDrawModel )
 	self:Draw()
 end
 
+function ENT:OnRemove()
+	Environments.GetEntTable()[self:EntIndex()] = nil
+end
+
 function ENT:GetOOO()
 	return self:GetNetworkedInt("OOO") or 0
 end
