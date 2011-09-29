@@ -22,20 +22,21 @@ surface.CreateFont( "arial", 60, 600, true, false, "ConflictText" )
 surface.CreateFont( "arial", 40, 600, true, false, "Flavour" )
 
 function ENT:Initialize()
-	self.resources = {}
-	self.maxresources = {}
+	local nettable = Environments.GetNetTable(self:EntIndex()) --yay synced table
+	self.resources = nettable.resources
+	self.maxresources = nettable.maxresources
 end
 
 function ENT:Draw( bDontDrawModel )
 	self:DoNormalDraw()
 
-	if (Wire_Render) then
+	if Wire_Render then
 		Wire_Render(self)
 	end
 end
 
 function ENT:DrawTranslucent( bDontDrawModel )
-	if ( bDontDrawModel ) then return end
+	if bDontDrawModel then return end
 	self:Draw()
 end
 
@@ -95,7 +96,7 @@ function ENT:DoNormalDraw( bDontDrawModel )
 			AddWorldTip( self:EntIndex(), OverlayText, 0.5, self:GetPos(), self  )
 		end
 	else
-		if ( !bDontDrawModel ) then self:DrawModel() end
+		if !bDontDrawModel then self:DrawModel() end
 	end
 end
 
@@ -117,12 +118,24 @@ usermessage.Hook("Env_UpdateResAmt", RecieveAmts)
 local function RecieveMax(msg)
 	local ent = msg:ReadEntity()
 	if !ent.maxresources then ent.maxresources = {} end
-
-	ent.maxresources[msg:ReadString()] = msg:ReadLong()
+	
+	Environments.GetNetTable(ent:EntIndex()).maxresources[msg:ReadString()] = msg:ReadLong()
 end
 usermessage.Hook("Env_UpdateMaxRes", RecieveMax)
 
 local function RecieveNode(msg)
-	msg:ReadEntity().node = msg:ReadEntity()
+	local entId = msg:ReadShort()
+	local nodeId = msg:ReadShort()
+	local node = Entity(nodeId)
+	local ent = Entity(entId)
+	if ent:IsValid() then
+		if nodeId == 0 then
+			node = NULL
+		end
+		ent.node = node
+	else --yay backup, ent isnt in PVS yet, not visible to user
+		local tab = Environments.GetEntTable(entId)
+		tab.network = nodeId
+	end
 end
 usermessage.Hook("Env_SetNodeOnEnt", RecieveNode)

@@ -1,6 +1,3 @@
-//Creates Tools
-AddCSLuaFile("autorun/EntRegister.lua")
-AddCSLuaFile("weapons/gmod_tool/environments_tool_base.lua")
 
 local list = list
 local scripted_ents = scripted_ents
@@ -11,10 +8,6 @@ local language = language
 local util = util
 local constraint = constraint
 local pairs = pairs
-
-if not Environments then
-	Environments = {}
-end
 
 local Environments = Environments --yay speed boost!
 
@@ -649,15 +642,3 @@ hook.Add("AddTools", "environments tool hax", function()
 	Environments.RegisterTool("Life Support", "Life_Support", "Life Support", "Used to spawn various devices designed to keep you alive in space.", "lifesupport", 15)
 end)
 
-//Load devices and stuff from addons
-local Files = file.FindInLua( "environments/lifesupport/*.lua" )
-for k, File in ipairs(Files) do
-	Msg("Loading: "..File.."...\n")
-	local ErrorCheck, PCallError = pcall(include, "environments/lifesupport/"..File)
-	ErrorCheck, PCallError = pcall(AddCSLuaFile, "environments/lifesupport/"..File)
-	if !ErrorCheck then
-		Msg(PCallError.."\n")
-	else
-		Msg("Loaded: Successfully\n")
-	end
-end

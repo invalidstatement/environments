@@ -91,18 +91,22 @@ function ENT:Link(ent, delay)
 	end
 	if ent and ent:IsValid() then
 		self.node = ent
-		--self:SetNWEntity("node", ent)
+
 		if delay then
 			timer.Simple(0.1, function(self, ent)
 				umsg.Start("Env_SetNodeOnEnt")
-					umsg.Entity(self)
-					umsg.Entity(ent)
+					--umsg.Entity(self)
+					--umsg.Entity(ent)
+					umsg.Short(self:EntIndex())
+					umsg.Short(ent:EntIndex())
 				umsg.End()
 			end, self, ent)
 		else
 			umsg.Start("Env_SetNodeOnEnt")
-				umsg.Entity(self)
-				umsg.Entity(ent)
+				--umsg.Entity(self)
+				--umsg.Entity(ent)
+				umsg.Short(self:EntIndex())
+				umsg.Short(ent:EntIndex())
 			umsg.End()
 		end
 	end
@@ -122,15 +126,18 @@ function ENT:Unlink()
 			end
 			--print("Recovered: "..amt)
 			self.resources[k] = amt
-			self:UpdateStorage(k)
+			--self:UpdateStorage(k)
 		end
 		self.node.updated = true
 		self.node:Unlink(self)
 		self.node = nil
-		--self:SetNWEntity("node", NullEntity())
+		self.client_updated = false
+
 		umsg.Start("Env_SetNodeOnEnt")
-			umsg.Entity(self)
-			umsg.Entity(NullEntity())
+			--umsg.Entity(self)
+			--umsg.Entity(NullEntity())
+			umsg.Short(self:EntIndex())
+			umsg.Short(0)
 		umsg.End()
 	end
 end
