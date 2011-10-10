@@ -1,4 +1,19 @@
-
+/*                        Environments Life Support System SDK
+Environments.RegisterLSStorage(name, class, res, basevolume, basehealth, basemass)
+   This function creates a new storage entity and registers its multipliers
+	-name: the name of the new storage
+	-class: the entity class of the new storage
+	-res: a table in the format of {[amt] = "resource"} of the resources stored inside
+	-basevolume: the volume used to calculate the multiplier
+	-basehealth
+   
+Environments.RegisterTool(name, filename, category, description, cleanupgroup, limit)
+   This function creates a new tool.
+   
+Environments.RegisterDevice(toolname, genname, devname, class, model, skin, extra)
+   This function adds a device to the tool specified with the specified model.
+   */
+   
 local list = list
 local scripted_ents = scripted_ents
 local table = table
@@ -8,6 +23,7 @@ local language = language
 local util = util
 local constraint = constraint
 local pairs = pairs
+local CurTime = CurTime()
 
 local Environments = Environments --yay speed boost!
 
@@ -38,16 +54,22 @@ function Environments.MakeFunc(ent)
 	
 	if data.resources then
 		for k,v in pairs(data.resources) do
-			ent:AddResource(v, math.Round(k*volume_mul))
+			ent:AddResource(v, math.PlaceRound(k*volume_mul, 4))
 		end
 	end
 	
-	ent:SetMaxHealth(data.basehealth*volume_mul)
-	ent:SetHealth(data.basehealth*volume_mul)
+	ent:SetMaxHealth(math.Round(data.basehealth*volume_mul))
+	ent:SetHealth(math.Round(data.basehealth*volume_mul))
 	
 	ent:SetMultiplier(volume_mul)
 	
-	ent:GetPhysicsObject():SetMass(data.basemass*volume_mul)
+	ent:GetPhysicsObject():SetMass(math.Round(data.basemass*volume_mul))
+end
+
+local log10 = math.log(10) --yay for optimization
+function math.PlaceRound(num, sigfigs)
+	local pow = math.ceil(math.log(num)/log10) 
+	return math.Round(num, -(pow - sigfigs)) 
 end
 
 /*GENERATOR_1_TO_1 = 1
@@ -376,7 +398,14 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 	end
 	
 	function TOOL:GetDeviceInfo()
-		return Environments.Tooldata[self.Name][self:GetClientInfo("type")][self:GetClientInfo("sub_type")] or {}
+		local tool = Environments.Tooldata[self.Name]
+		if tool then
+			local Type = tool[self:GetClientInfo("type")]
+			if Type then
+				return Type[self:GetClientInfo("sub_type")] or {}
+			end
+		end
+		return {}
 	end
 
 	if SERVER then
@@ -480,7 +509,9 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 				end
 			end
 			undo.SetPlayer(p)
-			undo.Finish()
+			local name = self:GetClientInfo("sub_type")
+			undo.SetCustomUndoText("Undone "..name)
+			undo.Finish(name)
 		end
 	end
 
@@ -514,14 +545,12 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 			self:UpdateGhostEntity( self.GhostEntity, self:GetOwner() )
 		end
 		
-		function TOOL:MakeGhostEntity( model, pos, angle, skin )
-			util.PrecacheModel( model )
+		function TOOL:MakeGhostEntity( model, pos, angle, skin ) --why do you spam so?
+			// Don't allow ragdolls/effects to be ghosts
+			if !model or model == " " or model == "" then return end
 			
 			// Release the old ghost entity
 			self:ReleaseGhostEntity()
-			
-			// Don't allow ragdolls/effects to be ghosts
-			if !model or model == " " or model == "" then return end
 			
 			self.GhostEntity = ents.Create( "prop_physics" )
 			

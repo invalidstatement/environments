@@ -49,9 +49,12 @@ function ENT:Initialize()
 	self.Entities = {}
 end
 
+local notouch = {}
+notouch["func_door"] = 1
+
 function ENT:StartTouch(ent)
 	if not ent:GetPhysicsObject():IsValid() then return end	--only physics stuff 
-	if ent:GetClass() == "func_door" or ent:IsWorld() then return end --no world stuff
+	if notouch[ent:GetClass()] or ent:IsWorld() then return end --no world stuff
 	
 	if ent.NoGrav then return end --let missiles,ect do their thang
 	
@@ -108,6 +111,9 @@ function ENT:Check()
 	local radius = self.radius
 	for k,ent in pairs(self.Entities) do
 		if ent:GetPhysicsObject():IsValid() then
+			if ent.environment and ent.environment != self and ent.environment != Space() and ent.environment.radius < self.radius then --try and fix planets in each other
+				continue
+			end
 			if ent:GetPos():Distance(self:GetPos()) <= radius then
 				//Set Planet
 				ent:SetGravity( self.gravity )

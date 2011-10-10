@@ -8,7 +8,7 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 134
+Environments.Version = 135
 Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 8
 

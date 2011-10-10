@@ -68,6 +68,27 @@ timer.Create("registerCAFOverwrites", 5, 1, function()
 	end
 end)
 
+function Environments.ShutDown() --wip
+	if not ply:IsAdmin() then return end
+	for k,v in pairs(environments) do
+		if v and v:IsValid() then
+			v:Remove()
+			v = nil
+		else
+			v = nil
+		end
+	end
+	environments = {}
+	
+	//Remove Hooks
+	hook.Remove("PlayerNoClip","EnvNoClip")
+	hook.Remove("PlayerInitialSpawn","CreateLS")
+	hook.Remove("PlayerInitialSpawn","CreateEnvironemtns")
+	hook.Remove("PlayerSpawn", "SpawnLS")
+	--hook.Remove("ShowTeam", "HelmetToggle") probably dont need to remove
+	hook.Remove("PlayerDeath", "ZgRagdoll")
+end
+
 local function LoadEnvironments()
 	local start = SysTime()
 	print("/////////////////////////////////////")
@@ -198,7 +219,7 @@ function Environments.GetMapEntities() --use this rather than whats in Environme
 				contrast = tonumber( tab.Case05 ),
 				color = tonumber( tab.Case06 ),
 				id = tab.Case16
-			} );
+			} )
 		elseif( tab.Case01 == "planet_bloom" ) then
 			table.insert(  Environments.MapEntities.Bloom, {
 				color = Vector( tab.Case02 ),
@@ -209,7 +230,7 @@ function Environments.GetMapEntities() --use this rather than whats in Environme
 				multiply = tonumber( tab.Case06 ),
 				colormul = tonumber( tab.Case07 ),
 				id = tab.Case16
-			} );
+			} )
 		end
 	end
 end
@@ -447,7 +468,13 @@ function Environments.LoadFromMap()
 			i=i+1
 			table.insert(stars, planet)
 			print("//     Spacebuild 3 Star Added     //")
+		else
+			print(Type)
+			PrintTable(tab)
 		end
+		print(" ")
+		print(Type)
+		PrintTable(tab)
 	end
 	planets.version = Environments.FileVersion
 	Environments.PlanetSaveData = {}
@@ -460,6 +487,7 @@ function Environments.SaveMap() --plz work :)
 	local map = game.GetMap()
 	local planets = {}
 	for k,v in pairs(environments) do
+		if !v:IsValid() then continue end
 		if not v:IsStar() then
 			local planet = {}
 			--print("Gravity: "..v.gravity)
