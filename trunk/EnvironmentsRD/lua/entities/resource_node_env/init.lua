@@ -78,7 +78,6 @@ function ENT:Link(ent, delay)
 				self.resources[name].value = amt
 			end
 			self.resources[name].haschanged = true
-			self.updated = true
 		end
 	end
 end
@@ -91,12 +90,16 @@ function ENT:Unlink(ent)
 				local curmax = self.maxresources[name]
 				if curmax then
 					self.maxresources[name] = curmax - max
+					if self.resources[name] then
+						self.resources[name].haschanged = true
+					end
+					umsg.Start("Env_UpdateMaxRes")
+						umsg.Entity(self)
+						umsg.String(name)
+						umsg.Long(self.maxresources[name])
+					umsg.End()
 				end
-				umsg.Start("Env_UpdateMaxRes")
-					umsg.Entity(self)
-					umsg.String(name)
-					umsg.Long(self.maxresources[name])
-				umsg.End()
+				
 			end
 		end
 	end
@@ -174,19 +177,16 @@ function ENT:GenerateResource(name, amt)
 		if res + amt < max then
 			self.resources[name].value = self.resources[name].value + amt
 			self.resources[name].haschanged = true
-			self.updated = true
 			return amt
 		else
 			self.resources[name].value = max
 			self.resources[name].haschanged = true
-			self.updated = true
 			return max - res
 		end
 	else
 		self.resources[name] = {}
 		self.resources[name].value = amt
 		self.resources[name].haschanged = true
-		self.updated = true
 		return amt
 	end
 	return amt
@@ -198,14 +198,12 @@ function ENT:ConsumeResource(name, amt)
 		local res = self.resources[name].value
 		if res >= amt then
 			self.resources[name].value = res - amt
-			self.updated = true
 			self.resources[name].haschanged = true
 			return amt
 		elseif res != 0 then
 			res = self.resources[name].value
 			self.resources[name].value = 0
 			self.resources[name].haschanged = true
-			self.updated = true
 			return res
 		else
 			return 0
