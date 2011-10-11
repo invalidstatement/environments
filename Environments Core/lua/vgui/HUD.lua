@@ -77,6 +77,14 @@ HUD = {}
 HUD.Convar = CreateConVar( "env_hud_enabled", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
 HUD.Unit = CreateConVar( "env_hud_unit", "F", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
 HUD.Mode = CreateConVar( "env_hud_mode", "1", { FCVAR_ARCHIVE, }, "The display mode of the HUD /n 0 = Basic    1 = Advanced" )
+	
+local scale_x = CreateConVar("env_hud_scale_x", 1, { FCVAR_ARCHIVE, },"")
+local scale_y = CreateConVar("env_hud_scale_y", 1, { FCVAR_ARCHIVE, },"")
+local scale_z = CreateConVar("env_hud_scale_z", 1.8, { FCVAR_ARCHIVE, },"")
+
+local off_x = CreateConVar("env_hud_offset_x", -2, { FCVAR_ARCHIVE, },"")
+local off_y = CreateConVar("env_hud_offset_y", 55, { FCVAR_ARCHIVE, },"")
+local off_z = CreateConVar("env_hud_offset_z", -53, { FCVAR_ARCHIVE, },"")
 
 temp_unit = "F"
 function LoadHud()
@@ -133,14 +141,14 @@ function LoadHud()
 			if LocalPlayer():InVehicle() then
 				HUD.EyeVectorOffset = tab.VehOffset
 			else
-				HUD.EyeVectorOffset = tab.Offset
+				HUD.EyeVectorOffset = Vector(off_x:GetFloat(), off_y:GetFloat(), off_z:GetFloat())--tab.Offset
 			end
 			
 			if not IsValid(HUD.CS_Model) then
 				HUD.CS_Model=ClientsideModel(HUD.Model,RENDERGROUP_OPAQUE)
 				HUD.CS_Model:SetNoDraw(true)
-				HUD.CS_Model:SetModelScale(tab.Scale or Vector(0,0,0))
 			end
+			HUD.CS_Model:SetModelScale(Vector(scale_x:GetFloat(), scale_y:GetFloat(), scale_z:GetFloat()))--tab.Scale or Vector(0,0,0))
 		end
 		
 		/*function Paint()
