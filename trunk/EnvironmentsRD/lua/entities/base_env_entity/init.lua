@@ -116,7 +116,7 @@ end
 
 function ENT:GetResourceAmount(resource)
 	if self.node then
-		if self.node.resources[resource] then
+		if self.node.resources and self.node.resources[resource] then
 			return self.node.resources[resource].value
 		else
 			return 0

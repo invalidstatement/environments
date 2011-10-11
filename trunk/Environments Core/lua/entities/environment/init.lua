@@ -111,7 +111,7 @@ function ENT:Check()
 	local radius = self.radius
 	for k,ent in pairs(self.Entities) do
 		if ent:GetPhysicsObject():IsValid() then
-			if ent.environment and ent.environment != self and ent.environment != Space() and ent.environment.radius < self.radius then --try and fix planets in each other
+			if ent.environment and ent.environment != self and ent.environment != Space() and (ent.environment.radius or 0) < (self.radius or 0) then --try and fix planets in each other
 				continue
 			end
 			if ent:GetPos():Distance(self:GetPos()) <= radius then

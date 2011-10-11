@@ -468,13 +468,9 @@ function Environments.LoadFromMap()
 			i=i+1
 			table.insert(stars, planet)
 			print("//     Spacebuild 3 Star Added     //")
-		else
-			print(Type)
-			PrintTable(tab)
+		else --not a normal ent
+
 		end
-		print(" ")
-		print(Type)
-		PrintTable(tab)
 	end
 	planets.version = Environments.FileVersion
 	Environments.PlanetSaveData = {}
