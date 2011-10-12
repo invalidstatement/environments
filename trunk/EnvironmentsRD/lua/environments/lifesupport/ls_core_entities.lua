@@ -20,6 +20,7 @@ Environments.RegisterDevice("Generators", "Fusion Generator", "Small SBEP Reacto
 Environments.RegisterDevice("Generators", "Fusion Generator", "Large SBEP Reactor", "generator_fusion", "models/Punisher239/punisher239_reactor_big.mdl")
 Environments.RegisterDevice("Generators", "Fusion Generator", "Small Pallet Reactor", "generator_fusion", "models/Slyfo/forklift_reactor.mdl")
 Environments.RegisterDevice("Generators", "Fusion Generator", "Large Crate Reactor", "generator_fusion", "models/Slyfo/crate_reactor.mdl")
+Environments.RegisterDevice("Generators", "Fusion Generator", "Classic Reactor", "generator_fusion", "models/props_c17/substation_circuitbreaker01a.mdl")
 
 Environments.RegisterDevice("Generators", "Solar Panel", "Huge Circular Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_c_huge.mdl")
 Environments.RegisterDevice("Generators", "Solar Panel", "Large Circular Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_c_large.mdl")
@@ -34,15 +35,19 @@ Environments.RegisterDevice("Generators", "Water Pump", "Small Water Pump", "gen
 
 Environments.RegisterDevice("Generators", "Oxygen Compressor", "Compact Air Compressor", "env_air_compressor", "models/ce_ls3additional/compressor/compressor.mdl", 0, "oxygen")
 Environments.RegisterDevice("Generators", "Oxygen Compressor", "Large Air Compressor", "env_air_compressor", "models/props_outland/generator_static01a.mdl", nil, "oxygen")
+Environments.RegisterDevice("Generators", "Oxygen Compressor", "Air Compressor", "env_air_compressor", "models/ce_ls3additional/compressor/compressor_large.mdl", 0, "oxygen")
 
 Environments.RegisterDevice("Generators", "Nitrogen Compressor", "Compact Air Compressor", "env_air_compressor", "models/ce_ls3additional/compressor/compressor.mdl", 3, "nitrogen")
 Environments.RegisterDevice("Generators", "Nitrogen Compressor", "Large Air Compressor", "env_air_compressor", "models/props_outland/generator_static01a.mdl", nil, "nitrogen")
+Environments.RegisterDevice("Generators", "Nitrogen Compressor", "Air Compressor", "env_air_compressor", "models/ce_ls3additional/compressor/compressor_large.mdl", 3, "nitrogen")
 
 Environments.RegisterDevice("Generators", "Hydrogen Compressor", "Compact Air Compressor", "env_air_compressor", "models/ce_ls3additional/compressor/compressor.mdl", 2, "hydrogen")
 Environments.RegisterDevice("Generators", "Hydrogen Compressor", "Large Air Compressor", "env_air_compressor", "models/props_outland/generator_static01a.mdl", nil, "hydrogen")
+Environments.RegisterDevice("Generators", "Hydrogen Compressor", "Air Compressor", "env_air_compressor", "models/ce_ls3additional/compressor/compressor_large.mdl", 2, "hydrogen")
 
 Environments.RegisterDevice("Generators", "CO2 Compressor", "Compact Air Compressor", "env_air_compressor", "models/ce_ls3additional/compressor/compressor.mdl", 1, "carbon dioxide")
 Environments.RegisterDevice("Generators", "CO2 Compressor", "Large Air Compressor", "env_air_compressor", "models/props_outland/generator_static01a.mdl", nil, "carbon dioxide")
+Environments.RegisterDevice("Generators", "CO2 Compressor", "Air Compressor", "env_air_compressor", "models/ce_ls3additional/compressor/compressor_large.mdl", 1, "carbon dioxide")
 
 Environments.RegisterDevice("Generators", "Water Splitter", "Water Splitter", "generator_water_to_air", "models/ce_ls3additional/water_air_extractor/water_air_extractor.mdl")
 Environments.RegisterDevice("Generators", "Water Splitter", "Electrolysis Generator", "generator_water_to_air", "models/Slyfo/electrolysis_gen.mdl")
