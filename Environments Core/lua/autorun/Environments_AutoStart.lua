@@ -8,7 +8,7 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 136
+Environments.Version = 137
 Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 8
 
@@ -39,6 +39,32 @@ if CLIENT then
 			LoadHud()
 			print("Environments Version "..msg:ReadShort().." Running On Server")
 		end
+		
+		//Overwrite CAF to fix issues with tools
+		timer.Create("registerCAFOverwrites", 10, 1, function()
+			if CAF then
+				local old = CAF.GetAddon
+				local SB = {}
+				local LS = {}
+					
+				function SB.GetStatus()
+					return true
+				end
+
+				function LS.GetStatus()
+					return true
+				end
+					
+				function CAF.GetAddon(name)
+					if name == "Spacebuild" then
+						return SB
+					elseif name == "Life Support" then
+						return LS
+					end
+					return old(name)
+				end
+			end
+		end)
 	end
 	usermessage.Hook("Environments", Load)
 	
@@ -52,6 +78,8 @@ if CLIENT then
 	concommand.Add("env_update_check", function(ply, cmd, args)
 		GetOnlineVersion(true)
 	end)
+	
+	
 else
 	include("environments/core/sv_environments.lua")
 	include("environments/core/sv_environments_planets.lua")

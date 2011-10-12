@@ -73,7 +73,9 @@ end
 function ENT:Check()
 	local size = 0
 	local constrainedents = constraint.GetAllConstrainedEntities( self )
+	local world = GetWorldEntity()
 	for k,ent in pairs(constrainedents) do
+		if ent == world then continue end --no more welding to world hax
 		if ent.IsLS
 		or ent:GetModel() == "models/props_canal/canal_bridge03a.mdl" 
 		or ent:GetModel() == "models/props_canal/canal_bridge03b.mdl" 
@@ -170,7 +172,7 @@ local maxtemp = 305
 local mino2 = 11
 local maxsize = 512
 function ENT:Regulate()
-	local temperature = self.environment.temperature 
+	local temperature = self.environment.temperature or 0
 	local pressure = self.environment.pressure
 	--Msg("Temperature: "..tostring(temperature)..", pressure: " ..tostring(pressure).."\n")
 	
@@ -182,7 +184,7 @@ function ENT:Regulate()
 		end
 		return
 	else
-		if self.temperature == nil then
+		if not self.temperature then
 			self.temperature = temperature
 		end
 		if temperature < self.temperature then
@@ -268,30 +270,6 @@ function ENT:Regulate()
 						self.coolant = 0
 					end
 				end
-			/*else
-				--print("Cooling Down")
-				self.coolant = self:GetResourceAmount("water")
-				self.coolant2 = self:GetResourceAmount("nitrogen")
-				
-				--self:ConsumeResource("energy", 100 * math.ceil(self.env.size/maxsize))
-				if self.coolant2 > (math.ceil(self.env.size / maxsize) * 12 * mult2) then
-					--Msg("Enough Coolant\n")
-					self.env.temperature = self.env.temperature - 1
-					self:ConsumeResource("nitrogen", mult * 12 * mult2)
-				elseif self.coolant > mult * 60 * mult2 then
-					--Msg("Enough Coolant\n")
-					self.temperature = self.temperature - 1
-					self:ConsumeResource("water", mult * 60 * mult2)
-				else
-					--Msg("Not enough coolant\n")
-					if self.coolant2 > 0 then
-						self.temperature = self.temperature - math.ceil((self.coolant2/mult * 12 * mult2))
-						self.coolant = 0
-					elseif self.coolant > 0 then
-						self.temperature = self.temperature - math.ceil((self.coolant/mult * 60 * mult2))
-						self.coolant = 0
-					end
-				end*/
 			end
 		end
 		
@@ -336,18 +314,6 @@ function ENT:Regulate()
 					self.temperature = self.temperature + math.ceil((self.energy/mult * 15 * mult2))
 					self.energy = 0
 				end
-			/*else
-				print("Heating Up")
-				local mult = 0.125
-				if self.energy > (math.ceil(self.env.size / maxsize) * 7.5 * math.ceil(maxsize/1024)) then
-					Msg("Enough energy\n")
-					self.temperature = self.temperature + 1
-					self:ConsumeResource("energy", math.ceil(self.env.size / maxsize) * 7.5 * math.ceil(maxsize/1024))
-				else
-					Msg("Not Enough energy\n")
-					self:ConsumeResource("energy", self.energy)
-					self.energy = 0
-				end*/
 			end
 		end
 		
@@ -367,7 +333,7 @@ end
 
 function ENT:Affect()
 	if not self.environment then return end
-	local temperature = self.environment.temperature
+	local temperature = self.environment.temperature or 0
 	if self.temperature == nil then
 		self.temperature = temperature
 	end
@@ -387,7 +353,6 @@ function ENT:Think()
 	self.BaseClass.Think(self)
 	if self.Entities == {} or nil then return end
 	if self.Active == 1 then
-		--self:Check()
 		self:Regulate()
 		--print("Energy:"..self.energy.." Coolant:"..self.coolant.." Temp:"..self.env.temperature)
 	else

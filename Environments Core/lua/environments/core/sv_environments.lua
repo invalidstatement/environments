@@ -27,6 +27,8 @@ local Environments = Environments
 
 UseEnvironments = false
 
+local EnvironmentDebugCount = 0 --used to check if a planet is missing
+
 local AllowNoClip = CreateConVar( "env_noclip", "0", FCVAR_NOTIFY )
 
 //Table of all Environments
@@ -42,6 +44,14 @@ default.atmosphere.ch4 = 0
 default.atmosphere.n = 40
 default.atmosphere.h = 22
 default.atmosphere.ar = 0
+
+local meta = {}
+function NewEnvironment(ent) --new metatable based environments, should have fewer problems than entities alone
+	local tab = {}
+	
+	
+	setmetatable(tab, meta)
+end
 
 //Overwrite CAF to fix issues with tools
 timer.Create("registerCAFOverwrites", 5, 1, function()
@@ -292,6 +302,7 @@ function Environments.RegisterEnvironments()
 	end
 	if table.Count(environments) > 0 then
 		UseEnvironments = true
+		EnvironmentDebugCount = table.Count(environments)
 	end
 	Environments.SaveMap()
 end
@@ -878,7 +889,6 @@ local function Reload(ply,cmd,args)
 	end
 	environments = {}
 	Environments.RegisterEnvironments()
-	Environments.Log("Planets Reloaded")
 	ply:ChatPrint("Environments Has Been Reset!")
 end
 concommand.Add("env_server_reload", Reload)
@@ -900,13 +910,13 @@ local function ComReload(ply,cmd,args)
 	end
 	environments = {}
 	Environments.RegisterEnvironments()
-	Environments.Log("Planets Reloaded From Map")
 	ply:ChatPrint("Environments Has Been Reloaded From Map!")
 end
 concommand.Add("env_server_full_reload", ComReload)
 
 local function SendPlanetData(ply, cmd, args)
-	local env = ply.environment
+	if ply:IsAdmin() then
+		local env = ply.environment
 	--if string.lower(type(ply.environment)) == "entity" then
 		umsg.Start("env_planet_data", ply)
 			umsg.String(env.name)
@@ -917,6 +927,7 @@ local function SendPlanetData(ply, cmd, args)
 			umsg.Float(env.suntemperature or 0)
 		umsg.End()
 	--end
+	end
 end
 concommand.Add("request_planet_data", SendPlanetData)
 
@@ -930,6 +941,30 @@ local function PrintData(ply, cmd, args)
 	Msg("------------- END DUMP -------------\n\n")
 end
 concommand.Add("print_planet", PrintData)
+
+local function PlanetCheck()
+	local original = EnvironmentDebugCount
+	local num = 0
+	for k,v in pairs(environments) do
+		if v:IsValid() then
+			num = num + 1
+		end
+	end
+	if num < original then --planet missing
+		MsgAll("Environments: Planet Discrepancy Detected, Reloading!")
+		for k,v in pairs(environments) do
+			if v and v:IsValid() then
+				v:Remove()
+				v = nil
+			else
+				v = nil
+			end
+		end
+		environments = {}
+		Environments.RegisterEnvironments()
+	end
+end
+timer.Create("ThinkCheckPlanetIssues", 1, 0, PlanetCheck)
 
 
 /*function getStartPosition( p, d, angle, radius )
