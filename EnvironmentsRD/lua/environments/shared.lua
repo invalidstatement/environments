@@ -15,13 +15,13 @@ local pairs = pairs
 //Stargate Overrides --Plz Work
 local loaded = false
 local o = scripted_ents.Register
-scripted_ents.Register = function(...)
-	if not loaded then
+scripted_ents.Register = function(t, name, reload, myarg)
+	if !loaded and !myarg then
 		loaded = true
 		if StarGate then
 			StarGate.LifeSupportAndWire = function(ENT) 
-				ENT.WireDebugName = ENT.WireDebugName or "No Name";
-				ENT.HasWire = StarGate.HasWire;
+				ENT.WireDebugName = ENT.WireDebugName or "No Name"
+				ENT.HasWire = StarGate.HasWire
 				ENT.HasResourceDistribution = true
 				ENT.HasRD = true
 				
@@ -134,7 +134,7 @@ scripted_ents.Register = function(...)
 						return self.node:ConsumeResource(resource, amount)
 					end
 				end
-				ENT.Link = function(self,ent)
+				ENT.Link = function(self, ent, delay)
 					if self.node then
 						self.node:Unlink(self)
 					end
@@ -144,16 +144,21 @@ scripted_ents.Register = function(...)
 						if delay then
 							timer.Simple(0.1, function(self, ent)
 								umsg.Start("Env_SetNodeOnEnt")
+									--umsg.Entity(self)
+									--umsg.Entity(ent)
 									umsg.Short(self:EntIndex())
 									umsg.Short(ent:EntIndex())
 								umsg.End()
 							end, self, ent)
 						else
 							umsg.Start("Env_SetNodeOnEnt")
+								--umsg.Entity(self)
+								--umsg.Entity(ent)
 								umsg.Short(self:EntIndex())
 								umsg.Short(ent:EntIndex())
 							umsg.End()
 						end
+						--self:SetNWEntity("node", ent)
 					end
 				end
 				ENT.Unlink = function(self)
@@ -210,7 +215,7 @@ scripted_ents.Register = function(...)
 			end 
 		end
 	end
-	o(...)
+	o(t, name, reload)
 end
 
 

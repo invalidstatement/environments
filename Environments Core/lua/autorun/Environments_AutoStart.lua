@@ -8,7 +8,7 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 137
+Environments.Version = 138
 Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 8
 
@@ -74,12 +74,10 @@ if CLIENT then
 			Load()
 		end
 	end)
-        
+    
 	concommand.Add("env_update_check", function(ply, cmd, args)
 		GetOnlineVersion(true)
 	end)
-	
-	
 else
 	include("environments/core/sv_environments.lua")
 	include("environments/core/sv_environments_planets.lua")
@@ -89,7 +87,7 @@ else
 	end
 	include("environments/events/sv_events.lua")
 	include("environments/core/sv_ls_support.lua")
-        
+    
 	AddCSLuaFile("autorun/Environments_AutoStart.lua")
 	AddCSLuaFile("environments/core/cl_core.lua")
 	AddCSLuaFile("environments/spawn_menu.lua")
@@ -97,7 +95,7 @@ else
 	AddCSLuaFile("environments/menu.lua")
 	AddCSLuaFile("environments/spacesuits/cl_suit.lua")
 	AddCSLuaFile("environments/core/cl_logging.lua")
-        
+    
 	resource.AddFile("resource/fonts/digital-7 (italic).ttf")
 	resource.AddFile( "materials/models/null.vmt" )
 	resource.AddFile( "materials/models/null.vtf" )
@@ -171,7 +169,6 @@ if SERVER then
 		Environments.Load()
 		environments = {}
 		hook.GetTable().InitPostEntity.EnvLoad() --load
-		Environments.Log("Environments Reloaded")
 		ply:ChatPrint("Environments Has Been Reloaded!")
 	end
 	concommand.Add("env_reload", Reload) --reloads everything, mainly for dev'ing

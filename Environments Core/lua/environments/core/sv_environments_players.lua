@@ -18,7 +18,7 @@ local Space = Space
 local Environments = Environments
 
 local efficiency = 0.02 --the insulating efficiency of the suit, how fast the suit gains or loses temperature
-function Environments.LSCheck()
+function Environments.LSCheck() --this has to be the worst function ever
 	if CAF then
 		local RD = CAF.GetAddon("Resource Distribution") --I dont want to depend on this being there :(
 	else

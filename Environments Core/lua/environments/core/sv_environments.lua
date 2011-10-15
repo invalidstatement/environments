@@ -19,7 +19,10 @@ local os = os
 local tonumber = tonumber
 local pcall = pcall
 local print = print
+local type = type
 local pairs = pairs
+local Angle = Angle
+local Vector = Vector
 local SysTime = SysTime
 
 //Custom Locals
@@ -41,8 +44,8 @@ default.atmosphere = {}
 default.atmosphere.o2 = 30
 default.atmosphere.co2 = 5
 default.atmosphere.ch4 = 0
-default.atmosphere.n = 40
-default.atmosphere.h = 22
+default.atmosphere.n = 50
+default.atmosphere.h = 15
 default.atmosphere.ar = 0
 
 local meta = {}
@@ -62,9 +65,29 @@ timer.Create("registerCAFOverwrites", 5, 1, function()
 		function SB.GetStatus()
 			return true
 		end
+		
+		//PewPew Compatibility
+		function SB.PerformEnvironmentCheckOnEnt(ent)
+			for k,v in pairs(environments) do
+				local distance = pos:Distance(ent:GetPos())
+				if distance <= v.radius then
+					ent.environment = v
+					return
+				end
+			end
+		end
+		
+		function SB.OnEnvironmentChanged(ent)
+		
+		end
+		//End PewPew Compatibility
 
 		function LS.GetStatus()
 			return true
+		end
+		
+		function LS.DamageLS()
+		
 		end
 			
 		function CAF.GetAddon(name)
@@ -581,6 +604,7 @@ function table.DeSanitise(tab)
 	end
 	return tab
 end
+
 //Space Definition
 local space = {}
 space.air = {}
@@ -593,6 +617,15 @@ space.noclip = 0
 space.name = "space"
 space.originalco2per = 0
 space.gravity = 0
+space.radius = 0
+
+function space.UpdateGravity()
+
+end
+
+function space.UpdatePressure()
+
+end
 
 function space.IsOnPlanet()
 	return false
@@ -713,28 +746,6 @@ function Environments.RegisterSun()
 end
 
 function Environments.Hooks.NoClip( ply, on )
-	/*--if ply:GetMoveType() == MOVETYPE_FLY then ply:SetMoveType(MOVETYPE_WALK) return false end --allow them to get out of jetpack
-	// Always allow them to get out of noclip
-	if ply:GetMoveType() == MOVETYPE_NOCLIP then return true end
-	// Always allow admins
-	if ply:IsAdmin() then return true end
-	
-	--if ply:GetNWBool("inspace", true) and ply.environment.gravity == 0 then --jetpack in space :D
-		--ply:SetMoveType(MOVETYPE_FLY)
-		
-		--return false
-	--else
-		// Allow others based on environment (if they can breathe or not)
-		if not ply.environment then return false end --double check	
-		--if ply:GetNWBool("inspace", false) then return end --not in space you don't
-		--if AllowNoClip:GetBool() then return true end --check if user wants to block noclip
-		
-		if ply.environment.air.o2per >= 9.5 and ply.environment.temperature > 270 and ply.environment.temperature <= 310 then --if can breathe
-			return true
-		else
-			return false
-		end
-	--end*/
     if ply:GetMoveType() == MOVETYPE_NOCLIP then return true end
     if ply:IsAdmin() then return true end
 	
@@ -966,30 +977,4 @@ local function PlanetCheck()
 end
 timer.Create("ThinkCheckPlanetIssues", 1, 0, PlanetCheck)
 
-
-/*function getStartPosition( p, d, angle, radius )
-	ang = d:Angle():Right():Angle()
-	ang:RotateAroundAxis( d, angle )
-	return p + (ang:Forward() * radius)
-end
-	--http://puu.sh/5fTo
-function RingPoint(position, up, right, angle, radius) --use radians for angle
-	return position + (up * math.cos(angle) * radius) + (right * math.sin(angle) * radius )--returns local unit vector
-end
-
-local start = SysTime()
-local vec = Vector(37, 23, 273)
-local vec2 = Vector(55,2251,3548)
-for i = 1, 10000 do
-	res = (vec2 - vec):LengthSqr()
-end
-print("no sqrt", SysTime()- start)
-
-local start = SysTime()
-local vec = Vector(37, 23, 273)
-local vec2 = Vector(55,2251,3548)
-for i = 1, 10000 do
-	res = vec:Distance(vec2)
-end
-print("vctor ", SysTime()- start)*/
 
