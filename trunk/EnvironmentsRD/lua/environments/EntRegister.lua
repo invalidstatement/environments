@@ -105,10 +105,12 @@ function GetGenerateFunc(type, res1, res2, res3)
 	return func
 end*/
 
-function Environments.RegisterEnt(class, basevolume, basehealth, basemass)
+function Environments.RegisterEnt(class, basevolume, basehealth, basemass, res)
 	Environments.MakeData[class] = {}
 	Environments.MakeData[class].basevolume = basevolume
-	--Environments.MakeData[class].resources = table.Copy(res)
+	if res then
+		Environments.MakeData[class].resources = table.Copy(res)
+	end
 	Environments.MakeData[class].basehealth = basehealth
 	Environments.MakeData[class].basemass = basemass
 end
@@ -213,7 +215,7 @@ function Environments.RegisterLSEntity(name,class,In,Out,generatefunc,basevolume
 		--client
 	end
 	
-	scripted_ents.Register(ENT, class, true)
+	scripted_ents.Register(ENT, class, true, true)
 	Environments.MakeData[class] = {}
 	Environments.MakeData[class].basevolume = basevolume
 	Environments.MakeData[class].basehealth = basehealth
@@ -332,7 +334,7 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 	
 	end
 	
-	scripted_ents.Register(ENT, class, true)
+	scripted_ents.Register(ENT, class, true, true)
 	Environments.MakeData[class] = {}
 	Environments.MakeData[class].basevolume = basevolume
 	Environments.MakeData[class].resources = table.Copy(res)

@@ -17,11 +17,11 @@ if ( CLIENT ) then
 end
 
 TOOL.ClientConVar[ "material" ] = "cable/cable2"
-TOOL.ClientConVar[ "width" ] = "2"
-TOOL.ClientConVar[ "color_r" ] = "255"
-TOOL.ClientConVar[ "color_g" ] = "255"
-TOOL.ClientConVar[ "color_b" ] = "255"
-TOOL.ClientConVar[ "color_a" ] = "255"
+--TOOL.ClientConVar[ "width" ] = "2"
+--TOOL.ClientConVar[ "color_r" ] = "255"
+--TOOL.ClientConVar[ "color_g" ] = "255"
+--TOOL.ClientConVar[ "color_b" ] = "255"
+--TOOL.ClientConVar[ "color_a" ] = "255"
 TOOL.ClientConVar[ "cable" ] = "1"
 
 if SERVER then

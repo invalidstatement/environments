@@ -17,7 +17,7 @@ OOO[1] = "On"
 OOO[2] = "Overdrive"
 
 local ResourceUnits = {}
-ResourceUnits["energy"] = " Kj"
+ResourceUnits["energy"] = " kJ"
 ResourceUnits["water"] = " L"
 ResourceUnits["oxygen"] = " L"
 ResourceUnits["hydrogen"] = " L"

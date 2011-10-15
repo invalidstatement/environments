@@ -105,6 +105,20 @@ function ENT:EndTouch(ent)
 		--if self.Debugging then Msg("...and has decided to not get spaced.\n") end
 	end
 end
+	
+function ENT:UpdateGravity(ent)
+	ent:SetGravity( self.gravity )
+	ent:GetPhysicsObject():EnableDrag( true )
+	ent:GetPhysicsObject():EnableGravity( true )
+	ent.environment = self
+	if( ent:IsPlayer() ) then
+		ent:SetNWBool( "inspace", false )
+	end
+end
+
+function ENT:UpdatePressure(ent)
+
+end
 
 function ENT:Check()
 	--local start = SysTime()
@@ -112,7 +126,7 @@ function ENT:Check()
 	for k,ent in pairs(self.Entities) do
 		if ent:GetPhysicsObject():IsValid() then
 			/*if ent.environment and ent.environment != self and ent.environment != Space() and (ent.environment.radius or 0) < (self.radius or 0) then --try and fix planets in each other
-				continue
+				continue --breaks LS Core
 			end*/
 			if ent:GetPos():Distance(self:GetPos()) <= radius then
 				//Set Planet

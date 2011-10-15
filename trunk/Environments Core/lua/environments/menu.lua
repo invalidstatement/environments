@@ -11,7 +11,7 @@ local function AddToolTab()
 	-- Add Tab
 	local logo;
 	--if(file.Exists("..logo")) then logo = "logo" end;
-	spawnmenu.AddToolTab("Environments","Environments",logo);
+	spawnmenu.AddToolTab("Environments","Environments",logo)
 	-- Add Config Category
 	spawnmenu.AddToolCategory("Environments","Config"," Config");
 	-- Add the entry for config

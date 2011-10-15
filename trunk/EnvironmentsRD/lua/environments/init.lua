@@ -129,7 +129,7 @@ if SERVER then
 			end
 			for name,amount in pairs(ent.maxresources) do
 				umsg.Start("Env_UpdateMaxRes")
-					umsg.Entity(ent)
+					umsg.Short(ent:EntIndex())
 					umsg.String(name)
 					umsg.Long(amount)
 				umsg.End()
