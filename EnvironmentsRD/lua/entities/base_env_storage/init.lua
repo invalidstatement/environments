@@ -8,9 +8,9 @@ ENT.IsLS = true
 
 function ENT:Initialize()
 	//self.BaseClass.Initialize(self) --use this in all ents
-	self.Entity:PhysicsInit( SOLID_VPHYSICS )
-	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
-	self.Entity:SetSolid( SOLID_VPHYSICS )
+	self:PhysicsInit( SOLID_VPHYSICS )
+	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetSolid( SOLID_VPHYSICS )
 	self:SetNetworkedInt( "OOO", 0 )
 	
 	self.maxresources = {}

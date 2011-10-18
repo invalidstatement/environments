@@ -26,12 +26,14 @@ scripted_ents.Register = function(t, name, reload, myarg)
 				ENT.HasRD = true
 				
 				-- General handlers
-				ENT.OnRemove = function(self)
-					if self.node then
-						self.node:Unlink(self)
-					end
-					if(WireAddon and (self.Outputs or self.Inputs)) then
-						Wire_Remove(self);
+				if SERVER then
+					ENT.OnRemove = function(self)
+						if self.node then
+							self.node:Unlink(self)
+						end
+						if(WireAddon and (self.Outputs or self.Inputs)) then
+							Wire_Remove(self);
+						end
 					end
 				end
 				ENT.OnRestore = function(self)
