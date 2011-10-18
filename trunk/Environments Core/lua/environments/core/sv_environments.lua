@@ -69,7 +69,7 @@ timer.Create("registerCAFOverwrites", 5, 1, function()
 		//PewPew Compatibility
 		function SB.PerformEnvironmentCheckOnEnt(ent)
 			for k,v in pairs(environments) do
-				local distance = pos:Distance(ent:GetPos())
+				local distance = v:GetPos():Distance(ent:GetPos())
 				if distance <= v.radius then
 					ent.environment = v
 					return
