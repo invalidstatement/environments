@@ -137,6 +137,26 @@ function ENT:GetNetworkCapacity(resource)
 	return 0
 end
 
+function ENT:GetStorageLeft(res)
+	if self.node then
+		if self.node.resources[res] then
+			local max = self.node.maxresources[res]
+			local cur = self.node.resources[res].value or 0
+			if max then
+				return max - cur
+			end
+		else
+			local max = self.node.maxresources[res]
+			if max then
+				return max
+			end
+		end
+	end
+	return 0
+end
+
+ENT.GetSpaceLeft = ENT.GetStorageLeft
+
 function ENT:OnRestore()
 	if WireLib then WireLib.Restored(self) end
 end

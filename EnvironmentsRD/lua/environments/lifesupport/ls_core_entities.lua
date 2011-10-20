@@ -95,7 +95,10 @@ Environments.RegisterDevice("Storages", "Resource Cache", "Large Cache", "env_ca
 Environments.RegisterDevice("Storages", "Resource Cache", "Medium Cache", "env_cache_storage", "models/ce_ls3additional/resource_cache/resource_cache_medium.mdl")
 Environments.RegisterDevice("Storages", "Resource Cache", "Small Cache", "env_cache_storage", "models/ce_ls3additional/resource_cache/resource_cache_small.mdl")
 
+Environments.RegisterDevice("Storages", "Admin Cache", "Small Admin Cache", "environments_admincache", "models/ce_ls3additional/resource_cache/resource_cache_small.mdl")
+
 //Life Support Tool
 Environments.RegisterDevice("Life Support", "Suit Dispenser", "Suit Dispenser", "suit_dispenser", "models/props_combine/combine_emitter01.mdl")
 Environments.RegisterDevice("Life Support", "LS Core", "LS Core", "env_lscore", "models/SBEP_community/d12airscrubber.mdl")
 Environments.RegisterDevice("Life Support", "Atmospheric Probe", "Atmospheric Probe", "env_probe", "models/props_combine/combine_mine01.mdl")
+Environments.RegisterDevice("Life Support", "Terraformer", "Terraformer", "environments_terraformer", "models/chipstiks_ls3_models/Terraformer/terraformer.mdl")

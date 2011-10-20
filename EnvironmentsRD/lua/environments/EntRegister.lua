@@ -471,6 +471,13 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 			local ent = self:CreateDevice( ply, trace, model, self:GetDeviceClass() )
 			if !ent or !ent:IsValid() then return end
 			
+			if ent.AdminOnly then
+				if !ply:IsAdmin() then
+					ent:Remove()
+					ply:ChatPrint("This device is admin only!")
+				end
+			end
+			
 			//effect :D
 			if DoPropSpawnedEffect then
 				DoPropSpawnedEffect(ent)
