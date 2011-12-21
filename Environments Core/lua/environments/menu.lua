@@ -15,9 +15,9 @@ local function AddToolTab()
 	-- Add Config Category
 	spawnmenu.AddToolCategory("Environments","Config"," Config");
 	-- Add the entry for config
-	spawnmenu.AddToolMenuOption("Environments","Config","Settings","Settings","","",Environments.ConfigMenu,{});
+	spawnmenu.AddToolMenuOption("Environments","Config","EnvOptions","Settings","","",Environments.ConfigMenu,{});
 	-- Add the admin menu
-	spawnmenu.AddToolMenuOption("Environments","Config","Admin","Admin","","",Environments.AdminMenu,{});
+	spawnmenu.AddToolMenuOption("Environments","Config","Admin Tools","Admin Tools","","",Environments.AdminMenu,{});
 	-- Add the entry for Credits and Bugreporting!
 	--spawnmenu.AddToolMenuOption("Environments","Config","Credits","Credits and Bugs","","",Environments.Credits);
 	-- Add our tools to the tab
@@ -39,6 +39,26 @@ local function AddToolTab()
 	end*/
 end
 hook.Add("AddToolMenuTabs", "EnvironmentsAddTabs", AddToolTab);
+
+hook.Add( "PopulateMenuBar", "EnvironmentsAddMenubar", function( menubar )
+    local m = menubar:AddOrGetMenu( "Environments" )
+	
+	//local sub = m:AddSubMenu( "Admin Options")
+	
+	m:AddOption("Reload Environments", function() RunConsoleCommand("env_server_reload") end)
+	m:AddOption("Fully Reload Environments", function() RunConsoleCommand("env_server_full_reload") end)
+	
+    m:AddSpacer()
+    
+    m:AddCVar( "Enable HUD", "env_hud_enabled", "1", "0" )
+    local option = m:AddCVar( "Use 3D HUD?", "env_hud_mode", "1", "0" )
+	m:AddCVar( "Draw Planet Effects", "env_effects_enable", "1", "0" )
+    m:AddCVar( "Enable Breathing Effects", "env_breathing_sound_enabled", "1", "0" )
+	
+	m:AddSpacer()
+	
+	m:AddOption("Reload HUD", function() RunConsoleCommand("env_reload_hud") end)
+end )
 
 SuitModels = {
 	["models/player/combine_super_soldier.mdl"] = {},

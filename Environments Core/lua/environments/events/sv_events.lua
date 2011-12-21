@@ -127,6 +127,33 @@ function Environments.EventChecker()
 	end
 end
 
+function Environments.SpecialEvents()
+	local count = #(ents.FindByClass("gas_cloud") or {})
+	if count < 10 then
+		local notfinished = true
+		local rep = 0
+		while notfinished do
+			rep = rep + 1
+			local a = VectorRand()*16384
+			if util.IsInWorld(a) then --add check to make sure they arent in something
+				if !Environments.FindEnvironmentOnPos(a) then
+					local cloud = ents.Create("gas_cloud")
+					cloud:SetPos(a)
+					cloud:SetAngles(Angle(math.Rand(-180,180),math.Rand(-180,180),math.Rand(-180,180)))
+					cloud:Spawn()
+					cloud:SetResource("hydrogen")
+					cloud:SetAmount(10000)
+					return
+				end
+			end
+			if rep > 15 then
+				notfinished = false
+				print("find pos failed, continuing")
+			end
+		end
+	end
+end
+
 function GetBestPath(ent, planet) --try for the best, most spectacular asteroid path
 	--for now, lets just go with the top of the map
 	local pos = Vector(0, 0, 32000)

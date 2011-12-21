@@ -101,7 +101,7 @@ end
 
 //Actually creates it
 function Environments.CreatePlanet(d)
-	local planet = " "
+	local planet = nil
 	
 	//Different Type Support
 	if d.typeof == "SB3" then

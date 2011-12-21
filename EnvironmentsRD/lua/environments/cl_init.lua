@@ -13,6 +13,16 @@ local type = type
 local tonumber = tonumber
 local pairs = pairs
 
+local drawcables = CreateClientConVar("env_draw_cables", 1, true, true)
+
+hook.Add( "PopulateMenuBar", "EnvironmentsLifeSupportAddMenubar", function( menubar )
+    local m = menubar:AddOrGetMenu( "Environments" )
+	
+	m:AddSpacer()
+	
+	m:AddCVar( "Draw 3D Cables?", "env_draw_cables", "1", "0" )
+end)
+	
 
 local models = {}
 function Environments.GetScreenInfo(model)
@@ -69,6 +79,10 @@ if CLIENT then
 		ang = d:Angle():Right():Angle()
 		ang:RotateAroundAxis( d, angle )
 		return p + (ang:Forward() * radius)
+	end
+	
+	local function Vertex( pos, u, v, normal )
+		return { pos = pos, u = u, v = v, normal = normal }
 	end
 	
 	local function MeshQuad( v1, v2, v3, v4, t ) --s = 0

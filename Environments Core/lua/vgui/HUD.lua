@@ -32,6 +32,8 @@ local Vector = Vector
 //Custom Locals
 local Environments = Environments
 
+render.MaterialOverride = render.MaterialOverride or SetMaterialOverride //beta and normal compatibility
+
 surface.CreateFont( "digital-7", 36, 2, true, false, "lcd2")
 surface.CreateFont( "coolvetica", 20, 2, true, true, "env")
 
@@ -60,7 +62,7 @@ end
 //End Resolution Stuff
 
 //Define your resolutions here
-AddResolution(1920, 1080, Vector(2,2,1.9), Vector(-2,55,-55), Vector(-2,44,-41))
+AddResolution(1920, 1080, Vector(1.46,1.45,1.8), Vector(-2,55,-53), Vector(-2,55,-53))
 AddResolution(1920, 1200, Vector(1.53,1.53,1.5), Vector(-2,55,-41), Vector(-2,44,-41))--untested
 AddResolution(1680, 1050, Vector(1.3,1.3,1.5), Vector(-2,55,-41), Vector(-2,44,-41))--untested
 AddResolution(1600, 900, Vector(1.3,1.3, 1.72), Vector(-2.222, 56.04,-49.91), Vector(-2.222, 46.04,-49.91))
@@ -145,7 +147,7 @@ function LoadHud()
 			end
 			
 			if not IsValid(HUD.CS_Model) then
-				HUD.CS_Model=ClientsideModel(HUD.Model,RENDERGROUP_OPAQUE)
+				HUD.CS_Model=ClientsideModel("models/props_phx/construct/glass/glass_curve90x1.mdl",RENDERGROUP_OPAQUE)
 				HUD.CS_Model:SetNoDraw(true)
 			end
 			HUD.CS_Model:SetModelScale(Vector(scale_x:GetFloat(), scale_y:GetFloat(), scale_z:GetFloat()))--tab.Scale or Vector(0,0,0))
@@ -317,7 +319,7 @@ function LoadHud()
 				local old = HUD.EyeVectorOffset
 				local mult = 0
 				if HUD.ontime != 0 then --it is being put on
-					mult = (HUD.ontime - RealTime())
+					mult = ((HUD.ontime or 0) - RealTime())
 					--if mult < -1.4 then return end --dont draw it, it is off
 					HUD.ang = (50-(math.abs(mult)*40))*-1
 					HUD.EyeVectorOffset = HUD.EyeVectorOffset - Vector(0,0,-1.4*50) + Vector(0,0,mult*50)
@@ -339,16 +341,16 @@ function LoadHud()
 					--draw the screen in 3D,then
 					RenderPos = EyePos()
 					RenderAng = EyeAngles() + Angle(HUD.ang,0,0)
-					RenderPos=HUD:CalcOffset(RenderPos,RenderAng,HUD.EyeVectorOffset)
+					RenderPos=RenderPos + RenderAng:Right() * HUD.EyeVectorOffset.x + RenderAng:Forward() * HUD.EyeVectorOffset.y + RenderAng:Up() * HUD.EyeVectorOffset.z;//HUD:CalcOffset(RenderPos,RenderAng,HUD.EyeVectorOffset)
 					RenderAng:RotateAroundAxis(RenderAng:Right(),HUD.EyeAngleOffset.p)
 					RenderAng:RotateAroundAxis(RenderAng:Up(),HUD.EyeAngleOffset.y)
 					RenderAng:RotateAroundAxis(RenderAng:Forward(),HUD.EyeAngleOffset.r)
 					
 					HUD.CS_Model:SetRenderAngles(RenderAng)
 					HUD.CS_Model:SetRenderOrigin(RenderPos)
-					SetMaterialOverride(Mat)
+					render.MaterialOverride(Mat)
 						HUD.CS_Model:DrawModel()
-					SetMaterialOverride(0)
+					render.MaterialOverride(0)
 				cam.IgnoreZ( false )
 			cam.End3D()
 			

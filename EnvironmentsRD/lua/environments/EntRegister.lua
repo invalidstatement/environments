@@ -121,6 +121,7 @@ Environments.RegisterEnt("generator_water", 18619, 200, 60)
 Environments.RegisterEnt("env_air_compressor", 284267, 600, 200)
 Environments.RegisterEnt("generator_water_to_air", 49738, 350, 120)
 Environments.RegisterEnt("generator_hydrogen_fuel_cell", 27929, 200, 60)
+Environments.RegisterEnt("generator_wind", 64586, 200, 200)
 
 function Environments.RegisterLSEntity(name,class,In,Out,generatefunc,basevolume,basehealth,basemass) --simple quick entity creation
 	local ENT = {}
@@ -220,7 +221,7 @@ function Environments.RegisterLSEntity(name,class,In,Out,generatefunc,basevolume
 	Environments.MakeData[class].basevolume = basevolume
 	Environments.MakeData[class].basehealth = basehealth
 	Environments.MakeData[class].basemass = basemass
-	print("Entity Registered "..class)
+	print("Entity Registered: "..class)
 end
 
 function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth, basemass) --in process of adding venting
@@ -340,7 +341,7 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 	Environments.MakeData[class].resources = table.Copy(res)
 	Environments.MakeData[class].basehealth = basehealth
 	Environments.MakeData[class].basemass = basemass
-	print("Storage Registered "..class)
+	print("Storage Registered: "..class)
 end
 
 function Environments.RegisterTool(name, filename, category, description, cleanupgroup, limit)
@@ -593,7 +594,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 			self.GhostEntity:SetMoveType( MOVETYPE_NONE )
 			self.GhostEntity:SetNotSolid( true )
 			self.GhostEntity:SetRenderMode( RENDERMODE_TRANSALPHA )
-			self.GhostEntity:SetColor( 255, 255, 255, 150 )
+			self.GhostEntity:SetColor( Color( 255, 255, 255, 150 ))
 		end
 	end
 	
@@ -603,8 +604,8 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 	function TOOL.BuildCPanel( CPanel )
 		-- Header stuff
 		CPanel:ClearControls()
-		CPanel:AddHeader()
-		CPanel:AddDefaultControls()
+		--CPanel:AddHeader()
+		--CPanel:AddDefaultControls()
 		CPanel:AddControl("Header", { Text = "#Tool_"..name.."_name", Description = "#Tool_"..name.."_desc" })
 		
 		local list = vgui.Create( "DPanelList" )

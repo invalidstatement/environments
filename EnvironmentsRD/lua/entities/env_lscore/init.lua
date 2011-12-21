@@ -48,7 +48,7 @@ function ENT:Initialize()
 	self.air.o2per = 0
 	self.air.o2 = 0
 	
-	local phys = self.Entity:GetPhysicsObject() --reset physics
+	local phys = self:GetPhysicsObject() --reset physics
 	if (phys:IsValid()) then
 		phys:Wake()
 	end
@@ -61,8 +61,8 @@ function ENT:Initialize()
 	
 	if not (WireAddon == nil) then
 		self.WireDebugName = self.PrintName
-		self.Inputs = Wire_CreateInputs(self.Entity, { "On", "Gravity", "Max O2 level" })
-		self.Outputs = Wire_CreateOutputs(self.Entity, { "On", "Oxygen-Level", "Temperature", "Gravity" })
+		self.Inputs = Wire_CreateInputs(self, { "On", "Gravity", "Max O2 level" })
+		self.Outputs = Wire_CreateOutputs(self, { "On", "Oxygen-Level", "Temperature", "Gravity" })
 	else
 		self.Inputs = {{Name="On"},{Name="Gravity"},{Name="Max O2 level"}}
 	end
@@ -99,7 +99,7 @@ function ENT:TurnOn()
 		self:Check()
 		self.Active = 1
 		--self.gravity = 1
-		if not (WireAddon == nil) then Wire_TriggerOutput(self.Entity, "On", self.Active) end
+		if not (WireAddon == nil) then Wire_TriggerOutput(self, "On", self.Active) end
 		self:SetOOO(1)
 	end
 end
@@ -110,7 +110,7 @@ function ENT:TurnOff()
 		self:EmitSound( "apc_engine_stop" )
 		self.Active = 0
 		--self.gravity = 0.00001
-		if not (WireAddon == nil) then Wire_TriggerOutput(self.Entity, "On", self.Active) end
+		if not (WireAddon == nil) then Wire_TriggerOutput(self, "On", self.Active) end
 		self:SetOOO(0)
 	end
 end
@@ -371,12 +371,8 @@ end
 
 function ENT:Repair()
 	self.BaseClass.Repair(self)
-	self.Entity:SetColor(255, 255, 255, 255)
+	self:SetColor(Color(255, 255, 255, 255))
 	self.damaged = 0
-end
-
-function ENT:Destruct()
-
 end
 
 function ENT:GetTemperature()

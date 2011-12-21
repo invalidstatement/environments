@@ -19,8 +19,8 @@ function ENT:Initialize()
 	self.Multiplier = 1
 	if not (WireAddon == nil) then
 		self.WireDebugName = self.PrintName
-		self.Inputs = Wire_CreateInputs(self.Entity, { "On", "Overdrive", "Mute", "Multiplier" })
-		self.Outputs = Wire_CreateOutputs(self.Entity, {"On", "Overdrive", "EnergyUsage", "GasProduction" })
+		self.Inputs = Wire_CreateInputs(self, { "On", "Overdrive", "Mute", "Multiplier" })
+		self.Outputs = Wire_CreateOutputs(self, {"On", "Overdrive", "EnergyUsage", "GasProduction" })
 	else
 		self.Inputs = {{Name="On"},{Name="Overdrive"}}
 	end
@@ -29,10 +29,10 @@ end
 function ENT:TurnOn()
 	if (self.Active == 0) then
 		if (self.Mute == 0) then
-			self.Entity:EmitSound( "Airboat_engine_idle" )
+			self:EmitSound( "Airboat_engine_idle" )
 		end
 		self.Active = 1
-		if not (WireAddon == nil) then Wire_TriggerOutput(self.Entity, "On", self.Active) end
+		if not (WireAddon == nil) then Wire_TriggerOutput(self, "On", self.Active) end
 		self:SetOOO(1)
 	elseif ( self.overdrive == 0 ) then
 		self:TurnOnOverdrive()
@@ -41,12 +41,12 @@ end
 
 function ENT:TurnOff()
 	if (self.Active == 1) then
-		self.Entity:StopSound( "Airboat_engine_idle" )
-		self.Entity:EmitSound( "Airboat_engine_stop" )
-		self.Entity:StopSound( "apc_engine_start" )
+		self:StopSound( "Airboat_engine_idle" )
+		self:EmitSound( "Airboat_engine_stop" )
+		self:StopSound( "apc_engine_start" )
 		self.Active = 0
 		self.overdrive = 0
-		if not (WireAddon == nil) then Wire_TriggerOutput(self.Entity, "On", self.Active) end
+		if not (WireAddon == nil) then Wire_TriggerOutput(self, "On", self.Active) end
 		self:SetOOO(0)
 	end
 end
@@ -54,13 +54,13 @@ end
 function ENT:TurnOnOverdrive()
 	if ( self.Active == 1 ) then
 		if (self.Mute == 0) then
-			self.Entity:StopSound( "Airboat_engine_idle" )
-			self.Entity:EmitSound( "Airboat_engine_idle" )
-			self.Entity:EmitSound( "apc_engine_start" )
+			self:StopSound( "Airboat_engine_idle" )
+			self:EmitSound( "Airboat_engine_idle" )
+			self:EmitSound( "apc_engine_start" )
 		end
 		self:SetOOO(2)
 		self.overdrive = 1
-		if not (WireAddon == nil) then Wire_TriggerOutput(self.Entity, "Overdrive", self.overdrive) end
+		if not (WireAddon == nil) then Wire_TriggerOutput(self, "Overdrive", self.overdrive) end
 	end
 end
 
@@ -73,7 +73,7 @@ function ENT:TurnOffOverdrive()
 		end
 		self:SetOOO(1)
 		self.overdrive = 0
-		if not (WireAddon == nil) then Wire_TriggerOutput(self.Entity, "Overdrive", self.overdrive) end
+		if not (WireAddon == nil) then Wire_TriggerOutput(self, "Overdrive", self.overdrive) end
 	end	
 end
 
@@ -130,10 +130,6 @@ function ENT:Damage()
 	if ((self.Active == 1) and (math.random(1, 10) <= 4)) then
 		self:TurnOff()
 	end
-end
-
-function ENT:Destruct()
-	Environments.LSDestruct( self, true )
 end
 
 function ENT:OnRemove()
@@ -202,7 +198,7 @@ function ENT:Think()
 	if self.Active == 1 then
 		local waterlevel = self:WaterLevel()
 		if waterlevel > 1 then
-			self:SetColor(50, 50, 50, 255)
+			self:SetColor(Color(50, 50, 50, 255))
 			self:TurnOff()
 			self:Destruct()
 		else

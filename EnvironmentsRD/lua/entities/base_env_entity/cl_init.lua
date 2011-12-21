@@ -57,18 +57,20 @@ end
 function ENT:Draw( bDontDrawModel )
 	self:DoNormalDraw()
 	
-	local node = self.node
-	if node and node:IsValid() and self:GetNWVector("CablePos") != Vector(0,0,0) then
-		if self:GetPos() != self.LastPos or node:GetPos() != node.LastPos then
-			Environments.DrawCable(self, self:LocalToWorld(self:GetNWVector("CablePos", Vector(0,0,0))), self:LocalToWorld(self:GetNWVector("CableForward", Vector(0,1,0))):Normalize(), node:GetPos(), node:GetAngles():Forward())
-			node.LastPos = node:GetPos()
-			self.LastPos = self:GetPos()
-		end
-		
-		if self.mesh then
-			if !self.Material or self.Material:GetName() != self:GetNWString("CableMat", "models/wireframe") then self.Material = Material( self:GetNWString("CableMat", "models/wireframe") ) end
-			render.SetMaterial( self.Material )
-			self.mesh:Draw()
+	if tobool(GetConVarNumber("env_draw_cables")) then
+		local node = self.node
+		if node and node:IsValid() and self:GetNWVector("CablePos") != Vector(0,0,0) then
+			if self:GetPos() != self.LastPos or node:GetPos() != node.LastPos then
+				Environments.DrawCable(self, self:LocalToWorld(self:GetNWVector("CablePos", Vector(0,0,0))), self:LocalToWorld(self:GetNWVector("CableForward", Vector(0,1,0))):Normalize(), node:GetPos(), node:GetAngles():Forward())
+				node.LastPos = node:GetPos()
+				self.LastPos = self:GetPos()
+			end
+			
+			if self.mesh then
+				if !self.Material or self.Material:GetName() != self:GetNWString("CableMat", "models/wireframe") then self.Material = Material( self:GetNWString("CableMat", "models/wireframe") ) end
+				render.SetMaterial( self.Material )
+				self.mesh:Draw()
+			end
 		end
 	end
 

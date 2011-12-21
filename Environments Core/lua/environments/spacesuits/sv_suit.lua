@@ -109,8 +109,8 @@ function Environments.Hooks.SuitPlayerSpawn( pl )
 		pl.ClothingColor.r = tonumber(pl:GetInfoNum("env_suit_color_r",255))
 		pl.ClothingColor.b = tonumber(pl:GetInfoNum("env_suit_color_b",255))
 		pl.ClothingColor.g = tonumber(pl:GetInfoNum("env_suit_color_g",255))
-		pl.m_hSuit:SetColor(pl.ClothingColor.r,pl.ClothingColor.g,pl.ClothingColor.b,255)
-		pl.m_hHelmet:SetColor(pl.ClothingColor.r,pl.ClothingColor.g,pl.ClothingColor.b,255)
+		pl.m_hSuit:SetColor(Color(pl.ClothingColor.r,pl.ClothingColor.g,pl.ClothingColor.b,255))
+		pl.m_hHelmet:SetColor(Color(pl.ClothingColor.r,pl.ClothingColor.g,pl.ClothingColor.b,255))
 		
 		pl.SuitModel = pl:GetInfo("env_suit_model") --or "models/player/combine_super_soldier.mdl"
 		

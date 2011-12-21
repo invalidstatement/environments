@@ -11,7 +11,7 @@ function ENT:Initialize()
 	self.damaged = 0
 	if not (WireAddon == nil) then
 		self.WireDebugName = self.PrintName
-		self.Outputs = Wire_CreateOutputs(self.Entity, { "Out" })
+		self.Outputs = Wire_CreateOutputs(self, { "Out" })
 	end
 end
 
@@ -26,7 +26,7 @@ function ENT:TurnOff()
 	if (self.Active == 1) then
 		self.Active = 0
 		self:SetOOO(0)
-		if not (WireAddon == nil) then Wire_TriggerOutput(self.Entity, "Out", 0) end
+		if not (WireAddon == nil) then Wire_TriggerOutput(self, "Out", 0) end
 	end
 end
 
@@ -37,12 +37,8 @@ function ENT:Damage()
 	if (self.damaged == 0) then self.damaged = 1 end
 end
 
-function ENT:Destruct()
-	Environments.LSDestruct( self.Entity, true )
-end
-
 function ENT:Extract_Energy(mul)
-	mul = mul or 0;
+	mul = mul or 0
 	if mul == 0 then
 		return
 	end
@@ -61,8 +57,7 @@ end
 
 
 function ENT:GenEnergy()
-	local waterlevel = 0
-	waterlevel = self:WaterLevel()
+	local waterlevel = self:WaterLevel() or 0
 
 	if (waterlevel > 1) then
 		self:TurnOff()
@@ -162,6 +157,6 @@ end
 function ENT:Think()
 	self.BaseClass.Think(self)
 	self:GenEnergy()
-	self.Entity:NextThink(CurTime() + 1)
+	self:NextThink(CurTime() + 1)
 	return true
 end
