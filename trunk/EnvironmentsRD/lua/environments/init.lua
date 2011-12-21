@@ -160,7 +160,7 @@ if SERVER then
 			end
 			
 			if ent:Health() <= 0 then
-				ent:SetColor(50, 50, 50, 255)
+				ent:SetColor(Color(50, 50, 50, 255))
 				if ent.Destruct then
 					ent:Destruct()
 				else
@@ -172,17 +172,17 @@ if SERVER then
 			local health = ent:Health()
 			local max = ent:GetMaxHealth()
 			if health <= max/7 then
-				ent:SetColor(75,75,75,255)
+				ent:SetColor(Color(75,75,75,255))
 			elseif health <= max/6 then
-				ent:SetColor(100,100,100,255)
+				ent:SetColor(Color(100,100,100,255))
 			elseif health <= max/5 then
-				ent:SetColor(125,125,125,255)
+				ent:SetColor(Color(125,125,125,255))
 			elseif health <= max/4 then
-				ent:SetColor(150,150,150,255)
+				ent:SetColor(Color(150,150,150,255))
 			elseif health <= max/3 then
-				ent:SetColor(175,175,175,255)
+				ent:SetColor(Color(175,175,175,255))
 			elseif health <= max/2 then
-				ent:SetColor(200,200,200,255)
+				ent:SetColor(Color(200,200,200,255))
 			end
 		end
 	end

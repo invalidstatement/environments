@@ -14,7 +14,7 @@ local Msg = Msg
 
 PlayerGravity = true
 
-CompatibleEntities = {"func_precipitation", "env_smokestack", "func_dustcloud"}
+local CompatibleEntities = {"func_precipitation", "env_smokestack", "func_dustcloud", "func_smokevolume"}
 
 include("shared.lua")
 include("core/base.lua")
@@ -43,7 +43,7 @@ function ENT:Initialize()
 	end
 	self:SetNotSolid( true )
 	
-	self:SetColor(255,255,255,0) --Make invis
+	self:SetColor(Color(255,255,255,0)) --Make invis
 	
 	//Important Tables
 	self.Entities = {}
@@ -179,7 +179,6 @@ function ENT:Think()
 			local rand = math.random(1,40)
 			if rand < 2 then
 				util.ScreenShake(self:GetPos(), 14, 255, 6, self.radius)
-				--self.Shaker:Fire("StartShake")
 			end
 		end
 	end
@@ -220,31 +219,7 @@ function ENT:Configure(rad, gravity, name, env)
 	
 	self.Env = {}
 	self.Env.sbenvironment = self:GetTable() --reverse compat
-	
-	//Create the earthquaker if need be :)
-	/*if self.unstable == "true" then
-		self.Shaker = ents.Create("env_shake")
-		self.Shaker:Spawn()
-		self.Shaker:SetPos(self:GetPos())
-		self.Shaker:SetKeyValue("radius", self.radius)
-		self.Shaker:SetKeyValue("duration", 6)
-		self.Shaker:Fire("Amplitude", 14)
-		self.Shaker:Fire("Frequency", 255)
-	end*/
 end
-
-//Debugging
-/*function ENT:OnRemove()
-	--print(debug.traceback( 1, "", 2 ))
-	--local callpath = debug.getinfo(2)['short_src']
-	local callpath = debug.traceback( 2 )
-	local old = file.Read("env_debug.txt")
-	if old then
-		file.Write("env_debug.txt", old.."\n"..os.time()..": ENVIRONMENT REMOVED! Caller:"..callpath)
-	else
-		file.Write("env_debug.txt", os.time()..": ENVIRONMENT REMOVED! Caller:"..callpath)
-	end
-end*/
 
 function ENT:CanTool()
 	return false

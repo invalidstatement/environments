@@ -32,13 +32,13 @@ local pstatus = {}
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	if not (WireAddon == nil) then
-		self.Inputs = Wire_CreateInputs(self.Entity, { "Deploy", "ReelInPlug", "EjectPlug" })
-		self.Outputs = Wire_CreateOutputs(self.Entity, { "InUse" })
+		self.Inputs = Wire_CreateInputs(self, { "Deploy", "ReelInPlug", "EjectPlug" })
+		self.Outputs = Wire_CreateOutputs(self, { "InUse" })
 	end
 	self:SetModel("models/props_lab/tpplugholder_single.mdl")
-	self.Entity:PhysicsInit( SOLID_VPHYSICS )
-	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
-	self.Entity:SetSolid( SOLID_VPHYSICS )
+	self:PhysicsInit( SOLID_VPHYSICS )
+	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetSolid( SOLID_VPHYSICS )
 	
 	self.damaged = 0
 	self.ropelength = 500
@@ -323,7 +323,7 @@ function ENT:Deploy()
 	plug:SetModel( "models/props_lab/tpplug.mdl" )
 	plug:SetPos( pos )
 	plug:SetAngles( ang )
-	plug:SetColor( 255, 255, 255, 255 )
+	plug:SetColor( Color(255, 255, 255, 255) )
 	plug:Spawn()
 		
 		local phys = plug:GetPhysicsObject()

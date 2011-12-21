@@ -11,7 +11,7 @@ ENT.IgnoreTouch = true
 ENT.NotTeleportable = true
 	
 function ENT:Initialize()
-	self:SetModel( "models/slyfo/cup_noodle.mdl" ) --setup stuff
+	self:SetModel( "models/items/car_battery01.mdl" ) --setup stuff
 	self:SetMoveType( MOVETYPE_NONE )
 	self:SetSolid( SOLID_NONE )
 	self:PhysicsInitSphere(1)

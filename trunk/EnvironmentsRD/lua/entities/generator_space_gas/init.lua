@@ -1,13 +1,12 @@
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
+util.PrecacheSound( "Airboat_engine_idle" )
+util.PrecacheSound( "Airboat_engine_stop" )
 util.PrecacheSound( "apc_engine_start" )
-util.PrecacheSound( "apc_engine_stop" )
-
 include('shared.lua')
 
-local Energy_Increment = 75
-local Water_Increment = 250
-local Generator_Effect = 1 //Less than one means that this generator "leak" resources
+local Pressure_Increment = 80
+local Energy_Increment = 10
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
@@ -15,14 +14,30 @@ function ENT:Initialize()
 	self.overdrive = 0
 	self.damaged = 0
 	self.lastused = 0
+	self.sequence = -1
+	self.thinkcount = 0
+	
+	self:PhysicsInit( SOLID_VPHYSICS )
+	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetSolid( SOLID_VPHYSICS )
+	
 	self.Mute = 0
 	self.Multiplier = 1
 	if not (WireAddon == nil) then
 		self.WireDebugName = self.PrintName
 		self.Inputs = Wire_CreateInputs(self, { "On", "Overdrive", "Mute", "Multiplier" })
+		self.Outputs = Wire_CreateOutputs(self, {"On", "Overdrive", "EnergyUsage", "GasProduction" })
 	else
 		self.Inputs = {{Name="On"},{Name="Overdrive"}}
 	end
+	
+	self.resources = {}
+	self.resources["energy"] = 0
+	self.resources["water"] = 0
+	
+	self.maxresources = {}
+	self.maxresources["energy"] = 0
+	self.maxresources["water"] = 0
 end
 
 function ENT:TurnOn()
@@ -31,6 +46,8 @@ function ENT:TurnOn()
 			self:EmitSound( "Airboat_engine_idle" )
 		end
 		self.Active = 1
+		if not (WireAddon == nil) then Wire_TriggerOutput(self, "On", self.Active) end
+
 		self:SetOOO(1)
 	elseif ( self.overdrive == 0 ) then
 		self:TurnOnOverdrive()
@@ -46,6 +63,7 @@ function ENT:TurnOff()
 		end
 		self.Active = 0
 		self.overdrive = 0
+		if not (WireAddon == nil) then Wire_TriggerOutput(self, "On", self.Active) end
 		self:SetOOO(0)
 	end
 end
@@ -53,24 +71,26 @@ end
 function ENT:TurnOnOverdrive()
 	if ( self.Active == 1 ) then
 		if (self.Mute == 0) then
-			self:StopSound( "Airboat_engine_idle" )
-			self:EmitSound( "Airboat_engine_idle" )
-			self:EmitSound( "apc_engine_start" )
+			self.Entity:StopSound( "Airboat_engine_idle" )
+			self.Entity:EmitSound( "Airboat_engine_idle" )
+			self.Entity:EmitSound( "apc_engine_start" )
 		end
 		self:SetOOO(2)
 		self.overdrive = 1
+		if not (WireAddon == nil) then Wire_TriggerOutput(self, "Overdrive", self.overdrive) end
 	end
 end
 
 function ENT:TurnOffOverdrive()
 	if ( self.Active == 1 and self.overdrive == 1) then
 		if (self.Mute == 0) then
-			self:StopSound( "Airboat_engine_idle" )
-			self:EmitSound( "Airboat_engine_idle" )
-			self:StopSound( "apc_engine_start" )
+			self.Entity:StopSound( "Airboat_engine_idle" )
+			self.Entity:EmitSound( "Airboat_engine_idle" )
+			self.Entity:StopSound( "apc_engine_start" )
 		end
 		self:SetOOO(1)
 		self.overdrive = 0
+		if not (WireAddon == nil) then Wire_TriggerOutput(self, "Overdrive", self.overdrive) end
 	end	
 end
 
@@ -118,7 +138,6 @@ function ENT:TriggerInput(iname, value)
 			self.Multiplier = value
 		else
 			self.Multiplier = 1
-
 		end	
 	end
 end
@@ -134,45 +153,43 @@ end
 
 function ENT:Repair()
 	self.BaseClass.Repair(self)
-	self:SetColor(255, 255, 255, 255)
+	self:SetColor(Color(255, 255, 255, 255))
 	self.damaged = 0
 end
 
 function ENT:OnRemove()
 	self.BaseClass.OnRemove(self)
-	self.Entity:StopSound( "apc_engine_start" )
+	self:StopSound( "Airboat_engine_idle" )
 end
 
-function ENT:Proc_Water()
+function ENT:SuckGas()
 	local energy = self:GetResourceAmount("energy")
-	local water = self:GetResourceAmount("water")
-	local einc = Energy_Increment + (self.overdrive*Energy_Increment)
-	einc = (math.Round(einc * self:GetMultiplier())) * self.Multiplier
-	local winc = Water_Increment + (self.overdrive*Water_Increment)
-	winc = (math.Round(winc * self:GetMultiplier())) * self.Multiplier
+	local einc = Energy_Increment + (self.overdrive*Energy_Increment*3)
+	local waterlevel = 0
+	waterlevel = self:WaterLevel()
 
-	if (energy >= einc and water >= winc) then
+	einc = (math.ceil(100 * self:GetMultiplier())) * self.Multiplier
+	if WireAddon then Wire_TriggerOutput(self, "EnergyUsage", math.Round(einc)) end
+	if energy >= einc then 
+		local winc = 200 * self.Multiplier * self:GetMultiplier()
 		if ( self.overdrive == 1 ) then
-			self:SetHealth( self:Health( ) - math.random(2, 3))
-			if self:Health() <= 0 then
-				self:Remove()
+			winc = winc * 3
+			self:SetHealth( self:Health() - math.random(2, 3))
+		end
+		
+		local res = nil
+		local clouds = ents.FindByClass("gas_cloud")
+		for k,v in pairs(clouds) do
+			if v:GetPos():Distance(self:GetPos()) < 1000 then
+				res = v.ResourceName
+				winc = v:Suck(winc)
+				break
 			end
 		end
+		
 		self:ConsumeResource("energy", einc)
-		self:ConsumeResource("water", winc)
-		
-		winc = math.Round(winc * Generator_Effect)
-		
-		local supplyO2 = math.Round(winc/2)
-		local leftO2 = self:SupplyResource("oxygen", supplyO2)
-		
-		local supplyH = winc*2
-		local leftH = self:SupplyResource("hydrogen",supplyH)
-		
-		if self.environment then
-			self.environment:Convert(-1, 0, leftO2)
-			self.environment:Convert(-1, 3, leftH)
-		end
+		if res then self:SupplyResource(res, winc) end
+		if WireAddon then Wire_TriggerOutput(self, "GasProduction", math.Round(winc)) end
 	else
 		self:TurnOff()
 	end
@@ -180,9 +197,9 @@ end
 
 function ENT:Think()
 	self.BaseClass.Think(self)
-	
-	if ( self.Active == 1 ) then self:Proc_Water() end
-	
+
+	if ( self.Active == 1 ) then self:SuckGas() end
+
 	self:NextThink( CurTime() + 1 )
 	return true
 end

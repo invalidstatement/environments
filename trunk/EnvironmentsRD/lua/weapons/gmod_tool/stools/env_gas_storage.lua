@@ -44,8 +44,7 @@ end
 function TOOL.BuildCPanel( CPanel )
 	-- Header stuff
 	CPanel:ClearControls()
-	CPanel:AddHeader()
-	CPanel:AddDefaultControls()
+
 	CPanel:AddControl("Header", { Text = "#Tool_"..name.."_name", Description = "#Tool_"..name.."_desc" })
 	
 	CPanel:AddControl( "PropSelect", {

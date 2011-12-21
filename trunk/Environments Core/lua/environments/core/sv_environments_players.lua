@@ -26,20 +26,20 @@ function Environments.LSCheck() --this has to be the worst function ever
 	end
 	for k, ply in pairs(player.GetAll()) do
 		local status, error = pcall(function() --starts the error checker
-		if not ply:Alive() or not ply:IsValid() then return end
+		if not ply:Alive() or not ply:IsValid() then return end --not if dead
 		
-		if ply:GetNWBool("inspace") == true then
-			ply.environment = Space()	
+		if ply:GetNWBool("inspace") == true then --make sure space is correct
+			ply.environment = Space()	--why am I doing this? perhaps get rid of NWBool?
 		end
-		if ply:GetScriptedVehicle() and ply:GetScriptedVehicle():IsValid() then
+		if ply:GetScriptedVehicle() and ply:GetScriptedVehicle():IsValid() then --if in vehicle
 			ply.environment = ply:GetScriptedVehicle().environment
 		end
 		
 		if ply.GHDed then
-			Environments.BackupCheck(ply)
+			Environments.BackupCheck(ply) --ghd crap
 		end
 		
-		Environments.PlayerCheck(ply)
+		Environments.PlayerCheck(ply) --check LS Cores, and grav plating
 		
 		local env = ply.environment
 		
@@ -50,14 +50,14 @@ function Environments.LSCheck() --this has to be the worst function ever
 		local temperature = env.temperature
 		
 		if ply:GetNWBool("inspace") == false then
-			temperature = Environments.SunCheck(ply)
+			temperature = Environments.SunCheck(ply) --check for suntemp
 		end
 		
-		if not env.pressure then
+		if not env.pressure then --double check
 			env.pressure = 1
 		end
 		
-		local realo2 = env.air.o2per*env.pressure
+		local realo2 = env.air.o2per*env.pressure --relative o2 percent
 		if ply.suit.worn and ply.suit.helmet then
 			local pod = ply:GetParent()
 			//Temperature Stuff
@@ -238,7 +238,7 @@ function Environments.LSCheck() --this has to be the worst function ever
 		Environments.UpdateLS(ply, temperature) end) --ends the error checker
 		
 		if error then
-			Environments.Log("Player Think Error: "..error)
+			--Environments.Log("Player Think Error: "..error) --lets not do that anymore.
 			MsgAll("Environments Player Think Error: "..error.."\n")
 		end
 	end
@@ -295,7 +295,7 @@ function Environments.SunCheck(ent)
 	end
 end
 
-function Environments.PlayerCheck(ent)
+function Environments.PlayerCheck(ent) --fix with parenting >:(
 	--if not ent:GetNWBool("inspace") then return end
 	local phys = ent:GetPhysicsObject()
 	local veh = ent:GetVehicle()

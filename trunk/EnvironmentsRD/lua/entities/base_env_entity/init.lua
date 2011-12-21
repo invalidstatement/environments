@@ -36,7 +36,7 @@ end
 
 function ENT:Repair()
 	self:SetHealth( self:GetMaxHealth())
-	self:SetColor(255,255,255,255)
+	self:SetColor(Color(255,255,255,255))
 end
 
 function ENT:AcceptInput(name,activator,caller)

@@ -45,4 +45,4 @@ local function Logging(id,handler,encoded,decoded)
 	
 	MenuTabs:AddSheet("Event Log", EventList, "gui/silkicons/shield", false, false, nil)
 end
-datastream.Hook("sendEnvLogs",Logging)
+//datastream.Hook("sendEnvLogs",Logging)

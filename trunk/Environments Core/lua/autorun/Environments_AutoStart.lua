@@ -17,6 +17,7 @@ Environments.ForceLoad = false
 Environments.UseSuit = true
 Environments.Debug = true
 
+
 local start = SysTime()
 function Environments.Load()
 if CLIENT then
@@ -34,9 +35,9 @@ if CLIENT then
 			LoadHud()
 		end
 		concommand.Add("env_reload_hud", Reload)
-        
+        LoadHud()
+		
 		if msg then
-			LoadHud()
 			print("Environments Version "..msg:ReadShort().." Running On Server")
 		end
 		
@@ -64,6 +65,8 @@ if CLIENT then
 					return old(name)
 				end
 			end
+			include("vgui/HUD.lua")
+			LoadHud()//it was being retarded
 		end)
 	end
 	usermessage.Hook("Environments", Load)

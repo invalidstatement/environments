@@ -48,8 +48,9 @@ default.atmosphere.n = 50
 default.atmosphere.h = 15
 default.atmosphere.ar = 0
 
-local meta = {}
-function NewEnvironment(ent) --new metatable based environments, should have fewer problems than entities alone
+//add a new Environments "Lite" mode that only checks players and stuff in a method similar to SB3, should be able to be turned on and off at will
+local meta = {} 
+local function NewEnvironment(ent) --new metatable based environments, should have fewer problems than entities alone
 	local tab = {}
 	
 	
@@ -101,7 +102,7 @@ timer.Create("registerCAFOverwrites", 5, 1, function()
 	end
 end)
 
-function Environments.ShutDown() --wip
+function Environments.ShutDown() --wip, add a new system for hook creation, a table filled with the hooks that gets created at startup, or destroyed at shutdown
 	if not ply:IsAdmin() then return end
 	for k,v in pairs(environments) do
 		if v and v:IsValid() then
@@ -153,6 +154,7 @@ local function LoadEnvironments()
 		local olds = meta.Spawn
 		function meta:Spawn()
 			olds(self)
+			if self:IsWeapon() then return end
 			local phys = self:GetPhysicsObject()
 			if phys:IsValid() then
 				phys:EnableDrag(false)
@@ -179,6 +181,7 @@ local function LoadEnvironments()
 			
 		print("// Starting Periodicals..          //")
 		timer.Create("EnvEvents", 30, 0, Environments.EventChecker)
+		//timer.Create("EnvSpecial", 10, 0, Environments.SpecialEvents)
 		print("//   Event System Started          //")
 		timer.Create("LSCheck", 1, 0, Environments.LSCheck)
 		print("//   LifeSupport Checker Started   //")
@@ -732,7 +735,7 @@ function Environments.RegisterSun()
 			else
 				print("//   No Stars Found, Defaulting    //")
 				TrueSun = {}
-				TrueSun[1] = Vector(0,0,0)
+				TrueSun[1] = Vector(0,0,10000)
 			end
 		end
 	end)
@@ -744,6 +747,99 @@ function Environments.RegisterSun()
 		TrueSun[1] = Vector(0,0,0)
 	end
 end
+
+function Environments.GetSunFraction(entpos, up)//wip
+	local trace = {}
+	local lit = false
+	local SunAngle2 = SunAngle or Vector(0, 0 ,1)
+	local SunAngle = nil
+	if TrueSun and table.Count(TrueSun) > 0 then
+		local output = 0
+		for k,SUN_POS in pairs(TrueSun) do
+				--[[SunAngle = (entpos - v)
+				SunAngle:Normalize()
+				local startpos = (entpos - (SunAngle * 4096))
+				trace.start = startpos
+				trace.endpos = entpos //+ Vector(0,0,30)
+				local tr = util.TraceLine( trace )
+				if (tr.Hit) then
+					if (tr.Entity == self) then
+						self:TurnOn()
+						self:Extract_Energy()
+						return
+					end
+				else
+					self:TurnOn()
+					self:Extract_Energy()
+					return
+				end]]
+			trace = util.QuickTrace(SUN_POS, entpos-SUN_POS, nil)
+			if trace.Hit then 
+				if trace.Entity == self then
+					local v = (up or Vector(0,0,1)) + trace.HitNormal
+					local n = v.x*v.y*v.z
+					print("truesun hit")
+					if n > 0 then
+						output = output + n
+						--solar panel produces energy
+					end
+				else
+					local n = math.Clamp(1-SUN_POS:Distance(trace.HitPos)/SUN_POS:Distance(entpos),0,1)
+					output = output + n
+					print("not hit self truesun")
+					--solar panel is being blocked
+				end
+			end
+			if output >= 1 then
+				break
+			end
+		end
+		if output > 1 then 
+			output = 1
+		end
+		if output > 0 then
+			return output
+		end
+	end
+	local SUN_POS = (entpos - (SunAngle2 * 4096))
+		--[[trace.start = startpos
+		trace.endpos = entpos //+ Vector(0,0,30)
+		local tr = util.TraceLine( trace )
+		if (tr.Hit) then
+			if (tr.Entity == self) then
+				self:TurnOn()
+				self:Extract_Energy(1)
+				return
+			end
+		else
+			self:TurnOn()
+			self:Extract_Energy()
+			return
+		end]]
+	trace = util.QuickTrace(SUN_POS, entpos-SUN_POS, nil)
+	if trace.Hit then 
+		if trace.Entity == self then
+			local v = (up or Vector(0,0,1)) + trace.HitNormal
+			local n = v.x*v.y*v.z
+			print("sunpos hit")
+			if n > 0 then
+				return n
+			end
+		else
+			local n = math.Clamp(1-SUN_POS:Distance(trace.HitPos)/SUN_POS:Distance(entpos),0,1)
+			if n > 0 then
+				print("not hit sunpos")
+				return n
+			end
+			--solar panel is being blocked
+		end
+	end
+end
+
+local function yay(ply, cmd, args)//temporary
+	print(Environments.GetSunFraction(ply:GetPos(), ply:GetUp()))
+end
+concommand.Add("env_suncheck", yay)
 
 function Environments.Hooks.NoClip( ply, on )
     if ply:GetMoveType() == MOVETYPE_NOCLIP then return true end
@@ -886,6 +982,15 @@ function Environments.OnEnvironment(pos)
 		end
 	end
 	return false
+end
+
+function Environments.FindEnvironmentOnPos(pos)
+	for k,v in pairs(environments) do
+		if pos:Distance(v:GetPos()) <= v.radius then
+			return v
+		end
+	end
+	return nil
 end
 
 local function Reload(ply,cmd,args)

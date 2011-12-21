@@ -111,7 +111,7 @@ if Wire_UpdateRenderBounds then
 	end
 end
 
-local function RecieveAmts(msg)
+local function RecieveAmts(msg) --errors when ent isnt valid :/
 	local ent = msg:ReadEntity()
 	local res = msg:ReadString()
 	if tonumber(res) then res = tonumber(res) end

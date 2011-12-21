@@ -117,8 +117,7 @@ else
 	function TOOL.BuildCPanel( CPanel )
 		-- Header stuff
 		CPanel:ClearControls()
-		CPanel:AddHeader()
-		CPanel:AddDefaultControls()
+
 		CPanel:AddControl("Header", { Text = "#Tool_resource_pumps_name", Description = "#Tool_resource_pumps_desc" })
 		
 		CPanel:AddControl("ComboBox", {
