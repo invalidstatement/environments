@@ -4,7 +4,7 @@
 ------------------------------------------
 
 --localize
---looser xD http://steamcommunity.com/id/AlauraLoveless/
+--loser xD http://steamcommunity.com/id/AlauraLoveless/
 local math = math
 local hook = hook
 local game = game
@@ -56,51 +56,6 @@ local function NewEnvironment(ent) --new metatable based environments, should ha
 	
 	setmetatable(tab, meta)
 end
-
-//Overwrite CAF to fix issues with tools
-timer.Create("registerCAFOverwrites", 5, 1, function()
-	if CAF then
-		local old = CAF.GetAddon
-		local SB = {}
-			
-		function SB.GetStatus()
-			return true
-		end
-		
-		//PewPew Compatibility
-		function SB.PerformEnvironmentCheckOnEnt(ent)
-			for k,v in pairs(environments) do
-				local distance = v:GetPos():Distance(ent:GetPos())
-				if distance <= v.radius then
-					ent.environment = v
-					return
-				end
-			end
-		end
-		
-		function SB.OnEnvironmentChanged(ent)
-		
-		end
-		//End PewPew Compatibility
-
-		function LS.GetStatus()
-			return true
-		end
-		
-		function LS.DamageLS()
-		
-		end
-			
-		function CAF.GetAddon(name)
-			if name == "Spacebuild" then
-				return SB
-			elseif name == "Life Support" then
-				return LS
-			end
-			return old(name)
-		end
-	end
-end)
 
 function Environments.ShutDown() --wip, add a new system for hook creation, a table filled with the hooks that gets created at startup, or destroyed at shutdown
 	if not ply:IsAdmin() then return end
@@ -181,7 +136,7 @@ local function LoadEnvironments()
 			
 		print("// Starting Periodicals..          //")
 		timer.Create("EnvEvents", 30, 0, Environments.EventChecker)
-		//timer.Create("EnvSpecial", 10, 0, Environments.SpecialEvents)
+		timer.Create("EnvSpecial", 10, 0, Environments.SpecialEvents)
 		print("//   Event System Started          //")
 		timer.Create("LSCheck", 1, 0, Environments.LSCheck)
 		print("//   LifeSupport Checker Started   //")
@@ -510,8 +465,8 @@ function Environments.LoadFromMap()
 		end
 	end
 	planets.version = Environments.FileVersion
-	Environments.PlanetSaveData = {}
-	Environments.PlanetSaveData = planets
+	//Environments.PlanetSaveData = {}
+	//Environments.PlanetSaveData = planets
 	
 	return planets, stars
 end
@@ -556,57 +511,6 @@ function Environments.SaveMap() --plz work :)
 	file.Write( "environments/" .. map .. ".txt", util.TableToKeyValues( table.Sanitise(planets) ) )
 end
 timer.Create("MapSavesEnv", 120, 0, Environments.SaveMap)
-
-function table.Sanitise(tab)
-	for k,v in pairs(tab) do
-		local t = type(v)
-		if t == "boolean" then
-			tab[k] = {}
-			tab[k].__type = "bool"
-			tab[k]["1"] = tostring(v)
-		elseif t == "table" then
-			tab[k] = table.Sanitise(v)
-		elseif t == "Vector" then
-			tab[k] = {}
-			tab[k].__type = "vector"
-			tab[k].x = v.x
-			tab[k].y = v.y
-			tab[k].z = v.z
-		elseif t == "Angle" then
-			tab[k] = {}
-			tab[k].__type = "angle"
-			tab[k].p = v.p
-			tab[k].y = v.y
-			tab[k].r = v.r
-		end
-	end
-	return tab
-end
-
-function table.DeSanitise(tab)
-	for k,v in pairs(tab) do
-		local t = type(v)
-
-		if t == "table" then
-			if v.__type then
-				if v.__type == "bool" then
-					if v["1"] == "true" then
-						tab[k] = true
-					else
-						tab[k] = false
-					end
-				elseif v.__type == "vector" then
-					tab[k] = Vector(v.x, v.y, v.z)
-				elseif v.__type == "angle" then
-					tab[k] = Angle(a.p, a.y, a.r)
-				end
-			else
-				tab[k] = table.DeSanitise(v)
-			end
-		end
-	end
-	return tab
-end
 
 //Space Definition
 local space = {}
@@ -876,23 +780,37 @@ end
 
 Environments.SFX = {}
 function RegisterWorldSFXEntity(ent, planet)
-	Environments.SFX[ent:EntIndex()] = ent
-	Environments.SFX[ent:EntIndex()].planet = planet
+	if planet or !Environments.SFX[ent:EntIndex()] then//dont overwrite other values unless there is a planet found for the entity
+		Environments.SFX[ent:EntIndex()] = {}
+		Environments.SFX[ent:EntIndex()].entity = ent
+		Environments.SFX[ent:EntIndex()].planet = planet
+	end
 end
+
+local CompatibleEntities = {"func_precipitation", "env_smokestack", "func_dustcloud", "func_smokevolume"}
+local function FindSFXEntities()
+	for k, v in pairs(ents.GetAll()) do
+		if table.HasValue(CompatibleEntities, v:GetClass()) then
+			RegisterWorldSFXEntity(v, nil)
+		end
+	end
+end
+hook.Add("InitPostEntity", "findSFX", FindSFXEntities)
 
 local function SFXManager()
 	if not Environments.SFX then return end
 	for k,v in pairs(Environments.SFX) do
-		local class = string.lower(v:GetClass())
+		local ent = v.entity
+		local class = string.lower(ent:GetClass())
 		if class == "func_precipitation" then
 
 		elseif class == "func_dustcloud" then
-			--v:Fire("TurnOff")
+			--ent:Fire("TurnOff")
 		elseif class == "env_smokestack" then
-			--v:SetKeyValue("BaseSpread", 300)
-			--v:SetKeyValue("rendercolor", "0 0 0")
-			--v:Fire("JetLength", 1000)
-			--v:Fire("Rate", 400)
+			--ent:SetKeyValue("BaseSpread", 300)
+			--ent:SetKeyValue("rendercolor", "0 0 0")
+			--ent:Fire("JetLength", 1000)
+			--ent:Fire("Rate", 400)
 		end
 	end
 end
@@ -906,30 +824,6 @@ local function bool(b)
 		return false
 	end
 end
-
-function Environments.AdminCommand(ply, cmd, args)
-	if !ply:IsAdmin() then return end
-	local cmd = args[1]
-	local value = args[2]
-	
-	print("Admin Command Recieved From "..ply:Nick().." Command: "..cmd..", Value: "..value)
-	if cmd == "noclip" then --noclip blocking
-		RunConsoleCommand("env_noclip", value)
-	elseif cmd == "planetconfig" then --planet editing
-		local k = value
-		local v = args[3]
-		if tonumber(v) then 
-			v = tonumber(v) 
-		elseif v == "true" or v == "false" then
-			v = bool(v)
-		end
-		if ply.environment and ply.environment != Space() then
-			print("Planet Var: '"..k.."', Set to: '"..tostring(v).."', Type: "..type(v))
-			ply.environment[k] = v
-		end
-	end
-end
-concommand.Add("environments_admin", Environments.AdminCommand)
 
 function Environments.SendInfo(ply)
 	timer.Simple(1, function()
@@ -992,6 +886,30 @@ function Environments.FindEnvironmentOnPos(pos)
 	end
 	return nil
 end
+
+function Environments.AdminCommand(ply, cmd, args)
+	if !ply:IsAdmin() then return end
+	local cmd = args[1]
+	local value = args[2]
+	
+	print("Admin Command Recieved From "..ply:Nick().." Command: "..cmd..", Value: "..value)
+	if cmd == "noclip" then --noclip blocking
+		RunConsoleCommand("env_noclip", value)
+	elseif cmd == "planetconfig" then --planet editing
+		local k = value
+		local v = args[3]
+		if tonumber(v) then 
+			v = tonumber(v) 
+		elseif v == "true" or v == "false" then
+			v = bool(v)
+		end
+		if ply.environment and ply.environment != Space() then
+			print("Planet Var: '"..k.."', Set to: '"..tostring(v).."', Type: "..type(v))
+			ply.environment[k] = v
+		end
+	end
+end
+concommand.Add("environments_admin", Environments.AdminCommand)
 
 local function Reload(ply,cmd,args)
 	if not ply:IsAdmin() then return end

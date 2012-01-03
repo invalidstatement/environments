@@ -55,9 +55,9 @@ function ENT:Initialize()
 end
 
 function ENT:Setup( pump, rate, hoselength )
-	self.pump_active = pump
-	self.pump_rate = rate
-	self.hose_length = hoselength
+	self.pump_active = pump or true
+	self.pump_rate = rate or 256
+	self.hose_length = hoselength or 512
 	
 	if (pump == 1) then 
 		self.pump_status = PUMP_READY
@@ -103,7 +103,7 @@ function ENT:ResetPlug()
 	end
 	
 	self.PumpOn = 0
-	if not (WireAddon == nil) then Wire_TriggerOutput(self, "InUse", 0) end
+	if WireAddon then Wire_TriggerOutput(self, "InUse", 0) end
 end
 
 function ENT:Think()
@@ -168,7 +168,7 @@ function ENT:Think()
 				self.plug = nil
 				self.DeployedPlug = 0
 				self.reel_status = REEL_STOP
-				if not (WireAddon == nil) then Wire_TriggerOutput(self, "InUse", 0) end
+				if WireAddon then Wire_TriggerOutput(self, "InUse", 0) end
 			end
 		end
 	end
@@ -306,7 +306,7 @@ function ENT:AttachPlug( plug )
 	self.OtherSocket.PumpOn = 1 --use their pump instead
 	self.PumpOn = 0
 	
-	if not (WireAddon == nil) then Wire_TriggerOutput(self, "InUse", 1) end
+	if WireAddon then Wire_TriggerOutput(self, "InUse", 1) end
 end
 
 function ENT:Deploy()
@@ -366,5 +366,5 @@ function ENT:Deploy()
 	self.DeployedPlug = 1
 	self.reel_status = REEL_OUT
 	
-	if not (WireAddon == nil) then Wire_TriggerOutput(self, "InUse", 1) end
+	if WireAddon then Wire_TriggerOutput(self, "InUse", 1) end
 end

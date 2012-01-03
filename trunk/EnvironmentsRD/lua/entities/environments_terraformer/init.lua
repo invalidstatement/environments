@@ -15,8 +15,8 @@ function ENT:Initialize()
 	self.damaged = 0
 	if not (WireAddon == nil) then
 		self.WireDebugName = self.PrintName
-		self.Inputs = Wire_CreateInputs(self.Entity, { "On" })
-		self.Outputs = Wire_CreateOutputs(self.Entity, { "O2 Level", "CO2 Level", "Nitrogen Level", "Hydrogen Level", "Pressure", "Temperature", "Gravity", "On" })
+		self.Inputs = Wire_CreateInputs(self, { "On" })
+		self.Outputs = Wire_CreateOutputs(self, { /*"O2 Level", "CO2 Level", "Nitrogen Level", "Hydrogen Level", "Pressure", "Temperature", "Gravity",*/ "On" })
 	else
 		self.Inputs = {{Name="On"}}
 	end
@@ -24,14 +24,14 @@ function ENT:Initialize()
 end
 
 function ENT:TurnOn()
-	self.Entity:EmitSound( "Buttons.snd17" )
+	self:EmitSound( "Buttons.snd17" )
 	self.Active = 1
 	self:SetOOO(1)
-	if not (WireAddon == nil) then Wire_TriggerOutput(self.Entity, "On", 1) end
+	if not (WireAddon == nil) then Wire_TriggerOutput(self, "On", 1) end
 end
 
 function ENT:TurnOff(warn)
-	if (!warn) then self.Entity:EmitSound( "Buttons.snd17" ) end
+	if (!warn) then self:EmitSound( "Buttons.snd17" ) end
 	self.Active = 0
 	self:SetOOO(0)
 end
@@ -115,7 +115,7 @@ function ENT:Think()
 		self:Terraform()
 	end
 	
-	self.Entity:NextThink(CurTime() + 1)
+	self:NextThink(CurTime() + 1)
 	return true
 end
 

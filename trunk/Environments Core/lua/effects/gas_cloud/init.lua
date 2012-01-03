@@ -1,4 +1,4 @@
-local matRefraction	= Material( "refract_ring" )
+/*local matRefraction	= Material( "refract_ring" )
 
 local tMats = {}
 
@@ -11,7 +11,7 @@ for _,mat in pairs(tMats) do
 	mat:SetMaterialInt("$spriterendermode",9)
 	mat:SetMaterialInt("$ignorez",1)
 	mat:SetMaterialInt("$illumfactor",8)
-end
+end*/
 
 /*---------------------------------------------------------
    Init( data table )
@@ -33,14 +33,16 @@ function EFFECT:Init( data )
 	for k=5,26 do
 		self.smokeparticles[k] = self.Emitter:Add( "particles/flamelet"..math.random(1,5), Pos + Vector(math.random(1,500),math.random(1,500),math.random(1,500)))
 		//particle:SetVelocity(vecang*math.Rand(2,3))
-		self.smokeparticles[k]:SetDieTime( 360 )
+		self.smokeparticles[k]:SetDieTime( 50000 )
 		self.smokeparticles[k]:SetStartAlpha( math.Rand(230, 250) )
-		self.smokeparticles[k]:SetStartSize( k*math.Rand( 13, 15 ) )
-		self.smokeparticles[k]:SetEndSize( k*math.Rand( 17, 19 ) )
+		local size = k*math.Rand(13,15)
+		self.smokeparticles[k]:SetStartSize( size )
+		self.smokeparticles[k]:SetEndSize( size )
 		self.smokeparticles[k]:SetRoll( math.Rand( 1, 10 ) )
 		//self.smokeparticles[k]:SetRollDelta( math.random( -1, 1 ) )
 		self.smokeparticles[k]:SetColor(100, math.random(100,128), math.random(230,255))
 		self.smokeparticles[k]:VelocityDecay( true )
+		self.smokeparticles[k].size = size
 	end
 end
 
@@ -52,13 +54,19 @@ function EFFECT:Think( )
 		local size = self.Entity:GetNWInt("resourceamt", 0)/10000
 		if size != self.lastsize then
 			for k,v in pairs(self.smokeparticles) do
-				--something
+				local size = v.size*size
+				v:SetEndSize(size)
+				v:SetStartSize(size)
 			end
 			self.lastsize = size
 		end
 		
 		return true
 	else
+		for k,v in pairs(self.smokeparticles) do
+			v:SetDieTime(1)
+			self.smokeparticles[k] = nil
+		end
 		self.Emitter:Finish()
 		return false
 	end

@@ -9,7 +9,7 @@ local Energy_Increment = 8
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	self.damaged = 0
-	if not (WireAddon == nil) then
+	if WireAddon then
 		self.WireDebugName = self.PrintName
 		self.Outputs = Wire_CreateOutputs(self, { "Out" })
 	end
@@ -26,7 +26,7 @@ function ENT:TurnOff()
 	if (self.Active == 1) then
 		self.Active = 0
 		self:SetOOO(0)
-		if not (WireAddon == nil) then Wire_TriggerOutput(self, "Out", 0) end
+		if WireAddon then Wire_TriggerOutput(self, "Out", 0) end
 	end
 end
 

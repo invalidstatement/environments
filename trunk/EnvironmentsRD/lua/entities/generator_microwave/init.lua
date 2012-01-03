@@ -41,7 +41,6 @@ function ENT:TurnOff()
 	if (self.Active == 1) then
 		self.Active = 0
 		self:StopSound( "k_lab.ambient_powergenerators" )
-		self:StopSound( "coast.siren_citizen" )
 		if WireLib then 
 			WireLib.TriggerOutput(self, "On", 0)
 			WireLib.TriggerOutput(self, "Output", 0)
@@ -59,13 +58,10 @@ end
 function ENT:Repair()
 	self.BaseClass.Repair(self)
 	self:SetColor(255, 255, 255, 255)
-
-	self:StopSound( "coast.siren_citizen" )
 end
 
 function ENT:OnRemove()
 	self:StopSound( "k_lab.ambient_powergenerators" )
-	self:StopSound( "coast.siren_citizen" )
 	self.BaseClass.OnRemove(self)
 end
 

@@ -8,19 +8,12 @@ ENT.NoSpaceAfterEndTouch = true
 
 ENT.IsNode = true
 
-function ENT:SpawnFunction(ply, tr) -- Spawn function needed to make it appear on the spawn menu
-	local ent = ents.Create("resource_node_env") -- Create the entity
-	ent:SetPos(tr.HitPos + Vector(0, 0, 50) ) -- Set it to spawn 50 units over the spot you aim at when spawning it
-	ent:Spawn() -- Spawn it
- 
-	return ent -- You need to return the entity to make it work
-end
 
 function ENT:Initialize()
 	//self.BaseClass.Initialize(self) --use this in all ents
-	self.Entity:PhysicsInit( SOLID_VPHYSICS )
-	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
-	self.Entity:SetSolid( SOLID_VPHYSICS )
+	self:PhysicsInit( SOLID_VPHYSICS )
+	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetSolid( SOLID_VPHYSICS )
 	
 	//rd table
 	self.resources = {}
@@ -107,7 +100,7 @@ end
 
 function ENT:Repair()
 	self:SetHealth( self:GetMaxHealth())
-	self:SetColor(255,255,255,255)
+	self:SetColor(Color(255,255,255,255))
 end
 
 function ENT:LinkCheck()

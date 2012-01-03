@@ -321,9 +321,9 @@ function ENT:Leak() --leak cause this is like with storage, make be it could lea
 		end
 	end
 	--chance to leak additional heavy water
-	if (math.random(1, 10) <= 2) then
-		self:ConsumeResource("heavy water", HW_Increment)
-	end
+	//if (math.random(1, 10) <= 2) then
+		//self:ConsumeResource("heavy water", HW_Increment)
+	//end
 end
 
 function ENT:Think()

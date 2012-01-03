@@ -54,11 +54,6 @@ function ENT:Initialize()
 	end
 	self.Entities = {}
 	
-	--self:AddResource("energy", 0)
-	--self:AddResource("water", 0)
-	--self:AddResource("nitrogen", 0)
-	--self:AddResource("oxygen", 0)
-	
 	if not (WireAddon == nil) then
 		self.WireDebugName = self.PrintName
 		self.Inputs = Wire_CreateInputs(self, { "On", "Gravity", "Max O2 level" })
@@ -142,7 +137,7 @@ function ENT:Breathe()
 end
 
 function ENT:OnRemove()
-	local constrainedents = constraint.GetAllConstrainedEntities( self.Entity )
+	local constrainedents = constraint.GetAllConstrainedEntities( self )
 	local size = 0
 	for k,ent in pairs(constrainedents) do
 		ent.env = nil
@@ -371,7 +366,6 @@ end
 
 function ENT:Repair()
 	self.BaseClass.Repair(self)
-	self:SetColor(Color(255, 255, 255, 255))
 	self.damaged = 0
 end
 
