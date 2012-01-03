@@ -66,6 +66,10 @@ function Environments.MakeFunc(ent)
 		volume_mul = vol/base_volume
 	end
 	
+	if data == default then
+		volume_mul = 1
+	end
+	
 	if data.resources then
 		for k,v in pairs(data.resources) do
 			ent:AddResource(v, math.PlaceRound(k*volume_mul, 4))
@@ -245,14 +249,16 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 				self.WireDebugName = self.PrintName
 				self.Inputs = WireLib.CreateInputs(self, { "Vent", "Vent Amount" })
 
-				/*local tab = {}
-				for i = 1,2 in pairs(self.res) do
+				local tab = {}
+				local i = 1
+				for k,res in pairs(self.res) do
 					local v = self.res[i]
 					tab[i] = res
 					tab[i+1] = "Max "..res
-					i = i + 1
-				end*/
-				self.Outputs = Wire_CreateOutputs(self, { "Storage", "Max Storage" })
+					i = i + 2
+				end
+				//PrintTable(tab)
+				self.Outputs = Wire_CreateOutputs(self, tab)
 			end
 		end
 		
@@ -320,11 +326,8 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 			
 			if WireAddon then
 				for k,v in pairs(self.res) do
-					local air = self:GetResourceAmount(v)
-					local maxair = self:GetNetworkCapacity(v)
-					Wire_TriggerOutput(self.Entity, "Storage", air)
-					Wire_TriggerOutput(self.Entity, "Max Storage", maxair)
-					break
+					Wire_TriggerOutput(self, v, self:GetResourceAmount(v))
+					Wire_TriggerOutput(self, "Max "..v, self:GetNetworkCapacity(v))
 				end
 			end
 			

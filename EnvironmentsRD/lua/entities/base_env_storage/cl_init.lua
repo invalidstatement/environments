@@ -274,7 +274,7 @@ local function UpdateStorage(msg)
 	if not ent.maxresources then
 		ent.maxresources = {}
 	end
-	ent.resources[res] = msg:ReadLong()
+	ent.resources[res] = msg:ReadLong() //this errors if ent isnt valid
 	ent.maxresources[res] = msg:ReadLong()
 end
 usermessage.Hook("EnvStorageUpdate", UpdateStorage)

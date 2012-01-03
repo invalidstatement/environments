@@ -8,7 +8,7 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 140
+Environments.Version = 142
 Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 8
 
@@ -82,6 +82,7 @@ if CLIENT then
 		GetOnlineVersion(true)
 	end)
 else
+	include("environments/core/sv_overrides.lua")
 	include("environments/core/sv_environments.lua")
 	include("environments/core/sv_environments_planets.lua")
 	include("environments/core/sv_environments_players.lua")
@@ -119,24 +120,22 @@ function GetOnlineVersion( printChecking )
 	end
 	http.Get("http://environments.googlecode.com/svn/trunk/","",function(contents,size)
 		local rev = tonumber(string.match( contents, "Revision ([0-9]+)" ))
-		VersionCheck(rev,contents,size)
-	end)
-end
-
-function VersionCheck(rev, contents, size)
-	if Environments.Version >= rev then
-		print("Environments Is Up To Date, Latest Version: "..rev)
-	else
-		print("A newer version of Environments is availible! Version: "..rev..", You have Version: "..Environments.Version)
-		print("Please update!")
-	end
-	Environments.CurrentVersion = rev
-	
-	if CLIENT then --update the config panel to show that it is up to date
-		if Environments.ConfigPanel then
-			Environments.ConfigMenu(Environments.ConfigPanel) 
+		if rev and Environments.Version >= rev then
+			print("Environments Is Up To Date, Latest Version: "..rev)
+		elseif !rev then
+			print("No Internet Connection Detected! Environments Update Check Failed")
+		else
+			print("A newer version of Environments is availible! Version: "..rev..", You have Version: "..Environments.Version)
+			print("Please update!")
 		end
-	end
+		Environments.CurrentVersion = rev
+		
+		if CLIENT then --update the config panel to show that it is up to date
+			if Environments.ConfigPanel then
+				Environments.ConfigMenu(Environments.ConfigPanel) 
+			end
+		end
+	end)
 end
 GetOnlineVersion()
 

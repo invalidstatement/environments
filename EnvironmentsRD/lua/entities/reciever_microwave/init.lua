@@ -25,7 +25,6 @@ function ENT:Initialize()
 	else
 		self.Inputs = {{Name="On"}}
 	end
-	
 end
 
 function ENT:TurnOn()
@@ -52,16 +51,4 @@ end
 function ENT:TriggerInput(iname, value)
 	
 end
-
-function ENT:Repair()
-	self.BaseClass.Repair(self)
-	self:SetColor(255, 255, 255, 255)
-
-end
-
-function ENT:OnRemove()
-
-	self.BaseClass.OnRemove(self)
-end
-
 

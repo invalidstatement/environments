@@ -7,10 +7,10 @@ include('shared.lua')
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	self.damaged = 0
-	self.Entity:PhysicsInit( SOLID_VPHYSICS )
-	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
-	self.Entity:SetSolid( SOLID_VPHYSICS )
-	if not (WireAddon == nil) then
+	self:PhysicsInit( SOLID_VPHYSICS )
+	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetSolid( SOLID_VPHYSICS )
+	if WireAddon then
 		self.WireDebugName = self.PrintName
 	end
 	self.resources = {}
@@ -30,14 +30,7 @@ end
 
 function ENT:Repair()
 	self.BaseClass.Repair(self)
-	self.Entity:SetColor(255, 255, 255, 255)
 	self.damaged = 0
-end
-
-function ENT:Destruct()
-	if CAF and CAF.GetAddon("Life Support") then
-		CAF.GetAddon("Life Support").Destruct( self.Entity, true )
-	end
 end
 
 local function quiet_steam(ent)

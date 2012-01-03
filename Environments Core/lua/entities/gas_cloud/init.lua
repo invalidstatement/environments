@@ -43,7 +43,7 @@ function ENT:Suck(amt)//dont forget to add effects
 		amt = self.ResourceAmount
 	end
 	
-	self:SetResource(self.ResourceAmount - amt)
+	self:SetAmount(self.ResourceAmount - amt)
 	return amt
 end
 

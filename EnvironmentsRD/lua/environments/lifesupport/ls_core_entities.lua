@@ -66,7 +66,7 @@ Environments.RegisterDevice("Generators", "Wind Turbine", "Small Wind Turbine", 
 Environments.RegisterDevice("Generators", "Wind Turbine", "Medium Wind Turbine", "generator_wind", "models/ls_models/cloudstrifexiii/windmill/windmill_medium.mdl")
 Environments.RegisterDevice("Generators", "Wind Turbine", "Large Wind Turbine", "generator_wind", "models/ls_models/cloudstrifexiii/windmill/windmill_large.mdl")
 
-Environments.RegisterDevice("Generators", "Space Gas Collectors", "Gas Collector", "generator_space_gas", "models/props_silo/barrelwarning.mdl")
+Environments.RegisterDevice("Generators", "Space Gas Collectors", "Gas Collector", "generator_space_gas", "models/Spacebuild/medbridge2_missile_launcher.mdl")
 
 //Storage Tool
 Environments.RegisterDevice("Storages", "Water Storage", "Massive Water Tank", "env_water_storage", "models/props/de_nuke/storagetank.mdl")

@@ -127,6 +127,12 @@ function Environments.EventChecker()
 	end
 end
 
+local resources = {}
+local r = resources
+r[1] = "hydrogen"
+r[2] = "nitrogen"
+r[3] = "carbon dioxide"
+r[4] = "oxygen"
 function Environments.SpecialEvents()
 	local count = #(ents.FindByClass("gas_cloud") or {})
 	if count < 10 then
@@ -139,16 +145,16 @@ function Environments.SpecialEvents()
 				if !Environments.FindEnvironmentOnPos(a) then
 					local cloud = ents.Create("gas_cloud")
 					cloud:SetPos(a)
-					cloud:SetAngles(Angle(math.Rand(-180,180),math.Rand(-180,180),math.Rand(-180,180)))
+					//cloud:SetAngles(Angle(math.Rand(-180,180),math.Rand(-180,180),math.Rand(-180,180)))
 					cloud:Spawn()
-					cloud:SetResource("hydrogen")
+					cloud:SetResource(table.Random(resources))//use different colors for different resources eventually
 					cloud:SetAmount(10000)
 					return
 				end
 			end
 			if rep > 15 then
 				notfinished = false
-				print("find pos failed, continuing")
+				//print("find pos failed, continuing")
 			end
 		end
 	end

@@ -16,12 +16,12 @@ if ( CLIENT ) then
 	language.Add( "rd3_dev_link_colour", "Color:")
 end
 
-TOOL.ClientConVar[ "material" ] = "cable/cable2"
---TOOL.ClientConVar[ "width" ] = "2"
---TOOL.ClientConVar[ "color_r" ] = "255"
---TOOL.ClientConVar[ "color_g" ] = "255"
---TOOL.ClientConVar[ "color_b" ] = "255"
---TOOL.ClientConVar[ "color_a" ] = "255"
+TOOL.ClientConVar[ "material" ] = "phoenix_storms/gear"
+TOOL.ClientConVar[ "width" ] = "2"
+TOOL.ClientConVar[ "color_r" ] = "255"
+TOOL.ClientConVar[ "color_g" ] = "255"
+TOOL.ClientConVar[ "color_b" ] = "255"
+TOOL.ClientConVar[ "color_a" ] = "255"
 TOOL.ClientConVar[ "cable" ] = "1"
 
 if SERVER then
@@ -58,9 +58,9 @@ function TOOL:LeftClick( trace )
 					Ent2:Link(Ent1)
 					if tonumber(self:GetClientInfo("cable")) == 1 then
 						if Ent1.IsNode then
-							Environments.Create_Beam(Ent2, self:GetLocalPos(iNum), self.Objects[iNum].Normal, self:GetClientInfo("material"))
+							Environments.Create_Beam(Ent2, self:GetLocalPos(iNum), self.Objects[iNum].Normal, self:GetClientInfo("material"), Color(self:GetClientInfo("color_r"), self:GetClientInfo("color_g"), self:GetClientInfo("color_b"), 255))
 						else
-							Environments.Create_Beam(Ent1, self:GetLocalPos(1), self.Objects[1].Normal, self:GetClientInfo("material"))
+							Environments.Create_Beam(Ent1, self:GetLocalPos(1), self.Objects[1].Normal, self:GetClientInfo("material"), Color(self:GetClientInfo("color_r"), self:GetClientInfo("color_g"), self:GetClientInfo("color_b"), 255))
 						end
 					else
 						if Ent1.IsNode then
@@ -122,24 +122,24 @@ function TOOL.BuildCPanel( panel )
 	
 	panel:AddControl("CheckBox", { Label = "Use Cables? DO NOT USE ON MOVING STRUCTURES", Command = "link_tool_cable" })
 
-	panel:AddControl( "MatSelect", {
+	/*panel:AddControl( "MatSelect", {
 		Height = "7",
 		Label = "#link_tool_material",
 		ItemWidth = 64,
 		ItemHeight = 64,
 		ConVar = "link_tool_material",
 		Options = list.Get( "OverrideMaterials" )
-	})
+	})*/
 
-	/*panel:AddControl("Color", {
+	panel:AddControl("Color", {
 		Label = "#rd3_dev_link_colour",
-		Red = "rd3_dev_link_color_r",
-		Green = "rd3_dev_link_color_g",
-		Blue = "rd3_dev_link_color_b",
+		Red = "link_tool_color_r",
+		Green = "link_tool_color_g",
+		Blue = "link_tool_color_b",
 		ShowAlpha = "1",
 		ShowHSV = "1",
 		ShowRGB = "1",
 		Multiplier = "255"
-	})*/
+	})
 end
 

@@ -86,7 +86,7 @@ function ENT:Sense()
 			Wire_TriggerOutput(self, "Hydrogen Level", self.environment:GetHPercentage())
 			Wire_TriggerOutput(self, "Pressure", self.environment:GetPressure())
 			Wire_TriggerOutput(self, "Temperature", self.environment:GetTemperature(self))
-			Wire_TriggerOutput(self, "Gravity", self.environment:GetGravity())
+			Wire_TriggerOutput(self, "Gravity", self.environment.gravity or 0)
 		end
 	end
 	self:ConsumeResource("energy", Energy_Increment)

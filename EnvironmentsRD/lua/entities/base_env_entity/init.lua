@@ -7,9 +7,9 @@ include('shared.lua')
 ENT.IsLS = true
 
 function ENT:Initialize()
-	self.Entity:PhysicsInit( SOLID_VPHYSICS )
-	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
-	self.Entity:SetSolid( SOLID_VPHYSICS )
+	self:PhysicsInit( SOLID_VPHYSICS )
+	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetSolid( SOLID_VPHYSICS )
 	self:SetNetworkedInt( "OOO", 0 )
 	self.Active = 0
 end
@@ -83,21 +83,16 @@ function ENT:Link(ent, delay)
 		if delay then
 			timer.Simple(0.1, function(self, ent)
 				umsg.Start("Env_SetNodeOnEnt")
-					--umsg.Entity(self)
-					--umsg.Entity(ent)
 					umsg.Short(self:EntIndex())
 					umsg.Short(ent:EntIndex())
 				umsg.End()
 			end, self, ent)
 		else
 			umsg.Start("Env_SetNodeOnEnt")
-				--umsg.Entity(self)
-				--umsg.Entity(ent)
 				umsg.Short(self:EntIndex())
 				umsg.Short(ent:EntIndex())
 			umsg.End()
 		end
-		--self:SetNWEntity("node", ent)
 	end
 end
 
@@ -106,8 +101,6 @@ function ENT:Unlink()
 		self.node:Unlink(self)
 		self.node = nil
 		umsg.Start("Env_SetNodeOnEnt")
-			--umsg.Entity(self)
-			--umsg.Entity(NullEntity())
 			umsg.Short(self:EntIndex())
 			umsg.Short(0)
 		umsg.End()

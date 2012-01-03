@@ -17,7 +17,7 @@ function ENT:Initialize()
 	self.lastused = 0
 	self.Mute = 0
 	self.Multiplier = 1
-	if not (WireAddon == nil) then
+	if WireAddon then
 		self.WireDebugName = self.PrintName
 		self.Inputs = Wire_CreateInputs(self, { "On", "Overdrive", "Mute", "Multiplier" })
 	else
@@ -134,13 +134,12 @@ end
 
 function ENT:Repair()
 	self.BaseClass.Repair(self)
-	self:SetColor(255, 255, 255, 255)
 	self.damaged = 0
 end
 
 function ENT:OnRemove()
 	self.BaseClass.OnRemove(self)
-	self.Entity:StopSound( "apc_engine_start" )
+	self:StopSound( "apc_engine_start" )
 end
 
 function ENT:Proc_Water()
@@ -153,10 +152,11 @@ function ENT:Proc_Water()
 
 	if (energy >= einc and water >= winc) then
 		if ( self.overdrive == 1 ) then
-			self:SetHealth( self:Health( ) - math.random(2, 3))
-			if self:Health() <= 0 then
-				self:Remove()
-			end
+			Environments.DamageLS(self, math.random(2,3))
+			//self:SetHealth( self:Health( ) - math.random(2, 3))
+			//if self:Health() <= 0 then
+				//self:Remove()
+			//end
 		end
 		self:ConsumeResource("energy", einc)
 		self:ConsumeResource("water", winc)

@@ -16,9 +16,9 @@ function ENT:Initialize()
 	self.lastused = 0
 	self.Mute = 0
 	self.Multiplier = 1
-	if not (WireAddon == nil) then
+	if WireAddon then
 		self.WireDebugName = self.PrintName
-		self.Inputs = Wire_CreateInputs(self.Entity, { "On", "Overdrive", "Mute", "Multiplier" })
+		self.Inputs = Wire_CreateInputs(self, { "On", "Overdrive", "Mute", "Multiplier" })
 	else
 		self.Inputs = {{Name="On"},{Name="Overdrive"}}
 	end
@@ -27,7 +27,7 @@ end
 function ENT:TurnOn()
 	if (self.Active == 0) then
 		if (self.Mute == 0) then
-			self.Entity:EmitSound( "Airboat_engine_idle" )
+			self:EmitSound( "Airboat_engine_idle" )
 		end
 		self.Active = 1
 		self:SetOOO(1)
@@ -39,9 +39,9 @@ end
 function ENT:TurnOff()
 	if (self.Active == 1) then
 		if (self.Mute == 0) then
-			self.Entity:StopSound( "Airboat_engine_idle" )
-			self.Entity:EmitSound( "Airboat_engine_stop" )
-			self.Entity:StopSound( "apc_engine_start" )
+			self:StopSound( "Airboat_engine_idle" )
+			self:EmitSound( "Airboat_engine_stop" )
+			self:StopSound( "apc_engine_start" )
 		end
 		self.Active = 0
 		self.overdrive = 0
@@ -52,9 +52,9 @@ end
 function ENT:TurnOnOverdrive()
 	if ( self.Active == 1 ) then
 		if (self.Mute == 0) then
-			self.Entity:StopSound( "Airboat_engine_idle" )
-			self.Entity:EmitSound( "Airboat_engine_idle" )
-			self.Entity:EmitSound( "apc_engine_start" )
+			self:StopSound( "Airboat_engine_idle" )
+			self:EmitSound( "Airboat_engine_idle" )
+			self:EmitSound( "apc_engine_start" )
 		end
 		self:SetOOO(2)
 		self.overdrive = 1
@@ -64,9 +64,9 @@ end
 function ENT:TurnOffOverdrive()
 	if ( self.Active == 1 and self.overdrive == 1) then
 		if (self.Mute == 0) then
-			self.Entity:StopSound( "Airboat_engine_idle" )
-			self.Entity:EmitSound( "Airboat_engine_idle" )
-			self.Entity:StopSound( "apc_engine_start" )
+			self:StopSound( "Airboat_engine_idle" )
+			self:EmitSound( "Airboat_engine_idle" )
+			self:StopSound( "apc_engine_start" )
 		end
 		self:SetOOO(1)
 		self.overdrive = 0
@@ -131,13 +131,9 @@ function ENT:Damage()
 	end
 end
 
-function ENT:Destruct()
-	Environments.LSDestruct( self.Entity, true )
-end
-
 function ENT:OnRemove()
 	self.BaseClass.OnRemove(self)
-	self.Entity:StopSound( "apc_engine_start" )
+	self:StopSound( "apc_engine_start" )
 end
 
 function ENT:Proc_Water()
@@ -169,7 +165,7 @@ function ENT:Think()
 	
 	if ( self.Active == 1 ) then self:Proc_Water() end
 	
-	self.Entity:NextThink( CurTime() + 1 )
+	self:NextThink( CurTime() + 1 )
 	return true
 end
 
