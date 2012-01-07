@@ -31,6 +31,7 @@ function TOOL:LeftClick( trace )
 	return true
 end
 
+//6:25 PM - Infinity7: You can't parent a child to its child.
 function TOOL:Parent(ent)
 	local Ents = constraint.GetAllConstrainedEntities(ent)
 	if Ents then
@@ -39,7 +40,9 @@ function TOOL:Parent(ent)
 				v:GetPhysicsObject():EnableMotion( false ) 
 				self:GetOwner():AddFrozenPhysicsObject( v, v:GetPhysicsObject() )
 				constraint.RemoveAll(v)
-				v:SetParent(ent)
+				if ent:GetParent() != v then
+					v:SetParent(ent)//crash fix?
+				end
 				constraint.Weld(ent, v, 0, 0, 0)
 				v:SetSolid(SOLID_VPHYSICS)
 				v:SetColor(255,255,255,255)
