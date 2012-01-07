@@ -1,10 +1,11 @@
 
 
 //TODO:
-//1. Add syncing to joining clients
-//2. Finish restoring
+//1. (WIP) Add syncing to joining clients
+//2. (DONE) Finish restoring
 //3. Add more contraint compatibility
 //4. Add option to freeze it when shrinking/restoring
+//5. Nocollide constrained shrunken props
 TOOL.Category = 'Tools'
 TOOL.Name = '#Prop Shrinker'
 TOOL.Command = nil
@@ -100,6 +101,8 @@ end
 Shrink = {}
 local s = Shrink
 
+local ShrinkedEnts = {}
+
 local badstuff = {}
 local a = badstuff//this stuff crashes if you try to shrink it
 a["prop_vehicle_jeep"] = true
@@ -158,11 +161,13 @@ function s.DoShrink(ent, scale, parent, freeze, ply)
 					ply:AddFrozenPhysicsObject( v, v:GetPhysicsObject() )
 				end
 			end
+			
+			ShrinkedEnts[v:EntIndex()] = scale
 		end
 	end
 end
 
-function s.DoRestore(ent)
+function s.DoRestore(ent, freeze)
 	local es = constraint.GetAllConstrainedEntities(ent)
 	
 	for k,v in pairs(es) do
@@ -187,20 +192,68 @@ function s.DoRestore(ent)
 					end
 				end
 			end
+			
+			if freeze then
+				v:GetPhysicsObject():EnableMotion( false ) 
+				if ply then
+					ply:AddFrozenPhysicsObject( v, v:GetPhysicsObject() )
+				end
+			end
+			
+			ShrinkedEnts[v:EntIndex()] = nil//its fine now
 		end
 		v.Shrunken = false //they can now mess with it again, it has been restored
 	end
 end
 
-if CLIENT then//need to add better syncing for this
+
+local function Sync(ply)
+	for k,v in pairs(ShrinkedEnts) do
+		local ent = Entity(k)
+		if ent and ent:IsValid() then
+			umsg.Start("addhullent", ply)
+				umsg.Short(k)
+				umsg.Short(0)
+				umsg.Float(v)
+			umsg.End()
+		else
+			ShrinkedEnts[k] = nil--its invalid, this would just slow everything down to send it to the clients
+		end
+	end
+end
+hook.Add("PlayerInitialSpawn", "SyncShrink", Sync)
+
+if CLIENT then
+	local shrinked = {}
+	
+	local function shrinkcheck()//this isnt working
+		for k,v in pairs(shrinked) do
+			local ent = Entity(k)
+			if ent and ent:IsValid() then
+				//print("scaled "..tostring(ent).." "..tostring(v))
+				ent:SetModelScale(Vector(v, v, v))
+				ent.DrawEntityOutline = function() end
+				
+				shrinked[k] = nil//dont loop through us again, we are finished
+			end
+		end
+	end
+	timer.Create("ShrinkCheck", 1, 0, shrinkcheck)//possibly increase interval
+	
 	local function addhullent(msg)
-		local ent = msg:ReadEntity()
-		local hull = msg:ReadEntity()
+		local entID = msg:ReadShort()
+		local hullID = msg:ReadShort()
 		local scale = msg:ReadFloat()
-		ent:SetModelScale(Vector(scale,scale,scale))
-		//print(ent:OBBMins(), ent:OBBMaxs())
-		//ent:SetCollisionBounds(ent:OBBMins()*scale, ent:OBBMaxs()*scale)
-		ent.DrawEntityOutline = function() end//fixes it breaking the clientside scale
+		
+		local ent = Entity(entID)
+		if ent and ent:IsValid() then
+			ent:SetModelScale(Vector(scale,scale,scale))
+			//print(ent:OBBMins(), ent:OBBMaxs())
+			//ent:SetCollisionBounds(ent:OBBMins()*scale, ent:OBBMaxs()*scale)
+			ent.DrawEntityOutline = function() end//fixes it breaking the clientside scale
+		else
+			shrinked[entID] = scale//this isnt working
+		end
 	end
 	usermessage.Hook("addhullent", addhullent)
 end
@@ -239,8 +292,8 @@ function s.Shrink(ent, mainent, scale)
 	
 	//send to client
 	umsg.Start("addhullent")
-		umsg.Entity(ent)
-		umsg.Entity(mainent)//hull ent
+		umsg.Short(ent:EntIndex())
+		umsg.Short(mainent:EntIndex())//hull ent
 		umsg.Float(scale or 0.25)
 	umsg.End()
 end
@@ -272,8 +325,8 @@ function s.Restore(ent, mainent)//physics remain glitchy, reasons unknown
 	ent:SetAngles(angles)
 	
 	umsg.Start("addhullent")
-		umsg.Entity(ent)
-		umsg.Entity(mainent)//hull ent
+		umsg.Short(ent:EntIndex())
+		umsg.Short(mainent:EntIndex())//hull ent
 		umsg.Float(1)
 	umsg.End()
 end
