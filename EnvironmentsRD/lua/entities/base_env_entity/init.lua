@@ -165,7 +165,7 @@ function ENT:PreEntityCopy()
 end
 
 function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
-	Environments.ApplyDupeInfo(Ent, CreatedEntities)
+	Environments.ApplyDupeInfo(Ent, CreatedEntities, Player)
 	if WireLib and (Ent.EntityMods) and (Ent.EntityMods.WireDupeInfo) then
 		WireLib.ApplyDupeInfo(Player, Ent, Ent.EntityMods.WireDupeInfo, function(id) return CreatedEntities[id] end)
 	end

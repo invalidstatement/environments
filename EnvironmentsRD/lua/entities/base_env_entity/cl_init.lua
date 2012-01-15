@@ -2,6 +2,13 @@ include('shared.lua')
 
 ENT.RenderGroup = RENDERGROUP_BOTH
 
+local params = {
+	["$basetexture"] = "",
+	["$model"] = 1,
+	["$color"] = "{255 255 255}",
+	["$vertexcolor"] = 1,
+}
+local cablemat = CreateMaterial("3DCableMaterial","UnlitGeneric",params);
 --ENT.ScreenAngles = Angle(0,0,0)
 --ENT.ScreenAngles.r = 270
 --ENT.ScreenAngles.y = 30
@@ -67,9 +74,25 @@ function ENT:Draw( bDontDrawModel )
 			end
 			
 			if self.mesh then
-				if !self.Material or self.Material:GetName() != self:GetNWString("CableMat", "models/wireframe") then self.Material = Material( self:GetNWString("CableMat", "models/wireframe") ) end
-				render.SetMaterial( self.Material )
-				self.mesh:Draw()
+				if !self.material or self.Rcolor != self:GetNWVector("CableColor", Vector(255,255,255)) then 
+					self.Rcolor = self:GetNWVector("CableColor", Vector(255,255,255))
+					local colorstr = "{"..self.Rcolor.x.." "..self.Rcolor.y.." "..self.Rcolor.z.."}"
+					local params = {
+						["$basetexture"] = "models/debug/debugwhite",
+						["$vertexcolor"] = 1,
+						["$model"] = 1,
+						["$color"] = colorstr,
+					}
+					self.material = CreateMaterial("3DCableMaterial"..math.random(1,2578846),"VertexLitGeneric",params);
+				end
+				
+				//render.SuppressEngineLighting(true)
+					render.SetMaterial( self.material )
+					//render.MaterialOverride( self.material )
+					
+						self.mesh:Draw()
+					//render.MaterialOverride( 0 )
+				//render.SuppressEngineLighting(false)
 			end
 		end
 	end
@@ -91,7 +114,7 @@ end
 function ENT:DoNormalDraw( bDontDrawModel )
 	if ( LocalPlayer():GetEyeTrace().Entity == self and EyePos():Distance( self:GetPos() ) < 512) then
 		--overlaysettings
-		local node = self.node --self:GetNWEntity("node", nil)
+		local node = self.node
 		local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] --replace this
 		local HasOOO = OverlaySettings.HasOOO
 		local resnames = OverlaySettings.resnames

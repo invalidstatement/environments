@@ -9,7 +9,7 @@ ENT.AdminOnly = true
 function ENT:Initialize()
         self.BaseClass.Initialize(self)
 
-        self:SetColor(0, 0, 0, 255)
+        self:SetColor(Color(0, 0, 0, 255))
         self:SetMaterial("models/shiny")
         
         for k, res in pairs(self.Resources) do
@@ -29,7 +29,7 @@ function ENT:Initialize()
 end
 
 function ENT:Think()
-	self:SetColor(0, 0, 0, 255)
+	self:SetColor(Color(0, 0, 0, 255))
     for k, res in pairs(self.Resources) do
         if self:GetResourceAmount(res) < self.MaxAmount then
             self:SupplyResource(res, self.MaxAmount)
