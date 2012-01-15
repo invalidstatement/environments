@@ -16,7 +16,7 @@ if ( CLIENT ) then
 	language.Add( "rd3_dev_link_colour", "Color:")
 end
 
-TOOL.ClientConVar[ "material" ] = "phoenix_storms/gear"
+TOOL.ClientConVar[ "material" ] = "models/debug/debugwhite"
 TOOL.ClientConVar[ "width" ] = "2"
 TOOL.ClientConVar[ "color_r" ] = "255"
 TOOL.ClientConVar[ "color_g" ] = "255"
@@ -58,9 +58,9 @@ function TOOL:LeftClick( trace )
 					Ent2:Link(Ent1)
 					if tonumber(self:GetClientInfo("cable")) == 1 then
 						if Ent1.IsNode then
-							Environments.Create_Beam(Ent2, self:GetLocalPos(iNum), self.Objects[iNum].Normal, self:GetClientInfo("material"), Color(self:GetClientInfo("color_r"), self:GetClientInfo("color_g"), self:GetClientInfo("color_b"), 255))
+							Environments.Create_Beam(Ent2, self:GetLocalPos(iNum), self.Objects[iNum].Normal, self:GetClientInfo("material"), Color(tonumber(self:GetClientInfo("color_r")), tonumber(self:GetClientInfo("color_g")), tonumber(self:GetClientInfo("color_b")), 255))
 						else
-							Environments.Create_Beam(Ent1, self:GetLocalPos(1), self.Objects[1].Normal, self:GetClientInfo("material"), Color(self:GetClientInfo("color_r"), self:GetClientInfo("color_g"), self:GetClientInfo("color_b"), 255))
+							Environments.Create_Beam(Ent1, self:GetLocalPos(1), self.Objects[1].Normal, self:GetClientInfo("material"), Color(tonumber(self:GetClientInfo("color_r")), tonumber(self:GetClientInfo("color_g")), tonumber(self:GetClientInfo("color_b")), 255))
 						end
 					else
 						if Ent1.IsNode then
@@ -136,8 +136,8 @@ function TOOL.BuildCPanel( panel )
 		Red = "link_tool_color_r",
 		Green = "link_tool_color_g",
 		Blue = "link_tool_color_b",
-		ShowAlpha = "1",
-		ShowHSV = "1",
+		ShowAlpha = "0",
+		ShowHSV = "0",
 		ShowRGB = "1",
 		Multiplier = "255"
 	})

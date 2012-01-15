@@ -85,38 +85,44 @@ function Environments.BuildDupeInfo( ent ) --need to add duping for cables
 end
 
 //apply the DupeInfo
-function Environments.ApplyDupeInfo( ent, CreatedEntities ) --add duping for cables
+function Environments.ApplyDupeInfo( ent, CreatedEntities, Player ) --add duping for cables
 	if ent.EntityMods and ent.EntityMods.EnvDupeInfo then
-		local DupeInfo = ent.EntityMods.EnvDupeInfo
-		if ent.IsNode then
-			return
-		elseif ent:GetClass() == "env_pump" then
-			ent:Setup( DupeInfo.pump, DupeInfo.rate, DupeInfo.hoselength )
+		if ent.AdminOnly and !Player:IsAdmin() then //stops people from pasting admin only stuff
+			ent:Remove()
+			Player:ChatPrint("This device is admin only!")
+		else
+			local DupeInfo = ent.EntityMods.EnvDupeInfo
+			if ent.IsNode then
+				return
+			elseif ent:GetClass() == "env_pump" then
+				ent:Setup( DupeInfo.pump, DupeInfo.rate, DupeInfo.hoselength )
+			end
+			Environments.MakeFunc(ent) --yay
+			
+			if DupeInfo.Node then
+				local node = CreatedEntities[DupeInfo.Node]
+				ent:Link(node, true)
+				node:Link(ent, true)
+			end
+			
+			local mat = DupeInfo.LinkMat
+			local pos = DupeInfo.LinkPos
+			local forward = DupeInfo.LinkForw
+			local color = DupeInfo.LinkColor
+			if mat and pos and forward then
+				Environments.Create_Beam(ent, pos, forward, mat, color) --make work
+			end
+			ent.EntityMods.EnvDupeInfo = nil
 		end
-		Environments.MakeFunc(ent) --yay
-		
-		if DupeInfo.Node then
-			local node = CreatedEntities[DupeInfo.Node]
-			ent:Link(node, true)
-			node:Link(ent, true)
-		end
-		
-		local mat = DupeInfo.LinkMat
-		local pos = DupeInfo.LinkPos
-		local forward = DupeInfo.LinkForw
-		local color = DupeInfo.LinkColor
-		if mat and pos and forward then
-			Environments.Create_Beam(ent, pos, forward, mat, color) --make work
-		end
-		ent.EntityMods.EnvDupeInfo = nil
 	end
 end
 
 function Environments.Create_Beam(ent, localpos, forward, mat, color)
+	PrintTable(color)
 	ent:SetNWVector("CableForward", forward)
 	ent:SetNWVector("CablePos", localpos)
 	ent:SetNWString("CableMat",  mat)
-	ent:SetNWVector("CableColor", Vector(color.r or 0, color.g or 0, color.b or 0, color.a or 255))
+	ent:SetNWVector("CableColor", Vector(color.r or 255, color.g or 255, color.b or 255))
 end
 
 if SERVER then

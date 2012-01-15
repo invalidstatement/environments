@@ -220,6 +220,39 @@ scripted_ents.Register = function(t, name, reload, myarg)
 	o(t, name, reload)
 end
 
+//reverse compatibility from beta
+properties = properties or {}
+properties.Add = properties.Add or function() end
+
+properties.Add( "Vent",
+{
+	MenuLabel = "Vent",
+	Order = 1,
+	
+	Filter = function( self, ent )
+		if ( !IsValid( ent ) ) then return false end
+		if ( ent:IsPlayer() ) then return false end
+
+		return true
+	end,
+
+	Action = function( self, ent )
+		self:MsgStart()
+			net.WriteEntity( ent )
+		self:MsgEnd()                                     
+	end,
+	
+    Receive = function( self, length, player )
+		local ent = net.ReadEntity()
+
+		if ( !IsValid( ent ) ) then return end
+		if ( !IsValid( player ) ) then return end
+		if ( ent:IsPlayer() ) then return false end
+		
+		//do stuff here
+	end
+});//this will be an alternative to venting with wire
+
 
 Environments.Resources = {} --string to short
 Environments.Resources2 = {} --short to string

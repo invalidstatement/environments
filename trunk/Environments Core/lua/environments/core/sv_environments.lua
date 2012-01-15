@@ -49,6 +49,7 @@ default.atmosphere.h = 15
 default.atmosphere.ar = 0
 
 //add a new Environments "Lite" mode that only checks players and stuff in a method similar to SB3, should be able to be turned on and off at will
+//USE THIS TO MAKE SURE THE PLAYER'S EVN IS A VALID ONE
 local meta = {} 
 local function NewEnvironment(ent) --new metatable based environments, should have fewer problems than entities alone
 	local tab = {}

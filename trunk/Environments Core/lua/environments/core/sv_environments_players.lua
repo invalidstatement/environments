@@ -322,7 +322,7 @@ function Environments.PlayerCheck(ent) --fix with parenting >:(
 	
 		local tr2 = util.TraceLine( trace )
 
-		if tr2.Entity.env and tr.Entity.env then
+		if tr2.Entity.env and tr.Entity.env and tr.Entity.env.IsValid and tr.Entity.env:IsValid() then
 			if tr.Entity.env.Active == 1 then
 				ent.environment = tr.Entity.env
 				tr.Entity.env:Breathe()
@@ -334,7 +334,7 @@ function Environments.PlayerCheck(ent) --fix with parenting >:(
 				end
 				
 				return
-			elseif tr.Entity.env:IsValid() and tr.Entity.env.air.o2per > 0 then
+			elseif tr.Entity.env.air.o2per > 0 then
 				ent.environment = tr.Entity.env
 				ent:SetGravity(0.00001)
 				tr.Entity.env:Breathe()
@@ -500,7 +500,7 @@ end
 
 function Environments.Hooks.HelmetSwitch( ply )
 	local status, error = pcall(function() 
-	if !ply.m_hSuit or !ply.m_hSuit:GetParent().GetInfo then return end
+	if !ply.m_hSuit or !ply.m_hSuit.GetParent or !ply.m_hSuit:GetParent().GetInfo then return end
 	if Environments.UseSuit then
 		if ply.suit.helmet then
 			--ply:TakeOffSuit()
