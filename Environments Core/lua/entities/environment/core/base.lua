@@ -235,3 +235,11 @@ end
 function ENT:GetEnvironmentName()
 	return self.name
 end
+
+function ENT:UpdateGravity(ent)
+
+end
+
+function ENT:UpdatePressure(ent)
+
+end

@@ -108,8 +108,11 @@ end
 	
 function ENT:UpdateGravity(ent)
 	ent:SetGravity( self.gravity )
-	ent:GetPhysicsObject():EnableDrag( true )
-	ent:GetPhysicsObject():EnableGravity( true )
+	local phys = ent:GetPhysicsObject()
+	if phys and phys:IsValid() then
+		phys:EnableDrag( true )
+		phys:EnableGravity( true )
+	end
 	ent.environment = self
 	if( ent:IsPlayer() ) then
 		ent:SetNWBool( "inspace", false )

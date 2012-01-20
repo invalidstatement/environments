@@ -73,6 +73,7 @@ timer.Create("registerCAFOverwrites", 5, 1, function()
 					return
 				end
 			end
+			ent.environment = Space()
 		end
 		
 		function SB.OnEnvironmentChanged(ent)

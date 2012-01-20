@@ -24,7 +24,7 @@ function meta:PutOnHelmet()
 	if self.m_hHelmet:GetParent().GetInfo then
 		self.m_hHelmet:SetModel(self.SuitModel)
 		self:SetNWBool("helmet", true)
-		self.m_hHelmet:SetColor(self.ClothingColor.r,self.ClothingColor.g,self.ClothingColor.b,255,255)
+		self.m_hHelmet:SetColor(Color(self.ClothingColor.r,self.ClothingColor.g,self.ClothingColor.b,255,255))
 	end
 end
 
@@ -32,7 +32,7 @@ function meta:TakeOffHelmet()
 	if self.m_hHelmet:GetParent().GetInfo then
 		self:SetNWBool("helmet", false)
 		self.m_hHelmet:SetModel(player_manager.TranslatePlayerModel(self.m_hHelmet:GetParent():GetInfo( "cl_playermodel" )))
-		self.m_hHelmet:SetColor(255,255,255,255)
+		self.m_hHelmet:SetColor(Color(255,255,255,255))
 	end
 end
 

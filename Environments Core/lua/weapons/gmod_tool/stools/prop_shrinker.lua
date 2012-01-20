@@ -119,14 +119,13 @@ function s.DoShrink(ent, scale, parent, freeze, ply)
 	
 	for k,v in pairs(es) do
 		constraint.RemoveAll(v)
-		v.Shrunken = scale
+		v.Shrunken = scale //dont let people shrink stuff more than once, its very glitchy
 	end
 	
 	if !badstuff[ent:GetClass()] then
 		//actually shrink
 		for k,v in pairs(es) do
 			s.Shrink(v, ent, scale or 0.25)
-			//v.Shrunken = scale //dont let people shrink stuff more than once, its very glitchy
 		end
 		
 		//redo constraints
