@@ -527,8 +527,16 @@ space.originalco2per = 0
 space.gravity = 0
 space.radius = 0
 
-function space.UpdateGravity()
-
+function space:UpdateGravity(ent)
+	ent:SetGravity( 0 )
+	local phys = ent:GetPhysicsObject()
+	if phys and phys:IsValid() then
+		phys:EnableDrag( false )
+		phys:EnableGravity( false )
+	end
+	if( ent:IsPlayer() ) then
+		ent:SetNWBool( "inspace", false )
+	end
 end
 
 function space.UpdatePressure()

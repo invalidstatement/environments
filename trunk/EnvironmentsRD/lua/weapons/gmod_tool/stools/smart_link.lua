@@ -33,7 +33,7 @@ function TOOL:RightClick( trace )
 	if (CLIENT) then return true end
 	local iNum = self:NumObjects()
 
-	if ( iNum > 0 and trace.Entity.IsNode ) then
+	if ( iNum > 0 and trace.Entity.IsNode and trace.Entity.Link ) then
 		-- Get information we're about to use
 		for k, v in pairs(self.Objects) do
 			local Ent1,  Ent2  = self:GetEnt(k), trace.Entity
@@ -58,7 +58,7 @@ function TOOL:RightClick( trace )
 		end
 		self:ClearObjects()
 	else
-		self:GetOwner():SendLua( "GAMEMODE:AddNotify('You didn't click on a Resource node to link to!', NOTIFY_GENERIC, 7);" )
+		self:GetOwner():SendLua( "GAMEMODE:AddNotify('You didn't click on a Valid Resource node to link to!', NOTIFY_GENERIC, 7);" )
 	end
 	return true
 end

@@ -111,16 +111,17 @@ function LoadHud()
 
 		HUD.RT_W = ScrW()
 		HUD.RT_H = ScrH()*1.3
-		HUD.RenderTarget = GetRenderTarget( "ENV_HUD_15",HUD.RT_W,HUD.RT_H,false);
+		HUD.RenderTarget = GetRenderTarget( "ENV_HUD_16",HUD.RT_W,HUD.RT_H,false);
 		HUD.RenderPos = nil;
 		HUD.RenderAng = nil;
 		HUD.ScreenMaterial = CreateMaterial(
-			"sprites/DDD_ScreenMat22",
+			"sprites/DDD_ScreenMat46",
 			"UnlitGeneric",
 			{
+				[ "$translucent" ] = 1, //OMG WTF BBQ
 				[ '$basetexture' ] = HUD.RenderTarget:GetName(),
 				[ '$basetexturetransform' ] = "center .5 .5 scale -1 1 rotate 0 translate 0 0",
-				[ '$additive' ] = 1
+				/*[ '$additive' ] = 1*/
 			}
 		)
 		HUD.TransparentMat=CreateMaterial(
@@ -172,7 +173,7 @@ function LoadHud()
 				Coolant = math.Round(Coolant)
 			end
 			//upper bar
-			surface.SetDrawColor(150,150,150,255)
+			surface.SetDrawColor(225,225,225,255)
 			surface.DrawRect(0,0,ScrW(),100)
 			
 			//lower bar
@@ -197,7 +198,7 @@ function LoadHud()
 			--draw.RoundedBox(0, 105*ratio, 140, math.Clamp(Air,0,100)*1.8,15, Color(255,255,255,255))
 			--draw.RoundedBox(0, 105*ratio, 175, math.Clamp(Energy,0,100)*1.8,15, Color(255,170,0,255))
 			--draw.RoundedBox(0, 105*ratio, 210, math.Clamp(Coolant,0,100)*1.8,15, Color(0,120,255,255))
-			draw.SimpleText("Clock: "..tostring(os.date()),"ScoreboardText",ScrW()-(300*ratio),140,Color(220,220,220,255),0,0)
+			draw.SimpleText("Clock: "..tostring(os.date()),"ScoreboardText",ScrW()-(300*ratio),140,Color(240,240,240,255),0,0)
 			surface.SetDrawColor(255,0,0,255)
 			surface.DrawOutlinedRect(105*ratio,140,180,15)
 			surface.DrawOutlinedRect(105*ratio,175,180,15)
@@ -232,9 +233,6 @@ function LoadHud()
 			surface.SetFont( "env" )
 			surface.SetTextColor(255,255,255,255)
 			surface.SetDrawColor(255,255,255,255)
-			
-			--surface.SetDrawColor(255,255,255,150)
-			--surface.DrawRect(0, 100, ScrW(), 24)
 			
 			surface.DrawRect(0, 124, ScrW(), 2)
 
