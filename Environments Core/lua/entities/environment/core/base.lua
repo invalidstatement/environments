@@ -42,6 +42,7 @@ function ENT:Create(gravity, atmosphere, pressure, temperature, gasses, name, to
 
 	//set pressure if given
 	self.pressure = pressure or math.Round(self.atmosphere * self.gravity)
+	//print("ent:Create()", name, pressure, self.pressure)
 	
 	//set temperature if given
 	self.temperature = temperature or 15

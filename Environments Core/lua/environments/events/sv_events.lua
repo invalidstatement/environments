@@ -95,7 +95,7 @@ end*/
 --timer.Create("storms", 10, 0, events["micrometeorite"])
 
 local function FireEvent(ply,cmd,args)
-	if not ply:IsAdmin() then return end
+	if ply != NULL and !ply:IsAdmin() then return end
 	if ply.environment.name != "space" then
 		if events[args[1]] then
 			events[args[1]](ply.environment)

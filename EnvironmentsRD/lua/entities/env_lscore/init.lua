@@ -156,8 +156,8 @@ function ENT:TriggerInput(iname, value)
 		self.gravity = gravity
 	elseif (iname == "Max O2 level") then
 		--local level = 100
-		--level = math.Clamp(math.Round(value), 0, 100)
-		--self.mino2 = level
+		local level = math.Clamp(value, 0, 100)
+		self.mino2 = level
 	end
 end
 

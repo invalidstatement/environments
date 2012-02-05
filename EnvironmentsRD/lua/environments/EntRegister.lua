@@ -289,7 +289,7 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 		
 		function ENT:OnRemove()
 			if self.environment then
-				for k,v in pairs(self.maxresources) do
+				for v,k in pairs(self.res) do
 					if k == "oxygen" or k == "nitrogen" or k == "hydrogen" or k == "carbon dioxide" then
 						self.environment:Convert(nil, k, self:GetResourceAmount(k) or self.resources[k])
 					end
@@ -300,7 +300,7 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 		function ENT:Think()
 			if self.Vent == 1 and self.environment then
 				if self.node then
-					for k,v in pairs(self.node.maxresources) do
+					for v,k in pairs(self.res) do
 						if k == "oxygen" then
 							local amt = self:ConsumeResource(k, self.ventamt)
 							self.environment:Convert(nil, "o2", amt)

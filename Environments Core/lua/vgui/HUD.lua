@@ -292,7 +292,7 @@ function LoadHud()
 		function HUD:DrawHUDScreen()
 			if !IsValid(HUD.CS_Model) or !HUD.Convar:GetBool() then return end
 			if LocalPlayer():GetActiveWeapon() and LocalPlayer():GetActiveWeapon().GetPrintName and LocalPlayer():GetActiveWeapon():GetPrintName() == "#GMOD_Camera" then return end
-			if !LocalPlayer():GetNWBool("helmet") and Environments.UseSuit then --stay on if suits are off
+			if !LocalPlayer():GetNWBool("helmet") and Environments.UseSuit and !SBONSERVER then --stay on if suits are off
 				local mult = 0
 				if HUD.offtime != 0 then --it is being taken off
 					mult = HUD.offtime - RealTime()
