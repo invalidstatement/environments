@@ -419,6 +419,8 @@ function Environments.LoadFromMap()
 			planet.colorid = tostring(tab.Case15)
 			planet.bloomid = tostring(tab.Case16)
 			
+			//print("MapLoad: ",planet.name, "'"..tab.Case05.."'", planet.pressure)
+			
 			planet.originalco2per = planet.atmosphere.co2
 			
 			if planet.atm == 0 then
@@ -897,7 +899,7 @@ function Environments.FindEnvironmentOnPos(pos)
 end
 
 function Environments.AdminCommand(ply, cmd, args)
-	if !ply:IsAdmin() then return end
+	if ply != NULL and !ply:IsAdmin() then return end
 	local cmd = args[1]
 	local value = args[2]
 	
@@ -921,7 +923,7 @@ end
 concommand.Add("environments_admin", Environments.AdminCommand)
 
 local function Reload(ply,cmd,args)
-	if not ply:IsAdmin() then return end
+	if ply != NULL and !ply:IsAdmin() then return end
 	for k,v in pairs(environments) do
 		if v and v:IsValid() then
 			v:Remove()
@@ -937,7 +939,7 @@ end
 concommand.Add("env_server_reload", Reload)
 
 local function ComReload(ply,cmd,args)
-	if not ply:IsAdmin() then return end
+	if ply != NULL and !ply:IsAdmin() then return end
 	
 	local map = game.GetMap()
 	file.Delete("environments/"..map..".txt")
@@ -958,7 +960,7 @@ end
 concommand.Add("env_server_full_reload", ComReload)
 
 local function SendPlanetData(ply, cmd, args)
-	if ply:IsAdmin() then
+	if ply != NULL and ply:IsAdmin() then
 		local env = ply.environment
 	--if string.lower(type(ply.environment)) == "entity" then
 		umsg.Start("env_planet_data", ply)

@@ -61,7 +61,7 @@ function ENT:PhysicsCollide(ent)
 end
 
 function ENT:Start(planet)
-	self.target = planet.position
+	self.target = planet.position or Vector(0,0,0)
 	self:GetPhysicsObject():SetVelocity( (self.target - self:GetPos() ):Normalize() * 700 ) 
 end
 

@@ -8,7 +8,7 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 145
+Environments.Version = 146
 Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 8
 
@@ -51,6 +51,8 @@ if CLIENT then
 				function SB.GetStatus()
 					return true
 				end
+				
+				SB.Fake = true
 
 				function LS.GetStatus()
 					return true
@@ -73,7 +75,8 @@ if CLIENT then
 	
 	timer.Create("ShouldDoBackupLoad", 2, 1, function()
 		if Environments.Suit then return end --has it already loaded?
-		if CAF and CAF.GetAddon("Spacebuild") then --load in case of SB
+		if CAF and CAF.GetAddon and CAF.GetAddon("Spacebuild") and CAF.GetAddon("Spacebuild").Fake != false then --load in case of SB
+			SBONSERVER = true
 			Load()
 		end
 	end)
@@ -157,7 +160,7 @@ if SERVER then
 	end)
 	
 	local function Reload(ply, cmd, args)
-		if !ply:IsAdmin() then return end
+		if ply != NULL and !ply:IsAdmin() then return end
 		if environments then
 			for k,v in pairs(environments) do
 				if v and v:IsValid() then

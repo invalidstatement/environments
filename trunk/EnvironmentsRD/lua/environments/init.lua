@@ -98,7 +98,6 @@ function Environments.ApplyDupeInfo( ent, CreatedEntities, Player ) --add duping
 				ent:Setup( DupeInfo.pump, DupeInfo.rate, DupeInfo.hoselength )
 			end
 			Environments.MakeFunc(ent) --yay
-			
 			if DupeInfo.Node then
 				local node = CreatedEntities[DupeInfo.Node]
 				ent:Link(node, true)
@@ -118,11 +117,14 @@ function Environments.ApplyDupeInfo( ent, CreatedEntities, Player ) --add duping
 end
 
 function Environments.Create_Beam(ent, localpos, forward, mat, color)
-	PrintTable(color)
 	ent:SetNWVector("CableForward", forward)
 	ent:SetNWVector("CablePos", localpos)
 	ent:SetNWString("CableMat",  mat)
-	ent:SetNWVector("CableColor", Vector(color.r or 255, color.g or 255, color.b or 255))
+	if color then
+		ent:SetNWVector("CableColor", Vector(color.r or 255, color.g or 255, color.b or 255))
+	else
+		ent:SetNWVector("CableColor", Vector(255,255,255,255))
+	end
 end
 
 if SERVER then
