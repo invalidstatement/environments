@@ -514,6 +514,7 @@ function Environments.SaveMap() --plz work :)
 	file.Write( "environments/" .. map .. ".txt", util.TableToKeyValues( table.Sanitise(planets) ) )
 end
 timer.Create("MapSavesEnv", 120, 0, Environments.SaveMap)
+concommand.Add("env_save", Environments.SaveMap)
 
 //Space Definition
 local space = {}

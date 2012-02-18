@@ -72,13 +72,9 @@ function Environments.BuildDupeInfo( ent ) --need to add duping for cables
 		info.Node = ent.node:EntIndex()
 	end
 	
-	local forw = ent:GetNWVector("CableForward", nil)
-	local pos = ent:GetNWVector("CablePos", nil)
-	local mat = ent:GetNWString("CableMat", nil)
-	
-	info.LinkMat = mat
-	info.LinkPos = pos 
-	info.LinkForw = forw
+	info.LinkMat = ent:GetNWString("CableMat", nil)
+	info.LinkPos = ent:GetNWVector("CablePos", nil)
+	info.LinkForw = ent:GetNWVector("CableForward", nil)
 	info.LinkColor = ent:GetNWVector("CableColor", nil)
 	
 	duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
@@ -112,6 +108,9 @@ function Environments.ApplyDupeInfo( ent, CreatedEntities, Player ) --add duping
 				Environments.Create_Beam(ent, pos, forward, mat, color) --make work
 			end
 			ent.EntityMods.EnvDupeInfo = nil
+			
+			//set the player/owner
+			ent:SetPlayer(Player)
 		end
 	end
 end

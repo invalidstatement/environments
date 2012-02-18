@@ -113,9 +113,9 @@ function ENT:Convert(res1, res2, value)
 			value = self.air[res1]
 		end
 	else
-		if value + self.air.total > self.air.max then
-			value = self.air.max - self.air.total
-		end
+		//if value + self.air.total > self.air.max then
+		//	value = self.air.max - self.air.total
+		//end
 	end
 	--print("\nValue: "..value)
 	
@@ -147,7 +147,7 @@ function ENT:Convert(res1, res2, value)
 	//Get Value Calculations
 	self.pressure = self.atmosphere * self.gravity * (self.air.total/self.air.max)
 	
-	--print("Pressure: "..self.pressure)
+	//print("Pressure: "..self.pressure)
 	return value
 end
 
