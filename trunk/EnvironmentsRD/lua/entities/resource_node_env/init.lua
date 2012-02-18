@@ -170,17 +170,17 @@ function ENT:GenerateResource(name, amt)
 		if res + amt < max then
 			self.resources[name].value = self.resources[name].value + amt
 			self.resources[name].haschanged = true
-			return amt
+			return 0//amt
 		else
 			self.resources[name].value = max
 			self.resources[name].haschanged = true
-			return max - res
+			return amt - (max - res)
 		end
 	else
 		self.resources[name] = {}
 		self.resources[name].value = amt
 		self.resources[name].haschanged = true
-		return amt
+		return 0//amt
 	end
 	return amt
 end
