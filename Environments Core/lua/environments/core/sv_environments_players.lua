@@ -93,6 +93,14 @@ function Environments.LSCheck() --this has to be the worst function ever
 					elseif suit.temperature - tempchange < 284 then
 						suit.temperature = 284
 					end
+				elseif pod and pod:IsValid() and pod.Link and pod.node and pod:GetResourceAmount("water") >= needed then
+					pod:ConsumeResource("water", needed)
+					suit.temperature = suit.temperature - tempchange
+					if suit.temperature + tempchange > 310 then
+						suit.temperature = 310
+					elseif suit.temperature - tempchange < 284 then
+						suit.temperature = 284
+					end
 				else
 					if suit.coolant >= needed then
 						suit.coolant = suit.coolant - needed
@@ -118,6 +126,14 @@ function Environments.LSCheck() --this has to be the worst function ever
 			
 				if pod and pod:IsValid() and RD and RD.GetResourceAmount(pod, "energy") >= needed then
 					RD.ConsumeResource(pod, "energy", needed)
+					suit.temperature = suit.temperature + tempchange
+					if suit.temperature + tempchange > 310 then
+						suit.temperature = 310
+					elseif suit.temperature - tempchange < 284 then
+						suit.temperature = 284
+					end
+				elseif pod and pod:IsValid() and pod.Link and pod.node and pod:GetResourceAmount("energy") >= needed then
+					pod:ConsumeResource("energy", needed)
 					suit.temperature = suit.temperature + tempchange
 					if suit.temperature + tempchange > 310 then
 						suit.temperature = 310
@@ -152,6 +168,8 @@ function Environments.LSCheck() --this has to be the worst function ever
 			if realo2 < 10 or ply:WaterLevel() > 2 then
 				if pod and pod:IsValid() and RD and RD.GetResourceAmount(pod, "oxygen") >= 5 then
 					RD.ConsumeResource(pod, "oxygen", 5)
+				elseif pod and pod:IsValid() and pod.Link and pod.node and pod:GetResourceAmount("oxygen") >= 5 then
+					pod:ConsumeResource("oxygen", 5)
 				else
 					if suit.air >= 5 then
 						suit.air = suit.air - 5

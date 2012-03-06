@@ -254,6 +254,122 @@ properties.Add( "Vent",
 });//this will be an alternative to venting with wire
 
 
+function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at entity register time
+	ENT.WireDebugName = ENT.WireDebugName or "No Name"
+	ENT.HasWire = StarGate.HasWire
+	ENT.HasResourceDistribution = true
+	ENT.HasRD = true
+
+	ENT.ConsumeResource = function(self, resource, amount)
+		if self.node then
+			return self.node:ConsumeResource(resource, amount)
+		end
+	end
+
+	ENT.SupplyResource = function(self, resource, amount)
+		if self.node then
+			return self.node:GenerateResource(resource, amount)
+		end
+	end
+
+	ENT.AddResource = function(self,name,amt)--adds to storage
+		if not self.maxresources then self.maxresources = {} end
+		self.maxresources[name] = (self.maxresources[name] or 0) + amt
+	end
+
+	ENT.Link = function(self, ent, delay)
+		if self.node then
+			self:Unlink()
+		end
+		if ent and ent:IsValid() then
+			self.node = ent
+
+			if delay then
+				timer.Simple(0.1, function(self, ent)
+					umsg.Start("Env_SetNodeOnEnt")
+						--umsg.Entity(self)
+						--umsg.Entity(ent)
+						umsg.Short(self:EntIndex())
+						umsg.Short(ent:EntIndex())
+					umsg.End()
+				end, self, ent)
+			else
+				umsg.Start("Env_SetNodeOnEnt")
+					--umsg.Entity(self)
+					--umsg.Entity(ent)
+					umsg.Short(self:EntIndex())
+					umsg.Short(ent:EntIndex())
+				umsg.End()
+			end
+		end
+	end
+
+	ENT.Unlink = function(self)
+		if self.node then
+			self.resources = {}
+			for k,v in pairs(self.maxresources) do
+				--print("Resource: "..k, "Amount: "..v)
+				local amt = self:GetResourceAmount(k)
+				if amt > v then
+					amt = v
+				end
+				if self.node.resources[k] then
+					self.node.resources[k].value = self.node.resources[k].value - amt
+				end
+				--print("Recovered: "..amt)
+				self.resources[k] = amt
+				--self:UpdateStorage(k)
+			end
+			self.node.updated = true
+			self.node:Unlink(self)
+			self.node = nil
+			self.client_updated = false
+
+			umsg.Start("Env_SetNodeOnEnt")
+				--umsg.Entity(self)
+				--umsg.Entity(NullEntity())
+				umsg.Short(self:EntIndex())
+				umsg.Short(0)
+			umsg.End()
+		end
+	end
+
+	function ENT:UpdateStorage(res)
+		local amt = self.resources[res]
+		umsg.Start("EnvStorageUpdate")
+			umsg.Entity(self)
+			umsg.String(res)
+			umsg.Long(amt)
+			umsg.Long(self.maxresources[res])
+		umsg.End()
+	end
+
+
+	function ENT:GetResourceAmount(resource)
+		if self.node then
+			if self.node.resources[resource] then
+				return self.node.resources[resource].value
+			else
+				return 0
+			end
+		else
+			return 0
+		end
+	end
+
+	function ENT:GetUnitCapacity(resource)
+		return self.maxresources[resource] or 0
+	end
+
+	function ENT:GetNetworkCapacity(resource)
+		if self.node then
+			return self.node.maxresources[resource] or 0
+		end
+		return 0
+	end
+end
+
+
 Environments.Resources = {} --string to short
 Environments.Resources2 = {} --short to string
 function Environments.RegisterResource(name)

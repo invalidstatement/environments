@@ -52,6 +52,14 @@ if SERVER then
 	timer.Create("RDChecker", 0.5, 0, CheckRD) --adjust rate perhaps?
 end
 
+local function RegisterVehicle(ply, ent)
+	//TODO
+	//local RD = CAF.GetAddon("Resource Distribution")
+	//RD.RegisterNonStorageDevice(ent)
+	RD_Register(ent, true)
+end
+hook.Add( "PlayerSpawnedVehicle", "ENV_vehicle_spawn", RegisterVehicle )
+
 function Environments.BuildDupeInfo( ent ) --need to add duping for cables
 	local info = {}
 	if ent.IsNode then

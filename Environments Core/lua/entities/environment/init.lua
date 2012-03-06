@@ -134,7 +134,11 @@ function ENT:Check()
 			if ent:GetPos():Distance(self:GetPos()) <= radius then
 				//Set Planet
 				ent:SetGravity( self.gravity )
-				ent:GetPhysicsObject():EnableDrag( true )
+				if self.pressure > 0.1 then
+					ent:GetPhysicsObject():EnableDrag( true )
+				else
+					ent:GetPhysicsObject():EnableDrag( false )
+				end
 				ent:GetPhysicsObject():EnableGravity( true )
 				ent.environment = self
 				if( ent:IsPlayer() ) then
