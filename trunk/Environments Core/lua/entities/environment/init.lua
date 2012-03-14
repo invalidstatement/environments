@@ -94,7 +94,11 @@ function ENT:EndTouch(ent)
 			
 			ent:SetNWBool( "inspace", true )
 		else
-			ent:GetPhysicsObject():EnableDrag( false )
+			if self.pressure > 0.1 then
+				ent:GetPhysicsObject():EnableDrag( false )
+			else
+				ent:GetPhysicsObject():EnableDrag( false )
+			end
 			ent:GetPhysicsObject():EnableGravity( false )
 		end
 		if not ent.NoSpaceAfterEndTouch then

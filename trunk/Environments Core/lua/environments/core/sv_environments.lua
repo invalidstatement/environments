@@ -136,7 +136,7 @@ local function LoadEnvironments()
 		Environments.RegisterSun()
 			
 		print("// Starting Periodicals..          //")
-		timer.Create("EnvEvents", 30, 0, Environments.EventChecker)
+		timer.Create("EnvEvents", 15, 0, Environments.EventChecker)
 		timer.Create("EnvSpecial", 10, 0, Environments.SpecialEvents)
 		print("//   Event System Started          //")
 		timer.Create("LSCheck", 1, 0, Environments.LSCheck)
