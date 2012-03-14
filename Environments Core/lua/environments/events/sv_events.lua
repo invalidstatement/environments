@@ -110,20 +110,22 @@ end
 concommand.Add("env_fire_event", FireEvent)
 
 function Environments.EventChecker()
-	local chance = math.random(1,50)
-	if chance < 35 and chance > 30 then
+	local chance = math.random(1,30)
+	if chance > 12 and chance < 17 then
 		//call the function to run the event
 		local planet = table.Random(environments)
 		local event, eventname = table.Random(events)
-		if not planet.spawn == "1" then
+		if !planet.air.o2per or planet.air.o2per < 10 then
 			event(planet)
+			MsgN("A " .. (eventname or "invalid event name") .. " Started at " .. tostring(os.date("%H:%M:%S")).." on planet ".. (planet.name or "Unnamed Planet"))
 		else
 			planet = table.Random(environments)
-			if not planet.spawn == "1" then
+			if !planet.air.o2per or planet.air.o2per < 10  then
 				event(planet)
+				MsgN("A " .. (eventname or "invalid event name") .. " Started at " .. tostring(os.date("%H:%M:%S")).." on planet ".. (planet.name or "Unnamed Planet"))
 			end
 		end	
-		MsgN("A " .. (eventname or "invalid event name") .. " Started at " .. tostring(os.date("%H:%M:%S")).." on planet ".. (planet.name or "Unnamed Planet"))
+		//MsgN("A event should have occured")
 	end
 end
 

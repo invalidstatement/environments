@@ -80,6 +80,8 @@ function Environments.BuildDupeInfo( ent ) --need to add duping for cables
 		info.Node = ent.node:EntIndex()
 	end
 	
+	info.extra = ent.env_extra
+	
 	info.LinkMat = ent:GetNWString("CableMat", nil)
 	info.LinkPos = ent:GetNWVector("CablePos", nil)
 	info.LinkForw = ent:GetNWVector("CableForward", nil)
@@ -107,6 +109,8 @@ function Environments.ApplyDupeInfo( ent, CreatedEntities, Player ) --add duping
 				ent:Link(node, true)
 				node:Link(ent, true)
 			end
+			
+			ent.env_extra = DupeInfo.extra
 			
 			local mat = DupeInfo.LinkMat
 			local pos = DupeInfo.LinkPos
