@@ -143,7 +143,11 @@ function ENT:Check()
 				else
 					ent:GetPhysicsObject():EnableDrag( false )
 				end
-				ent:GetPhysicsObject():EnableGravity( true )
+				if self.gravity > 0.01 then
+					ent:GetPhysicsObject():EnableGravity( true )
+				else
+					ent:GetPhysicsObject():EnableGravity( false )
+				end
 				ent.environment = self
 				if( ent:IsPlayer() ) then
 					ent:SetNWBool( "inspace", false )
