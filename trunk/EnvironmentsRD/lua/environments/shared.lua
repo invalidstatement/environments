@@ -254,6 +254,22 @@ properties.Add( "Vent",
 });//this will be an alternative to venting with wire
 
 
+function _R.Entity:GetDataTable()
+ 
+    if not self.dt then return {} end
+ 
+    local t = {}
+    local _, dt = debug.getupvalue( self.DTVar, 1 )
+    for k, v in pairs( dt ) do
+ 
+        t[ k ] = v.GetFunc( self, v.index )
+ 
+    end
+ 
+    return t
+end
+
+
 function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at entity register time
 	ENT.WireDebugName = ENT.WireDebugName or "No Name"
 	ENT.HasWire = StarGate.HasWire
