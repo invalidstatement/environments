@@ -7,7 +7,7 @@ Environments.RegisterLSStorage("Oxygen Storage", "env_oxygen_storage", {[4600] =
 Environments.RegisterLSStorage("Hydrogen Storage", "env_hydrogen_storage", {[4600] = "hydrogen"}, 4084, 100, 10)
 Environments.RegisterLSStorage("Nitrogen Storage", "env_nitrogen_storage", {[4600] = "nitrogen"}, 4084, 100, 10)
 Environments.RegisterLSStorage("CO2 Storage", "env_co2_storage", {[4600] = "carbon dioxide"}, 4084, 100, 10)
-Environments.RegisterLSStorage("Resource Cache", "env_cache_storage", {[4601] = "carbon dioxide",[4600] = "oxygen",[4602] = "hydrogen",[4603] = "nitrogen",[4599] = "water",[4598] = "steam",[4604] = "energy"}, 4084, 100, 10)
+Environments.RegisterLSStorage("Resource Cache", "env_cache_storage", {[2301] = "carbon dioxide",[2300] = "oxygen",[2302] = "hydrogen",[2303] = "nitrogen",[2299] = "water",[2298] = "steam",[2304] = "energy"}, 4084, 100, 10)
 
 Environments.RegisterLSEntity("Water Heater","env_water_heater",{"water","energy"},{"steam"},function(self) local mult = self:GetMultiplier()*self.multiplier local amt = self:ConsumeResource("water", 200) or 0 amt = self:ConsumeResource("energy",amt*1.5)  self:SupplyResource("steam", amt) end, 70000, 300, 300)
 

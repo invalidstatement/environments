@@ -12,7 +12,6 @@ util.PrecacheSound( "coast.siren_citizen" )
 util.PrecacheSound( "common/warning.wav" )
 
 include('shared.lua')
--- Was 2200, increased
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)

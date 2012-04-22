@@ -46,7 +46,13 @@ print("== Environments Life Support Ents Installed ==")
 print("==============================================")
 
 //Load devices and stuff from addons
-local Files = file.FindInLua( "environments/lifesupport/*.lua" )
+local Files
+if file.FindInLua then
+	Files = file.FindInLua( "environments/lifesupport/*.lua" )
+else//gm13
+	Files = file.Find("environments/lifesupport/*.lua", LUA_PATH)
+end
+
 for k, File in ipairs(Files) do
 	Msg("Loading: "..File.."...\n")
 	local ErrorCheck, PCallError = pcall(include, "environments/lifesupport/"..File)

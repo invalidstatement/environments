@@ -5,11 +5,11 @@
 
 local meta = FindMetaTable("Player")
 function meta:PutOnSuit()
-	if table.HasValue(nofingers, self.m_hSuit:GetParent():GetInfo( "cl_playermodel" )) then
-		self.m_hSuit:SetModel("models/player/barney.mdl")
-	else
+	//if table.HasValue(nofingers, self.m_hSuit:GetParent():GetInfo( "cl_playermodel" )) then
+		//self.m_hSuit:SetModel("models/player/barney.mdl")
+	//else
 		self.m_hSuit:SetModel(self.SuitModel)
-	end
+	//end
 	self:SetNWBool("helmet", true)
 end
 

@@ -17,6 +17,19 @@ Environments.ForceLoad = false
 Environments.UseSuit = true
 Environments.Debug = true
 
+local oldex = file.Exists
+function file.Exists(path, sub)
+	if sub then
+		if type(sub) == "boolean" then
+			oldex(path, "GAME");
+		else
+			oldex(path, sub);
+		end
+	else
+		oldex(path, "DATA");
+	end
+end
+
 
 local start = SysTime()
 function Environments.Load()
