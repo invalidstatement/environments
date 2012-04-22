@@ -51,7 +51,7 @@ function TOOL:LeftClick( trace )
 
 		if Ent1.IsNode or Ent2.IsNode then
 			if Ent1.IsNode and Ent2.IsNode then
-				self:GetOwner():SendLua( "GAMEMODE:AddNotify('You can't link two nodes!', NOTIFY_GENERIC, 7);" )
+				self:GetOwner():SendLua( "GAMEMODE:AddNotify('You cant link two nodes!', NOTIFY_GENERIC, 7);" )
 			else
 				if Ent1.Link and Ent2.Link then --only let LS ents, need to fix, lets all ents with a Link() function
 					Ent1:Link(Ent2)

@@ -347,7 +347,7 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 	print("Storage Registered: "..class)
 end
 
-function Environments.RegisterTool(name, filename, category, description, cleanupgroup, limit)
+function Environments.RegisterTool(name, filename, category, description, cleanupgroup, limit)//add descriptions for devices
 	local TOOL = ToolObj:Create()
 	
 	TOOL.Mode = filename

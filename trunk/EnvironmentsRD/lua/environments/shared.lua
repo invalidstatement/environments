@@ -18,7 +18,7 @@ local o = scripted_ents.Register
 scripted_ents.Register = function(t, name, reload, myarg)
 	if !loaded and !myarg then
 		loaded = true
-		if StarGate then
+		if StarGate and !StarGate.CAP then
 			StarGate.LifeSupportAndWire = function(ENT) 
 				ENT.WireDebugName = ENT.WireDebugName or "No Name"
 				ENT.HasWire = StarGate.HasWire
@@ -382,6 +382,25 @@ function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at
 			return self.node.maxresources[resource] or 0
 		end
 		return 0
+	end
+	
+	if !bLive then
+		function ENT:PreEntityCopy()
+			Environments.BuildDupeInfo(self)
+			if WireLib then
+				local DupeInfo = WireLib.BuildDupeInfo(self)
+				if DupeInfo then
+					duplicator.StoreEntityModifier( self, "WireDupeInfo", DupeInfo )
+				end
+			end
+		end
+
+		function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
+			Environments.ApplyDupeInfo(Ent, CreatedEntities, Player)
+			if WireLib and (Ent.EntityMods) and (Ent.EntityMods.WireDupeInfo) then
+				WireLib.ApplyDupeInfo(Player, Ent, Ent.EntityMods.WireDupeInfo, function(id) return CreatedEntities[id] end)
+			end
+		end
 	end
 end
 

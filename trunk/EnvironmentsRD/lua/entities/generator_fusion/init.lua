@@ -14,7 +14,7 @@ util.PrecacheSound( "common/warning.wav" )
 include('shared.lua')
 -- Was 2200, increased
 local Energy_Increment = 5000
-local Coolant_Increment = 45 --WATER NOW -- 15 nitrogen produced per 150 energy, so 45 is about 450 energy , 2000 - 450 = 1550 energy left - the requirements to generate the N
+local Coolant_Increment = 100 --WATER NOW -- 15 nitrogen produced per 150 energy, so 45 is about 450 energy , 2000 - 450 = 1550 energy left - the requirements to generate the N
 local HW_Increment = 1
 
 function ENT:Initialize()
@@ -273,7 +273,7 @@ function ENT:Extract_Energy()
 	end
 
 	--heavy water check (water adds stability)
-	if (self:GetResourceAmount("heavy water") <= 0) then
+	/*if (self:GetResourceAmount("heavy water") <= 0) then
 		if (inc > 0) then 
 			--instability varying the output from 20-80% of normal
 			local hwmult = math.random(20,80)/100
@@ -285,7 +285,7 @@ function ENT:Extract_Energy()
 			self:ConsumeResource("heavy water", math.ceil(HW_Increment * self:GetMultiplier()))
 			self.hwcount = 0
 		end
-	end
+	end*/
 
 	--the money shot!
 	if (inc > 0) then 

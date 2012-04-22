@@ -4,6 +4,7 @@
 ------------------------------------------
 
 include("shared.lua")
+AddCSLuaFile("shared.lua")
 include("core/base.lua")
 
 ENT.IgnoreStaff = true
@@ -29,7 +30,7 @@ function ENT:Initialize()
 	end
 	self:SetNotSolid( true )
 	
-	self:SetColor(255,255,255,0) --Make invis
+	//self:SetColor(255,255,255,0) --Make invis
 	self.Entities = {}
 end
 
