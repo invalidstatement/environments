@@ -8,7 +8,7 @@ if not Environments then
 end
 
 Environments.Hooks = {}
-Environments.Version = 151
+Environments.Version = 153
 Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 8
 
@@ -17,16 +17,18 @@ Environments.ForceLoad = false
 Environments.UseSuit = true
 Environments.Debug = true
 
-local oldex = file.Exists
-function file.Exists(path, sub)
-	if sub then
-		if type(sub) == "boolean" then
-			oldex(path, "GAME");
+if file.Open then
+	local oldex = file.Exists
+	function file.Exists(path, sub)
+		if sub then
+			if type(sub) == "boolean" and sub == true then
+				return oldex(path, "GAME");
+			else
+				return oldex(path, sub);
+			end
 		else
-			oldex(path, sub);
+			return oldex(path, "DATA");
 		end
-	else
-		oldex(path, "DATA");
 	end
 end
 
