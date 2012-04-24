@@ -7,6 +7,8 @@ ENT.Author = "CmdrMatthew"
 if CLIENT then
 	function ENT:Draw()
 		//local radius = self:GetRadius() * 10
+		if not Environments.EffectsCvar:GetBool() then return end
+		
 		local radius = 3000
 		local pos = self:GetPos()
 		local BeamRadius = radius * 6
