@@ -112,10 +112,10 @@ if Wire_UpdateRenderBounds then
 end
 
 local function RecieveAmts(msg) --errors when ent isnt valid :/
-	local ent = msg:ReadEntity()
+	local entid = msg:ReadShort()
 	local res = msg:ReadString()
 	if tonumber(res) then res = tonumber(res) end
-	ent.resources[Environments.Resources2[res] or res] = msg:ReadLong()
+	Environments.GetNetTable(entid).resources[Environments.Resources2[res] or res] = msg:ReadLong()
 end
 usermessage.Hook("Env_UpdateResAmt", RecieveAmts)
 

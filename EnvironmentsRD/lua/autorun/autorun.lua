@@ -30,14 +30,19 @@ if SERVER then
 	include("environments/shared.lua")
 	AddCSLuaFile("environments/shared.lua")
 
-	include("environments/EntRegister.lua") --sort this file
+	include("environments/EntRegister.lua")
 	AddCSLuaFile("environments/EntRegister.lua")
+	
+	include("environments/resources.lua")
+	AddCSLuaFile("environments/resources.lua")
 else
 	include("environments/cl_init.lua")
 	
 	include("environments/shared.lua")
 	
 	include("environments/EntRegister.lua")
+	
+	include("environments/resources.lua")
 end
 
 

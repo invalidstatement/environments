@@ -131,7 +131,8 @@ function ENT:DoUpdate(res1, res2, ply) --todo make cheaper
 			local v = self.resources[name]
 			if v and v.haschanged then
 				umsg.Start("Env_UpdateResAmt")
-					umsg.Entity(self)
+					//umsg.Entity(self)
+					umsg.Short(self:EntIndex())
 					local old = name
 					name = Environments.Resources[name] or name
 						--print("Sending "..old.." as "..name)
@@ -148,7 +149,8 @@ function ENT:DoUpdate(res1, res2, ply) --todo make cheaper
 		local v = self.resources[name]
 		if v and v.haschanged then
 			umsg.Start("Env_UpdateResAmt")
-				umsg.Entity(self)
+				//umsg.Entity(self)
+				umsg.Short(self:EntIndex())
 				local old = name
 				name = Environments.Resources[name] or name
 					--print("Sending "..old.." as "..name)
