@@ -12,6 +12,8 @@ function ENT:Initialize()
 	self:SetSolid( SOLID_VPHYSICS )
 	self:SetNetworkedInt( "OOO", 0 )
 	self.Active = 0
+	
+	self.maxresources = {}
 end
 
 function ENT:SetActive( value, caller )
@@ -31,7 +33,7 @@ function ENT:GetMultiplier()
 end
 
 function ENT:SetMultiplier(num)
-	self.MULTIPLIER = tonumber(num) or 1
+	self.MULTIPLIER = tonumber(num) or 1 
 end
 
 function ENT:Repair()

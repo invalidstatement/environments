@@ -42,6 +42,7 @@ events["meteor"] = function(planet)
 end
 events["earthquake"] = function(planet)
 	util.ScreenShake(planet:GetPos(), 14, 255, 6, planet.radius)
+	WorldSound(Sound("ambient/explosions/exp" .. math.random(1, 4) .. ".wav"), planet:GetPos(), 100, 100)
 	return "Earthquake"
 end
 /*events["micrometeorite"] = function(planet)

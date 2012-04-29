@@ -323,18 +323,20 @@ function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at
 	ENT.Unlink = function(self)
 		if self.node then
 			self.resources = {}
-			for k,v in pairs(self.maxresources) do
-				--print("Resource: "..k, "Amount: "..v)
-				local amt = self:GetResourceAmount(k)
-				if amt > v then
-					amt = v
+			if self.maxresources then
+				for k,v in pairs(self.maxresources) do
+					--print("Resource: "..k, "Amount: "..v)
+					local amt = self:GetResourceAmount(k)
+					if amt > v then
+						amt = v
+					end
+					if self.node.resources[k] then
+						self.node.resources[k].value = self.node.resources[k].value - amt
+					end
+					--print("Recovered: "..amt)
+					self.resources[k] = amt
+					--self:UpdateStorage(k)
 				end
-				if self.node.resources[k] then
-					self.node.resources[k].value = self.node.resources[k].value - amt
-				end
-				--print("Recovered: "..amt)
-				self.resources[k] = amt
-				--self:UpdateStorage(k)
 			end
 			self.node.updated = true
 			self.node:Unlink(self)

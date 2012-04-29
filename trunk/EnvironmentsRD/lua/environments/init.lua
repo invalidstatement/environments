@@ -143,7 +143,8 @@ if SERVER then
 		for k,ent in pairs(ents.FindByClass("resource_node_env")) do
 			for name,tab in pairs(ent.resources) do
 				umsg.Start("Env_UpdateResAmt")
-					umsg.Entity(ent)
+					//umsg.Entity(ent)
+					umsg.Short(ent:EntIndex())
 					name = Environments.Resources[name] or name
 					umsg.String(name)
 					umsg.Long(tab.value)
