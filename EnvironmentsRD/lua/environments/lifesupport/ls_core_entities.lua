@@ -120,12 +120,24 @@ Environments.RegisterDevice("Storages", "Steam Storage", "Large Steam Tank", "en
 Environments.RegisterDevice("Storages", "Resource Cache", "Large Cache", "env_cache_storage", "models/ce_ls3additional/resource_cache/resource_cache_large.mdl")
 Environments.RegisterDevice("Storages", "Resource Cache", "Medium Cache", "env_cache_storage", "models/ce_ls3additional/resource_cache/resource_cache_medium.mdl")
 Environments.RegisterDevice("Storages", "Resource Cache", "Small Cache", "env_cache_storage", "models/ce_ls3additional/resource_cache/resource_cache_small.mdl")
+Environments.RegisterDevice("Storages", "Resource Cache","Modular Unit X-01","env_cache_storage","models/Spacebuild/milcock4_multipod1.mdl")
+Environments.RegisterDevice("Storages", "Resource Cache","Slyfo Tank 1","env_cache_storage","models/Slyfo/t-eng.mdl")
+Environments.RegisterDevice("Storages", "Resource Cache","Slyfo Power Crystal","env_cache_storage","models/Slyfo/powercrystal.mdl")
+Environments.RegisterDevice("Storages", "Resource Cache","SmallBridge Small Wall Cache","env_cache_storage","models/SmallBridge/Life Support/SBwallcacheS.mdl")
+Environments.RegisterDevice("Storages", "Resource Cache","SmallBridge Large Wall Cache","env_cache_storage","models/SmallBridge/Life Support/SBwallcacheL.mdl")
+Environments.RegisterDevice("Storages", "Resource Cache","SmallBridge External Wall Cache","env_cache_storage","models/SmallBridge/Life Support/SBwallcacheE.mdl")
+Environments.RegisterDevice("Storages", "Resource Cache","SmallBridge Small Wall Cache (half length)","env_cache_storage","models/smallbridge/Life Support/SBwallcacheS05.mdl")
+Environments.RegisterDevice("Storages", "Resource Cache","SmallBridge Large Wall Cache (half length)","env_cache_storage","models/smallbridge/Life Support/SBwallcacheL05.mdl")
+Environments.RegisterDevice("Storages", "Resource Cache","SmallBridge Hull Cache","env_cache_storage","models/smallbridge/life support/sbhullcache.mdl")
 
 Environments.RegisterDevice("Storages", "Admin Cache", "Small Admin Cache", "environments_admincache", "models/ce_ls3additional/resource_cache/resource_cache_small.mdl")
 Environments.RegisterDevice("Storages", "Admin Cache", "Admin Cache", "environments_admincache", "models/ascension/objects/crate_01.mdl")
 
 //Life Support Tool
 Environments.RegisterDevice("Life Support", "Suit Dispenser", "Suit Dispenser", "suit_dispenser", "models/props_combine/combine_emitter01.mdl")
+
 Environments.RegisterDevice("Life Support", "LS Core", "LS Core", "env_lscore", "models/sbep_community/d12airscrubber.mdl")
+Environments.RegisterDevice("Life Support", "LS Core","SmallBridge LS Core", "env_lscore","models/smallbridge/life support/sbclimatereg.mdl")
+
 Environments.RegisterDevice("Life Support", "Atmospheric Probe", "Atmospheric Probe", "env_probe", "models/props_combine/combine_mine01.mdl")
 Environments.RegisterDevice("Life Support", "Terraformer", "Terraformer", "environments_terraformer", "models/chipstiks_ls3_models/terraformer/terraformer.mdl")

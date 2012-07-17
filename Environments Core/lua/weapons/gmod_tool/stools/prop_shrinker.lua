@@ -19,7 +19,7 @@ TOOL.ClientConVar[ "freeze" ] = 1
 // Add Default Language translation (saves adding it to the txt files)
 if ( CLIENT ) then
 	language.Add( "Tool_prop_shrinker_name", "Prop Shrinker" )
-	language.Add( "Tool_prop_shrinker_desc", "Enables walking on a prop even in low-to-zero gravity." )
+	language.Add( "Tool_prop_shrinker_desc", "Alters the size of props and contraptions." )
 	language.Add( "Tool_prop_shrinker_0", "Left Click to Shrink All Constrained Props.  Right Click To Restore to Normal Size." )
 end
 
@@ -92,9 +92,6 @@ function TOOL.BuildCPanel( CPanel)
 	cp:AddControl("Slider",{Label = "Scale", Description = "The scale to shrink the props to.", Type = "Float", Min = 0.01, Max = 2, Command = "prop_shrinker_scale"})
 	cp:AddControl("Checkbox",{Label = "Parent?", Description = "Attach the props together with parenting? Makes them far more stable, but only the parent will collide.", Command = "prop_shrinker_parent"})
 	cp:AddControl("Checkbox",{Label = "Freeze?", Description = "Keep the shrunken props from moving, highly recommended with stationary structures.", Command = "prop_shrinker_freeze"})
-	//cp:AddControl("Slider",{Label = "Player Gravity Percentage", Description = "The percentage of normal gravity to apply to players inside. *DOES NOT WORK WITH PROPS YET*", Type = "Integer", Min = 0, Max = 500, Command = "localphysics_gravity"})
-	//cp:AddControl("Button",{Label = "Help", Description = "Help, obviously", Command = "ghd_help"})
-	//cp:AddControl("Button",{Label = "Fix Camera", Description = "If you're teleporting to the sky when you enter a ship, click this until it works.", Command = "ghd_fixcamera"})
 end
 
 

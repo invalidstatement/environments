@@ -16,6 +16,29 @@ local type = type
 local tonumber = tonumber
 local pairs = pairs
 
+	
+/*local function e2hook(ent)
+	if ent and ent:IsValid() then
+		if ent:GetClass() == "sent_anim" then
+			if ent.Execute then
+				RD_Register(ent)
+				
+				ent.override_ops = 50
+				ent.oldExecute = ent.Execute or function() end
+				ent.Execute = function(self)
+					if self:GetResourceAmount("energy") >= self.override_ops then
+						self:ConsumeResource("energy", self.override_ops)
+						self.oldExecute(self)//execute
+						print("counter: ",self.context.prfcount, "prf: ", self.context.prf, "prfbench: ", self.context.prfbench)
+						self.override_ops = self.context.prfcount or 0
+					end
+				end
+			end
+		end
+	end
+end
+hook.Add("OnEntityCreated", "E2OVERRIDES", e2hook)*/
+
 if SERVER then
 	local function CheckRD() --make not call for update all the time
 		for k,ply in pairs(player.GetAll()) do

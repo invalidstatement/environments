@@ -35,7 +35,7 @@ function ENT:Initialize()
 	self.Entity:PhysicsInit(SOLID_VPHYSICS)
 	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)
 	self.Entity:SetSolid(SOLID_VPHYSICS)
-	local phys = self.Entity:GetPhysicsObject()
+	local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:SetMass(2500)
 	end
@@ -45,27 +45,27 @@ end
 function ENT:PhysicsCollide(ent)
 	if not self.Burn then return end
 	local expl = ents.Create("env_explosion")
-	expl:SetPos(self.Entity:GetPos())
-	expl:SetParent(self.Entity)
-	expl:SetOwner(self.Entity:GetOwner())
+	expl:SetPos(self:GetPos())
+	expl:SetParent(self)
+	expl:SetOwner(self:GetOwner())
 	expl:SetKeyValue("iMagnitude","400");
 	expl:SetKeyValue("iRadiusOverride", 250)
 	expl:Spawn()
 	expl:Activate()
 	expl:Fire("explode", "", 0)	
 	expl:Fire("kill", "", .5)
-	for k,v in pairs(ents.FindInSphere(self.Entity:GetPos(),100)) do
+	for k,v in pairs(ents.FindInSphere(self:GetPos(),100)) do
 		if v:IsValid() then
 			constraint.RemoveAll(v)
 		end
 	end
-	local tr = util.QuickTrace(self.Entity:GetPos(), self.Entity:GetPos()+(self.Entity:GetVelocity()*100), self.Entity)
+	local tr = util.QuickTrace(self:GetPos(), self:GetPos()+(self:GetVelocity()*100), self)
 	if tr.Entity then
 		if tr.Entity:IsValid() then
 			constraint.RemoveAll(tr.Entity)
 		end
 	end
-	self.Entity:Remove()
+	self:Remove()
 end
 
 function ENT:Think()
@@ -73,15 +73,15 @@ function ENT:Think()
 		if self.Burn ~= true then
 			self.Burn = true
 			self.flame = ents.Create("env_fire_trail")
-			self.flame:SetAngles(self.Entity:GetAngles())
-			self.flame:SetPos(self.Entity:GetPos())
-			self.flame:SetParent(self.Entity)
+			self.flame:SetAngles(self:GetAngles())
+			self.flame:SetPos(self:GetPos())
+			self.flame:SetParent(self)
 			self.flame:Spawn()
 			self.flame:Activate()
 		end
 	else
 		self.firstthink = false
 	end
-	self.Entity:NextThink(CurTime()+1)
+	self:NextThink(CurTime()+1)
 	return true
 end

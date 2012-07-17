@@ -668,7 +668,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 		CPanel:AddControl("CheckBox", { Label = "Nocollide", Command = name.."_NoCollide" })
 		CPanel:AddControl("CheckBox", { Label = "Freeze", Command = name.."_Freeze" })
 	end
-		
+	
 	TOOL:Register()
 
 	TOOL:CreateConVars()
@@ -686,7 +686,7 @@ function Environments.RegisterDevice(toolname, genname, devname, class, model, s
 		dat[genname] = {}
 	end
 	dat[genname][devname] = {}
-	dat[genname][devname].model = model
+	dat[genname][devname].model = string.lower(model)//prevents crashes
 	dat[genname][devname].class = class
 	dat[genname][devname].skin = skin
 	dat[genname][devname].extra = extra
