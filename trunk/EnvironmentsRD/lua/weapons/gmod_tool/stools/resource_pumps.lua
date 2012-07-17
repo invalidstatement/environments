@@ -12,7 +12,7 @@ TOOL.Tab = "Environments"
 
 local EntityName = "env_pump"
 local toolname = "resource_pumps"
-local offset = Vector(-12, 13, 0)
+local offset = Vector(0,0,0)//Vector(-12, 13, 0)
 
 cleanup.Register("generators")
 
@@ -25,7 +25,7 @@ function TOOL:GetDeviceModel()
 	if (!util.IsValidModel(mdl) or !util.IsValidProp(mdl)) then return "models/props_lab/tpplugholder_single.mdl" end
 	return mdl
 end
-						
+
 if (SERVER) then
 	CreateConVar("sbox_maxpump", 6)
 	
@@ -36,7 +36,7 @@ if (SERVER) then
 		
 		-- Pos/Model/Angle
 		ent:SetModel( Model )
-		ent:SetPos( trace.HitPos - trace.HitNormal * ent:OBBMins().z - offset)
+		ent:SetPos( trace.HitPos - trace.HitNormal * ent:OBBMins().z)
 		ent:SetAngles( trace.HitNormal:Angle() )
 		ent:SetPlayer(ply)
 		ent:Spawn()

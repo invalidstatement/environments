@@ -17,10 +17,13 @@ include('shared.lua')
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	self.Active = 0
+	
+	self.broadcast_angle = 3
+	self.trans = 500
 
 	if WireLib then
 		self.WireDebugName = self.PrintName
-		self.Inputs = WireLib.CreateInputs(self, { "On" })
+		self.Inputs = WireLib.CreateInputs(self, { "On", "Broadcast Angle", "Transmit Power"})
 		self.Outputs = WireLib.CreateOutputs(self, { "On", "Output" })
 	else
 		self.Inputs = {{Name="On"}}
@@ -52,6 +55,22 @@ end
 function ENT:TriggerInput(iname, value)
 	if (iname == "On") then
 		self:SetActive(value)
+	elseif (iname == "Broadcast Angle") then
+		if value > 180 then
+			self.broadcast_angle = 180
+		elseif value < 1 then
+			self.broadcast_angle = 1
+		else
+			self.broadcast_angle = value
+		end
+	elseif (iname == "Transmit Power") then
+		if value > 10000 then
+			self.trans = 10000
+		elseif value < 1 then
+			self.trans = 1
+		else
+			self.trans = value
+		end
 	end
 end
 
@@ -66,10 +85,11 @@ function ENT:OnRemove()
 end
 
 function ENT:Transfer_Energy()
-	local tr = {}
+	/*local tr = {}
 	tr.start = self:GetPos() + self:GetUp()*100
 	tr.endpos = self:GetPos() + self:GetUp()*50000
 	tr.Filter = self
+	tr.filter = self
 	local trace = util.TraceLine(tr)
 	if trace.Entity and trace.Entity:IsValid() then
 		if trace.Entity:GetClass() == "reciever_microwave" then
@@ -77,6 +97,27 @@ function ENT:Transfer_Energy()
 			if amt then
 				trace.Entity:SupplyResource("energy", amt*0.6)
 			end
+		end
+	end*/
+	
+	local amt = self:ConsumeResource("energy", self.trans)
+	
+	local spos = self:GetPos()
+	local targs = ents.FindByClass("reciever_microwave")
+	local count = table.Count(targs)
+	
+	local mynorm = self:GetUp()
+	
+	local supplyamt = (amt/count) * ((200-self.broadcast_angle) / 240)
+	for k,v in pairs(targs) do
+		//local dist = v:GetPos():Distance(spos)
+		//local tDist2 =(spos+self:GetUp()*dist):Distance(v:GetPos())
+		//local ang = math.Rad2Deg(math.atan2( tDist2, dist))
+		
+		local ang = math.Rad2Deg(math.acos(mynorm:Dot((v:GetPos()-self:GetPos()):Normalize())))
+		//print(ang)
+		if (ang < self.broadcast_angle) then
+			v:SupplyResource("energy", supplyamt)
 		end
 	end
 end

@@ -272,7 +272,9 @@ end
 
 function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at entity register time
 	ENT.WireDebugName = ENT.WireDebugName or "No Name"
-	ENT.HasWire = StarGate.HasWire
+	if StarGate then
+		ENT.HasWire = StarGate.HasWire
+	end
 	ENT.HasResourceDistribution = true
 	ENT.HasRD = true
 
@@ -303,16 +305,12 @@ function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at
 			if delay then
 				timer.Simple(0.1, function(self, ent)
 					umsg.Start("Env_SetNodeOnEnt")
-						--umsg.Entity(self)
-						--umsg.Entity(ent)
 						umsg.Short(self:EntIndex())
 						umsg.Short(ent:EntIndex())
 					umsg.End()
 				end, self, ent)
 			else
 				umsg.Start("Env_SetNodeOnEnt")
-					--umsg.Entity(self)
-					--umsg.Entity(ent)
 					umsg.Short(self:EntIndex())
 					umsg.Short(ent:EntIndex())
 				umsg.End()
@@ -344,8 +342,6 @@ function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at
 			self.client_updated = false
 
 			umsg.Start("Env_SetNodeOnEnt")
-				--umsg.Entity(self)
-				--umsg.Entity(NullEntity())
 				umsg.Short(self:EntIndex())
 				umsg.Short(0)
 			umsg.End()
@@ -361,7 +357,6 @@ function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at
 			umsg.Long(self.maxresources[res])
 		umsg.End()
 	end
-
 
 	function ENT:GetResourceAmount(resource)
 		if self.node then
@@ -387,21 +382,20 @@ function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at
 	end
 	
 	if !bLive then
-		function ENT:PreEntityCopy()
-			Environments.BuildDupeInfo(self)
-			if WireLib then
-				local DupeInfo = WireLib.BuildDupeInfo(self)
-				if DupeInfo then
-					duplicator.StoreEntityModifier( self, "WireDupeInfo", DupeInfo )
-				end
+		local oldpre = ENT.PreEntityCopy
+		local oldpost = ENT.PostEntityPaste
+		function ENT:PreEntityCopy(a,b,c,d)
+			if oldpre then
+				oldpre(self,a,b,c,d)
 			end
+			Environments.BuildDupeInfo(self)
 		end
 
 		function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
-			Environments.ApplyDupeInfo(Ent, CreatedEntities, Player)
-			if WireLib and (Ent.EntityMods) and (Ent.EntityMods.WireDupeInfo) then
-				WireLib.ApplyDupeInfo(Player, Ent, Ent.EntityMods.WireDupeInfo, function(id) return CreatedEntities[id] end)
+			if oldpost then
+				oldpost(self, Player, Ent, CreatedEntities)
 			end
+			Environments.ApplyDupeInfo(Ent, CreatedEntities, Player)
 		end
 	end
 end
