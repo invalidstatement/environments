@@ -1,13 +1,13 @@
 //Core Environments LS Entities/Devices
 
-Environments.RegisterLSStorage("Steam Storage", "env_steam_storage", {[3600] = "steam"}, 4084, 400, 300)
+Environments.RegisterLSStorage("Steam Storage", "env_steam_storage", {[3600] = "steam"}, 4084, 300, 50)
 Environments.RegisterLSStorage("Water Storage", "env_water_storage", {[3600] = "water"}, 4084, 400, 500)
-Environments.RegisterLSStorage("Energy Storage", "env_energy_storage", {[3600] = "energy"}, 6021, 200, 5)
-Environments.RegisterLSStorage("Oxygen Storage", "env_oxygen_storage", {[4600] = "oxygen"}, 4084, 100, 10)
-Environments.RegisterLSStorage("Hydrogen Storage", "env_hydrogen_storage", {[4600] = "hydrogen"}, 4084, 100, 10)
-Environments.RegisterLSStorage("Nitrogen Storage", "env_nitrogen_storage", {[4600] = "nitrogen"}, 4084, 100, 10)
-Environments.RegisterLSStorage("CO2 Storage", "env_co2_storage", {[4600] = "carbon dioxide"}, 4084, 100, 10)
-Environments.RegisterLSStorage("Resource Cache", "env_cache_storage", {[2301] = "carbon dioxide",[2300] = "oxygen",[2302] = "hydrogen",[2303] = "nitrogen",[2299] = "water",[2298] = "steam",[2304] = "energy"}, 4084, 100, 10)
+Environments.RegisterLSStorage("Energy Storage", "env_energy_storage", {[3600] = "energy"}, 6021, 200, 50)
+Environments.RegisterLSStorage("Oxygen Storage", "env_oxygen_storage", {[4600] = "oxygen"}, 4084, 100, 20)
+Environments.RegisterLSStorage("Hydrogen Storage", "env_hydrogen_storage", {[4600] = "hydrogen"}, 4084, 100, 20)
+Environments.RegisterLSStorage("Nitrogen Storage", "env_nitrogen_storage", {[4600] = "nitrogen"}, 4084, 100, 20)
+Environments.RegisterLSStorage("CO2 Storage", "env_co2_storage", {[4600] = "carbon dioxide"}, 4084, 100, 20)
+Environments.RegisterLSStorage("Resource Cache", "env_cache_storage", {[1601] = "carbon dioxide",[1600] = "oxygen",[1602] = "hydrogen",[1603] = "nitrogen",[1599] = "water",[1598] = "steam",[1604] = "energy"}, 4084, 100, 10)
 
 Environments.RegisterLSEntity("Water Heater","env_water_heater",{"water","energy"},{"steam"},function(self) local mult = self:GetMultiplier()*self.multiplier local amt = self:ConsumeResource("water", 200) or 0 amt = self:ConsumeResource("energy",amt*1.5)  self:SupplyResource("steam", amt) end, 70000, 300, 300)
 
@@ -74,6 +74,7 @@ Environments.RegisterDevice("Storages", "Water Storage", "Large Water Tank", "en
 Environments.RegisterDevice("Storages", "Water Storage", "Medium Water Tank", "env_water_storage", "models/ce_ls3additional/resource_tanks/resource_tank_medium.mdl")
 Environments.RegisterDevice("Storages", "Water Storage", "Small Water Tank", "env_water_storage", "models/ce_ls3additional/resource_tanks/resource_tank_small.mdl")
 Environments.RegisterDevice("Storages", "Water Storage", "Tiny Water Tank", "env_water_storage", "models/ce_ls3additional/resource_tanks/resource_tank_tiny.mdl")
+Environments.RegisterDevice("Storages", "Water Storage", "Water Shipping Tank", "env_water_storage", "models/Slyfo/crate_resource_large.mdl")
 
 Environments.RegisterDevice("Storages", "Energy Storage", "Large Battery", "env_energy_storage", "models/props_phx/life_support/battery_large.mdl")
 Environments.RegisterDevice("Storages", "Energy Storage", "Medium Battery", "env_energy_storage", "models/props_phx/life_support/battery_medium.mdl")
@@ -88,6 +89,7 @@ Environments.RegisterDevice("Storages", "Oxygen Storage", "Small Oxygen Canister
 Environments.RegisterDevice("Storages", "Oxygen Storage", "Small Oxygen Tank", "env_oxygen_storage", "models/props_phx/life_support/tank_small.mdl")
 Environments.RegisterDevice("Storages", "Oxygen Storage", "Medium Oxygen Tank", "env_oxygen_storage", "models/props_phx/life_support/tank_medium.mdl")
 Environments.RegisterDevice("Storages", "Oxygen Storage", "Large Oxygen Tank", "env_oxygen_storage", "models/props_phx/life_support/tank_large.mdl")
+Environments.RegisterDevice("Storages", "Oxygen Storage", "Oxygen Shipping Tank", "env_oxygen_storage", "models/Slyfo/crate_resource_large.mdl")
 
 Environments.RegisterDevice("Storages", "Nitrogen Storage", "Large Nitrogen Storage", "env_nitrogen_storage", "models/props_wasteland/coolingtank02.mdl")
 Environments.RegisterDevice("Storages", "Nitrogen Storage", "Large Nitrogen Canister", "env_nitrogen_storage", "models/props_phx/life_support/canister_large.mdl", 1)
@@ -96,6 +98,8 @@ Environments.RegisterDevice("Storages", "Nitrogen Storage", "Small Nitrogen Cani
 Environments.RegisterDevice("Storages", "Nitrogen Storage", "Small Nitrogen Tank", "env_nitrogen_storage", "models/props_phx/life_support/tank_small.mdl", 1)
 Environments.RegisterDevice("Storages", "Nitrogen Storage", "Medium Nitrogen Tank", "env_nitrogen_storage", "models/props_phx/life_support/tank_medium.mdl", 1)
 Environments.RegisterDevice("Storages", "Nitrogen Storage", "Large Nitrogen Tank", "env_nitrogen_storage", "models/props_phx/life_support/tank_large.mdl", 1)
+Environments.RegisterDevice("Storages", "Nitrogen Storage", "Nitrogen Shipping Tank", "env_nitrogen_storage", "models/Slyfo/crate_resource_large.mdl")
+
 
 Environments.RegisterDevice("Storages", "Hydrogen Storage", "Large Hydrogen Storage", "env_hydrogen_storage", "models/props_wasteland/coolingtank02.mdl")
 Environments.RegisterDevice("Storages", "Hydrogen Storage", "Large Hydrogen Canister", "env_hydrogen_storage", "models/props_phx/life_support/canister_large.mdl", 2)
@@ -104,6 +108,8 @@ Environments.RegisterDevice("Storages", "Hydrogen Storage", "Small Hydrogen Cani
 Environments.RegisterDevice("Storages", "Hydrogen Storage", "Small Hydrogen Tank", "env_hydrogen_storage", "models/props_phx/life_support/tank_small.mdl", 2)
 Environments.RegisterDevice("Storages", "Hydrogen Storage", "Medium Hydrogen Tank", "env_hydrogen_storage", "models/props_phx/life_support/tank_medium.mdl", 2)
 Environments.RegisterDevice("Storages", "Hydrogen Storage", "Large Hydrogen Tank", "env_hydrogen_storage", "models/props_phx/life_support/tank_large.mdl", 2)
+Environments.RegisterDevice("Storages", "Hydrogen Storage", "Hydrogen Shipping Tank", "env_hydrogen_storage", "models/Slyfo/crate_resource_large.mdl")
+
 
 Environments.RegisterDevice("Storages", "CO2 Storage", "Large CO2 Storage", "env_co2_storage", "models/props_wasteland/coolingtank02.mdl")
 Environments.RegisterDevice("Storages", "CO2 Storage", "Large CO2 Canister", "env_co2_storage", "models/props_phx/life_support/canister_large.mdl", 3)
@@ -112,6 +118,9 @@ Environments.RegisterDevice("Storages", "CO2 Storage", "Small CO2 Canister", "en
 Environments.RegisterDevice("Storages", "CO2 Storage", "Small CO2 Tank", "env_co2_storage", "models/props_phx/life_support/tank_small.mdl", 3)
 Environments.RegisterDevice("Storages", "CO2 Storage", "Medium CO2 Tank", "env_co2_storage", "models/props_phx/life_support/tank_medium.mdl", 3)
 Environments.RegisterDevice("Storages", "CO2 Storage", "Large CO2 Tank", "env_co2_storage", "models/props_phx/life_support/tank_large.mdl", 3)
+
+Environments.RegisterDevice("Storages", "CO2 Storage", "Large CO2 Tank", "env_co2_storage", "models/props_phx/life_support/tank_large.mdl", 3)
+
 
 Environments.RegisterDevice("Storages", "Steam Storage", "Small Steam Tank", "env_steam_storage", "models/chipstiks_ls3_models/smallsteamtank/smallsteamtank.mdl")
 Environments.RegisterDevice("Storages", "Steam Storage", "Medium Steam Tank", "env_steam_storage", "models/chipstiks_ls3_models/mediumsteamtank/mediumsteamtank.mdl")
