@@ -150,7 +150,18 @@ function ENT:DoNormalDraw( bDontDrawModel )
 				if resnames and table.Count(resnames) > 0 then
 					for _, k in pairs(resnames) do
 						if node then
-							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. (ResourceUnits[k] or "") .."\n"
+							if node.resources_last[k] and node.resources[k] then
+								local diff = CurTime() - node.data.last_update
+								if diff > 1 then
+									diff = 1
+								end
+								
+								local amt = math.Round(node.resources_last[k] + (node.resources[k] - node.resources_last[k])*diff)
+								OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (amt) .."/".. (node.maxresources[k] or 0) .. (ResourceUnits[k] or "") .."\n"
+							else
+								OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. (ResourceUnits[k] or "") .."\n"
+							end
+							//OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. (ResourceUnits[k] or "") .."\n"
 						else
 							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. 0 .."/".. self.maxresources[k] .."\n"
 						end
@@ -160,7 +171,18 @@ function ENT:DoNormalDraw( bDontDrawModel )
 					OverlayText = OverlayText.."\nGenerates:\n"
 					for _, k in pairs(genresnames) do
 						if node then
-							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0).. (ResourceUnits[k] or "") .."\n"
+							if node.resources_last[k] and node.resources[k] then
+								local diff = CurTime() - node.data.last_update
+								if diff > 1 then
+									diff = 1
+								end
+								
+								local amt = math.Round(node.resources_last[k] + (node.resources[k] - node.resources_last[k])*diff)
+								OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (amt) .."/".. (node.maxresources[k] or 0) .. (ResourceUnits[k] or "") .."\n"
+							else
+								OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. (ResourceUnits[k] or "") .."\n"
+							end
+							//OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0).. (ResourceUnits[k] or "") .."\n"
 						else
 							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. 0 .."/".. 0 .."\n"
 						end
