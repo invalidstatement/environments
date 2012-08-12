@@ -75,10 +75,26 @@ if SERVER then
 	timer.Create("RDChecker", 0.5, 0, CheckRD) --adjust rate perhaps?
 end
 
+local function SaveGravPlating( Player, Entity, Data )
+	if not SERVER then return end
+	if Data.GravPlating and Data.GravPlating == 1 then
+		Entity.grav_plate = 1
+		if ( SERVER ) then
+			Entity.EntityMods = Entity.EntityMods or {}
+			Entity.EntityMods.GravPlating = Data
+		end
+	else
+		Entity.grav_plate = nil
+		if ( SERVER ) then
+			if Entity.EntityMods then Entity.EntityMods.GravPlating = nil end
+		end	
+	end
+	duplicator.StoreEntityModifier( Entity, "gravplating", Data )
+end
+//duplicator.RegisterEntityModifier( "gravplating", SaveGravPlating )
+
+//need to add dupe support
 local function RegisterVehicle(ply, ent)
-	//TODO
-	//local RD = CAF.GetAddon("Resource Distribution")
-	//RD.RegisterNonStorageDevice(ent)
 	RD_Register(ent, true)
 end
 hook.Add( "PlayerSpawnedVehicle", "ENV_vehicle_spawn", RegisterVehicle )
