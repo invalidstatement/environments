@@ -25,8 +25,9 @@ function ENT:Initialize()
 	local nettable = Environments.GetNetTable(self:EntIndex()) --yay synced table
 	self.resources = nettable.resources
 	self.maxresources = nettable.maxresources
-	self.data = nettable.data
+	//self.data = nettable.data
 	self.resources_last = nettable.resources_last
+	self.last_update = nettable.last_update
 end
 
 function ENT:Draw( bDontDrawModel )
@@ -122,7 +123,7 @@ local function RecieveAmts(msg) --errors when ent isnt valid :/
 	local index = Environments.Resources2[res] or res
 	net.resources_last[index] = net.resources[index]
 	net.resources[index] = msg:ReadLong()
-	net.data.last_update = CurTime()
+	net.last_update[index] = CurTime()
 	//Environments.GetNetTable(entid).resources[Environments.Resources2[res] or res] = msg:ReadLong()
 end
 usermessage.Hook("Env_UpdateResAmt", RecieveAmts)
