@@ -149,7 +149,7 @@ function ENT:DoNormalDraw( bDontDrawModel )
 				for _, k in pairs(resnames) do
 					if node and node:IsValid() then
 						if node.resources_last[k] and node.resources[k] then
-							local diff = CurTime() - node.data.last_update
+							local diff = CurTime() - node.last_update[k]
 							if diff > 1 then
 								diff = 1
 							end
@@ -169,7 +169,7 @@ function ENT:DoNormalDraw( bDontDrawModel )
 				for _, k in pairs(genresnames) do
 					if node and node:IsValid() then
 						if node.resources_last[k] and node.resources[k] then
-							local diff = CurTime() - node.data.last_update
+							local diff = CurTime() - node.last_update[k]
 							if diff > 1 then
 								diff = 1
 							end

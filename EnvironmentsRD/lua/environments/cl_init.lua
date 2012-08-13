@@ -145,10 +145,9 @@ local function CreateNetTable(netid)
 	index.resources = {}
 	index.maxresources = {}
 	index.cons = {}
-	index.resources_last = {}
 	
-	index.data = {}
-	index.data.last_update = 0;
+	index.resources_last = {}
+	index.last_update = {};
 	
 	return index
 end
