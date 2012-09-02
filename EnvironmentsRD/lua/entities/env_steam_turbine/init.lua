@@ -3,19 +3,11 @@ AddCSLuaFile( "shared.lua" )
 
 include('shared.lua')
 
-function ENT:SpawnFunction(ply, tr) -- Spawn function needed to make it appear on the spawn menu
-	local ent = ents.Create("storage_energy") -- Create the entity
-	ent:SetPos(tr.HitPos + Vector(0, 0, 50) ) -- Set it to spawn 50 units over the spot you aim at when spawning it
-	ent:Spawn() -- Spawn it
- 
-	return ent -- You need to return the entity to make it work
-end
-
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
-	self.Entity:PhysicsInit( SOLID_VPHYSICS )
-	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
-	self.Entity:SetSolid( SOLID_VPHYSICS )
+	self:PhysicsInit( SOLID_VPHYSICS )
+	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetSolid( SOLID_VPHYSICS )
 	self.Active = 0
 	self.damaged = 0
 	self.sequence = -1
@@ -82,6 +74,7 @@ function ENT:Generate()
 	local needed = self:GetMultiplier()*30
 	local amt = self:ConsumeResource("steam", needed)
 	self:SupplyResource("energy", amt*50)
+	self:SupplyResource("water", amt*25)
 end
 
 function ENT:Think()

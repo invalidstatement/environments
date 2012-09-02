@@ -439,8 +439,8 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 			
 			-- Pos/Model/Angle
 			ent:SetModel( Model )
-			ent:SetPos( trace.HitPos - trace.HitNormal * ent:OBBMins().z )
 			ent:SetAngles( trace.HitNormal:Angle() + self.Entity.Angle )
+			ent:SetPos( trace.HitPos - trace.HitNormal * ent:OBBMins().z )
 
 			ent:SetPlayer(ply)
 			ent:Spawn()
@@ -691,6 +691,7 @@ function Environments.RegisterDevice(toolname, genname, devname, class, model, s
 	dat[genname][devname].skin = skin
 	dat[genname][devname].extra = extra
 end
+
 
 hook.Add("AddTools", "environments tool hax", function()
 	Environments.RegisterTool("Generators", "Energy_Gens", "Life Support", "Used to spawn various LS devices", "generator", 30)

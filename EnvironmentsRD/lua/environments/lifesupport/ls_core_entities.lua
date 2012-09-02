@@ -22,6 +22,11 @@ Environments.RegisterDevice("Generators", "Fusion Generator", "Small Pallet Reac
 Environments.RegisterDevice("Generators", "Fusion Generator", "Large Crate Reactor", "generator_fusion", "models/slyfo/crate_reactor.mdl")
 Environments.RegisterDevice("Generators", "Fusion Generator", "Classic Reactor", "generator_fusion", "models/props_c17/substation_circuitbreaker01a.mdl")
 
+Environments.RegisterDevice("Generators", "Fission Generator", "Basic Fission Reactor", "generator_fission", "models\SBEP_community\d12siesmiccharge.mdl")
+
+Environments.RegisterDevice("Generators", "Steam Turbine", "Basic Steam Turbine", "env_steam_turbine", "models/ce_ls3additional/water_heater/water_heater.mdl")
+Environments.RegisterDevice("Generators", "Steam Turbine", "Steam Turbine", "env_steam_turbine", "models/chipstiks_ls3_models/hydrogenerator/hydrogenerator.mdl")
+
 Environments.RegisterDevice("Generators", "Solar Panel", "Huge Circular Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_c_huge.mdl")
 Environments.RegisterDevice("Generators", "Solar Panel", "Large Circular Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_c_large.mdl")
 Environments.RegisterDevice("Generators", "Solar Panel", "Medium Circular Solar Panel", "generator_solar", "models/ce_ls3additional/solar_generator/solar_generator_c_medium.mdl")
@@ -118,9 +123,6 @@ Environments.RegisterDevice("Storages", "CO2 Storage", "Small CO2 Canister", "en
 Environments.RegisterDevice("Storages", "CO2 Storage", "Small CO2 Tank", "env_co2_storage", "models/props_phx/life_support/tank_small.mdl", 3)
 Environments.RegisterDevice("Storages", "CO2 Storage", "Medium CO2 Tank", "env_co2_storage", "models/props_phx/life_support/tank_medium.mdl", 3)
 Environments.RegisterDevice("Storages", "CO2 Storage", "Large CO2 Tank", "env_co2_storage", "models/props_phx/life_support/tank_large.mdl", 3)
-
-Environments.RegisterDevice("Storages", "CO2 Storage", "Large CO2 Tank", "env_co2_storage", "models/props_phx/life_support/tank_large.mdl", 3)
-
 
 Environments.RegisterDevice("Storages", "Steam Storage", "Small Steam Tank", "env_steam_storage", "models/chipstiks_ls3_models/smallsteamtank/smallsteamtank.mdl")
 Environments.RegisterDevice("Storages", "Steam Storage", "Medium Steam Tank", "env_steam_storage", "models/chipstiks_ls3_models/mediumsteamtank/mediumsteamtank.mdl")
