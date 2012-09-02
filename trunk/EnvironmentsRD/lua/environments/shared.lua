@@ -408,6 +408,32 @@ function Environments.RegisterResource(name)
 	Environments.Resources2[table.Count(Environments.Resources)] = name
 end	
 
+Environments.ResourceData = {}
+Environments.ResourceData.units = {}
+Environments.ResourceData.names = {}
+function Environments.RegisterResourceInfo(name, realname, unit)
+	Environments.ResourceData.names[name] = realname
+	Environments.ResourceData.units[name] = unit
+end
+
+local ResourceUnits = Environments.ResourceData.units
+ResourceUnits["energy"] = " kJ"
+ResourceUnits["water"] = " L"
+ResourceUnits["oxygen"] = " L"
+ResourceUnits["hydrogen"] = " L"
+ResourceUnits["nitrogen"] = " L"
+ResourceUnits["carbon dioxide"] = " L"
+ResourceUnits["steam"] = " L"
+
+local ResourceNames = Environments.ResourceData.names
+ResourceNames["energy"] = "Energy"
+ResourceNames["water"] = "Water"
+ResourceNames["oxygen"] = "Oxygen"
+ResourceNames["hydrogen"] = "Hydrogen"
+ResourceNames["nitrogen"] = "Nitrogen"
+ResourceNames["carbon dioxide"] = "CO2"
+ResourceNames["steam"] = "Steam"
+
 //Adding Main Resources For Optimization
 Environments.RegisterResource("oxygen")
 Environments.RegisterResource("water")
