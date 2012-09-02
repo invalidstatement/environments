@@ -664,7 +664,12 @@ function Environments.RegisterSun()
 	end
 end
 
+Environments.IsSunAlive = true
 function Environments.GetSunFraction(entpos, up)//wip
+	if Environments.IsSunAlive == false then//sun is dead, no solar power
+		return 0
+	end
+	
 	local trace = {}
 	local lit = false
 	local SunAngle2 = SunAngle or Vector(0, 0 ,1)
@@ -1011,5 +1016,65 @@ local function PlanetCheck()
 	end
 end
 timer.Create("ThinkCheckPlanetIssues", 1, 0, PlanetCheck)
+
+//add magnetic plasma shields to repel explosion and protect stuff underneath
+//after supernova have gradual recovery, so it can happen again without complete reset
+local function SuperNova(ply, cmd, args)//have sun model that expands and breaks into an explosion, then turns darker
+	if ply:IsAdmin() or ply == NULL then
+		NovaData = {}
+		local nd = NovaData
+		nd.messages = 0
+		nd.death_time = CurTime() + 360 //360
+		local function Nova()
+			local timeleft = nd.death_time - CurTime()
+			if timeleft < 300 and nd.messages < 1 then
+				for k,v in pairs(player.GetAll()) do
+					v:ChatPrint("5 minutes till sun goes supernova!!!! Get ready!")
+				end
+				nd.messages = 1
+			elseif timeleft < 60 and nd.messages < 2 then
+				for k,v in pairs(player.GetAll()) do
+					v:ChatPrint("Only 1 minute till sun goes supernova!!!! Get ready!")
+				end
+				nd.messages = 2
+			elseif timeleft < 20 and nd.messages < 3 then
+				for k,v in pairs(player.GetAll()) do
+					v:ChatPrint("Only 20 seconds remaining till sun goes supernova!!!! Get ready!")
+				end
+				nd.messages = 3
+			elseif timeleft < 0 then
+				//kill the sun and other stuff here
+				
+				//drain atmospheres
+				for k,v in pairs(environments) do
+					//drain here
+				end
+				
+				//kill players/props not protected
+				for k,v in pairs(player.GetAll()) do
+					//if not in cover kill player and ignite
+					local trace = {}
+					local pos = v:GetPos() + Vector(0,0,200)
+					trace.start = pos
+					trace.endpos = v:GetPos()
+					trace.filter = { v }
+					
+					local tr = util.TraceLine( trace )
+					if tr.Hit and tr.Entity:IsValid() then
+						//player is "protected"
+					else
+						v:Ignite()
+						v:Kill()
+						v:ChatPrint("You were killed by the Supernova Explosion.")
+					end
+				end
+				
+				timer.Destroy("Supernova timer")//kill the timer, we are done counting down
+			end
+		end
+		timer.Create("Supernova timer", 1, 0, Nova)
+	end
+end
+concommand.Add("env_supernova", SuperNova)
 
 
