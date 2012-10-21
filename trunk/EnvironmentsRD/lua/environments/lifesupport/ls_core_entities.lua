@@ -37,6 +37,8 @@ Environments.RegisterDevice("Generators", "Solar Panel", "Medium Solar Panel", "
 
 Environments.RegisterDevice("Generators", "Water Pump", "Large Water Pump", "generator_water", "models/chipstiks_ls3_models/largeh2opump/largeh2opump.mdl")
 Environments.RegisterDevice("Generators", "Water Pump", "Small Water Pump", "generator_water", "models/props_phx/life_support/gen_water.mdl")
+Environments.RegisterDevice("Generators", "Water Pump", "Deployable Water Pump w/ Hose", "generator_water_hose", "models/chipstiks_ls3_models/largeh2opump/largeh2opump.mdl")
+
 
 Environments.RegisterDevice("Generators", "Oxygen Compressor", "Compact Air Compressor", "env_air_compressor", "models/ce_ls3additional/compressor/compressor.mdl", 0, "oxygen")
 Environments.RegisterDevice("Generators", "Oxygen Compressor", "Large Air Compressor", "env_air_compressor", "models/props_outland/generator_static01a.mdl", nil, "oxygen")
