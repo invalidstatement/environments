@@ -26,7 +26,7 @@ function ENT:Initialize()
 		self:SetModel( modelname )
 	end
 
-	self:AddEffects( EF_BONEMERGE | EF_BONEMERGE_FASTCULL | EF_PARENT_ANIMATES )
+	self:AddEffects( bit.bor(EF_BONEMERGE, EF_BONEMERGE_FASTCULL, EF_PARENT_ANIMATES) )
 end
 
 

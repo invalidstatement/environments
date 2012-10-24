@@ -2,7 +2,7 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
-
+print("hey")
 //localize stuff
 local surface = surface
 local cam = cam
@@ -34,8 +34,16 @@ local Environments = Environments
 
 render.MaterialOverride = render.MaterialOverride or SetMaterialOverride //beta and normal compatibility
 
-surface.CreateFont( "digital-7", 36, 2, true, false, "lcd2")
-surface.CreateFont( "coolvetica", 20, 2, true, true, "env")
+local t = {}
+t.font = "digital-7"
+t.size = 36
+t.weight = nil
+t.additive = false
+t.antialias = false
+surface.CreateFont("lcd2", t)
+t.font = "coolvetica"
+t.size = 20
+surface.CreateFont("env", t)
 
 //New Code For Resolutions
 local Resolutions = {}
@@ -151,7 +159,12 @@ function LoadHud()
 				HUD.CS_Model=ClientsideModel("models/props_phx/construct/glass/glass_curve90x1.mdl",RENDERGROUP_OPAQUE)
 				HUD.CS_Model:SetNoDraw(true)
 			end
-			HUD.CS_Model:SetModelScale(Vector(scale_x:GetFloat(), scale_y:GetFloat(), scale_z:GetFloat()))--tab.Scale or Vector(0,0,0))
+			local scale = Vector( scale_x:GetFloat(), scale_y:GetFloat(), scale_z:GetFloat() )
+
+			local mat = Matrix()
+			mat:Scale( scale )
+			HUD.CS_Model:EnableMatrix( "RenderMultiply", mat )
+			//HUD.CS_Model:SetModelScale(Vector(scale_x:GetFloat(), scale_y:GetFloat(), scale_z:GetFloat()))--tab.Scale or Vector(0,0,0))
 		end
 		
 		/*function Paint()
@@ -419,16 +432,16 @@ function LoadHud()
 			
 			--surface.DrawOutlinedRect(a.x+s*.5+55, a.y-33, 50,40)
 			draw.DrawText(tostring(Air),"lcd2",a.x+s*.5+55,a.y-33,Color(0,255,0,255),2)
-			draw.DrawText("Air %", nil,a.x+100,a.y-40, Color(0,255,0,255), 2)
+			draw.DrawText("Air %", "DermaDefault",a.x+100,a.y-40, Color(0,255,0,255), 2)
 			
 			draw.DrawText(tostring(math.Round(temperature))..temp_unit,"lcd2",a.x+s*.5+55,a.y-73,Color(255,0,0,255),2)
-			draw.DrawText("Temperature", nil,a.x+100,a.y-80, Color(255,0,0,255), 2)
+			draw.DrawText("Temperature", "DermaDefault",a.x+100,a.y-80, Color(255,0,0,255), 2)
 			
 			draw.DrawText(tostring(Energy),"lcd2",a.x+s*.5-30,a.y-73,Color(255,255,255,255),2)
-			draw.DrawText("Energy %", nil,a.x+15,a.y-80, Color(255,255,255,255), 2)
+			draw.DrawText("Energy %", "DermaDefault",a.x+15,a.y-80, Color(255,255,255,255), 2)
 			
 			draw.DrawText(tostring(Coolant),"lcd2",a.x+s*.5-30,a.y-33,Color(0,0,0,255),2)
-			draw.DrawText("Coolant %", nil,a.x+15,a.y-40, Color(0,0,0,255), 2)
+			draw.DrawText("Coolant %", "DermaDefault",a.x+15,a.y-40, Color(0,0,0,255), 2)
 			
 			--draw.DrawText("Pressure", nil,a.x+s*.5-30,a.y-40, color_black, 2)
 			--draw.DrawText("atm", nil,a.x+s*.5-10,a.y-16, color_black, 2)

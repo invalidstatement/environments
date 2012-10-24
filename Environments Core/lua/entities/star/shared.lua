@@ -14,11 +14,15 @@ if CLIENT then
 		local BeamRadius = radius * 6
      
 		-- calculate brightness.
-		local dot = math.Clamp( EyeAngles():Forward():DotProduct( ( pos - EyePos() ):Normalize() ), 0, 1 )
+		local diff = pos - EyePos()
+		diff:Normalize()
+		local dot = math.Clamp( EyeAngles():Forward():DotProduct( diff ), 0, 1 )
 		local dist = ( pos - EyePos() ):Length()
      
 		-- draw sunbeams.
-		local sunpos = EyePos() + ( pos - EyePos() ):Normalize() * ( dist * 0.5 )
+		local ang = pos - EyePos()
+		ang:Normalize()
+		local sunpos = EyePos() + ang * ( dist * 0.5 )
 		local scrpos = sunpos:ToScreen()
 			 
 		if( dist <= BeamRadius && dot > 0 ) then

@@ -843,46 +843,49 @@ local function bool(b)
 end
 
 function Environments.SendInfo(ply)
-	timer.Simple(1, function()
-	for _, v in pairs( environments ) do
-		umsg.Start( "AddPlanet", ply )
-			umsg.Short( v:EntIndex() )
-			umsg.Vector( v:GetPos() )
-			umsg.Short( v.radius )
-			umsg.String( v.name or "" )
-			if v.colorid then
-				umsg.String( v.colorid )
-			end
-			if v.bloomid then
-				umsg.String( v.bloomid )
-			end
-		umsg.End()
-	end
+	/*timer.Simple(1, */
+	local func = function()
+		for _, v in pairs( environments ) do
+			umsg.Start( "AddPlanet", ply )
+				umsg.Short( v:EntIndex() )
+				umsg.Vector( v:GetPos() )
+				umsg.Short( v.radius )
+				umsg.String( v.name or "" )
+				if v.colorid then
+					umsg.String( v.colorid )
+				end
+				if v.bloomid then
+					umsg.String( v.bloomid )
+				end
+			umsg.End()
+		end
 
-	for _, v in pairs( Environments.MapEntities.Color ) do
-		umsg.Start( "PlanetColor", ply )
-			umsg.Vector( v.addcol )
-			umsg.Vector( v.mulcol )
-			umsg.Float( v.brightness )
-			umsg.Float( v.contrast )
-			umsg.Float( v.color )
-			umsg.String( v.id )
-		umsg.End()
+		for _, v in pairs( Environments.MapEntities.Color ) do
+			umsg.Start( "PlanetColor", ply )
+				umsg.Vector( v.addcol )
+				umsg.Vector( v.mulcol )
+				umsg.Float( v.brightness )
+				umsg.Float( v.contrast )
+				umsg.Float( v.color )
+				umsg.String( v.id )
+			umsg.End()
+		end
+		
+		for _, v in pairs( Environments.MapEntities.Bloom ) do
+			umsg.Start( "PlanetBloom", ply )
+				umsg.Vector( v.color )
+				umsg.Float( v.x )
+				umsg.Float( v.y )
+				umsg.Float( v.passes )
+				umsg.Float( v.darken )
+				umsg.Float( v.multiply )
+				umsg.Float( v.colormul )
+				umsg.String( v.id )
+			umsg.End()
+		end 
 	end
-	
-	for _, v in pairs( Environments.MapEntities.Bloom ) do
-		umsg.Start( "PlanetBloom", ply )
-			umsg.Vector( v.color )
-			umsg.Float( v.x )
-			umsg.Float( v.y )
-			umsg.Float( v.passes )
-			umsg.Float( v.darken )
-			umsg.Float( v.multiply )
-			umsg.Float( v.colormul )
-			umsg.String( v.id )
-		umsg.End()
-	end 
-	end, ply)
+	timer.Simple(1, func)
+	//end, ply)
 end
 
 function Environments.OnEnvironment(pos)
