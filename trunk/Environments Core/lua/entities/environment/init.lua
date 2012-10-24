@@ -128,7 +128,7 @@ function ENT:UpdatePressure(ent)
 end
 
 function ENT:Check()
-	--local start = SysTime()
+	//local start = SysTime()
 	local radius = self.radius
 	for k,ent in pairs(self.Entities) do
 		if ent:GetPhysicsObject():IsValid() then
@@ -179,7 +179,7 @@ function ENT:Check()
 			end
 		end
 	end
-	--print(self.name, SysTime()-start, table.Count(self.Entities))
+	//print(self.name, SysTime()-start, table.Count(self.Entities))
 end
 
 function ENT:Think()

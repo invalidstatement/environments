@@ -85,7 +85,12 @@ function ENT:Think()
 			self.flame:Spawn()
 			self.flame:Activate()
 		end
-		self:GetPhysicsObject():SetVelocity( (self.target - self:GetPos() ):Normalize() * 700 ) 
+		local phys = self:GetPhysicsObject()
+		if phys and phys:IsValid() then
+			local diff = self.target - self:GetPos()
+			diff:Normalize()
+			phys:SetVelocity( diff * 700 ) 
+		end
 	else
 		self.firstthink = false
 	end

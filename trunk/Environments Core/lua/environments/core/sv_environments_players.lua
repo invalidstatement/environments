@@ -31,8 +31,10 @@ function Environments.LSCheck() --this has to be the worst function ever
 		if ply:GetNWBool("inspace") == true then --make sure space is correct
 			ply.environment = Space()	--why am I doing this? perhaps get rid of NWBool?
 		end
-		if ply:GetScriptedVehicle() and ply:GetScriptedVehicle():IsValid() then --if in vehicle
+		if ply.GetScriptedVehicle and ply:GetScriptedVehicle() and ply:GetScriptedVehicle():IsValid() then --if in vehicle
 			ply.environment = ply:GetScriptedVehicle().environment
+		elseif ply:GetVehicle() and ply:GetVehicle():IsValid() then
+			ply.environment = ply:GetVehicle().environment
 		end
 		
 		if ply.GHDed then
@@ -43,7 +45,7 @@ function Environments.LSCheck() --this has to be the worst function ever
 		
 		local env = ply.environment
 		
-		if not env then return end
+		if not env then print("player env nil") return end
 		
 		local suit = ply.suit
 		local airused = true
@@ -513,7 +515,8 @@ function Environments.Hooks.LSSpawn(ply)
 		ply:ChatPrint("This server is running Environments, please report any bugs to CmdrMatthew")
 		ply.msged = true
 	end
-	timer.Simple(1, function(ply) ply:ResetSuit() end, ply)
+	local temp = function() ply:ResetSuit() end
+	timer.Simple(1, temp)
 end
 
 function Environments.Hooks.HelmetSwitch( ply )

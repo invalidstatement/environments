@@ -17,6 +17,10 @@ Environments.ForceLoad = false
 Environments.UseSuit = true
 Environments.Debug = true
 
+if !SinglePlayer then
+	SinglePlayer = game.SinglePlayer
+end
+
 if file.Open then
 	local oldex = file.Exists
 	function file.Exists(path, sub)
@@ -136,24 +140,26 @@ function GetOnlineVersion( printChecking )
 	if printChecking then
 		print("Checking for updates....")
 	end
-	http.Get("http://environments.googlecode.com/svn/trunk/","",function(contents,size)
-		local rev = tonumber(string.match( contents, "Revision ([0-9]+)" ))
-		if rev and Environments.Version >= rev then
-			print("Environments Is Up To Date, Latest Version: "..rev)
-		elseif !rev then
-			print("No Internet Connection Detected! Environments Update Check Failed")
-		else
-			print("A newer version of Environments is availible! Version: "..rev..", You have Version: "..Environments.Version)
-			print("Please update!")
-		end
-		Environments.CurrentVersion = rev
-		
-		if CLIENT then --update the config panel to show that it is up to date
-			if Environments.ConfigPanel then
-				Environments.ConfigMenu(Environments.ConfigPanel) 
+	if http and http.Get then
+		http.Get("http://environments.googlecode.com/svn/trunk/","",function(contents,size)
+			local rev = tonumber(string.match( contents, "Revision ([0-9]+)" ))
+			if rev and Environments.Version >= rev then
+				print("Environments Is Up To Date, Latest Version: "..rev)
+			elseif !rev then
+				print("No Internet Connection Detected! Environments Update Check Failed")
+			else
+				print("A newer version of Environments is availible! Version: "..rev..", You have Version: "..Environments.Version)
+				print("Please update!")
 			end
-		end
-	end)
+			Environments.CurrentVersion = rev
+			
+			if CLIENT then --update the config panel to show that it is up to date
+				if Environments.ConfigPanel then
+					Environments.ConfigMenu(Environments.ConfigPanel) 
+				end
+			end
+		end)
+	end
 end
 GetOnlineVersion()
 
