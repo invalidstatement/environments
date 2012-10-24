@@ -18,8 +18,8 @@ ResourceNames["hydrogen"] = "Hydrogen"
 ResourceNames["nitrogen"] = "Nitrogen"
 ResourceNames["carbon dioxide"] = "CO2"
 
-surface.CreateFont( "arial", 60, 600, true, false, "ConflictText" )
-surface.CreateFont( "arial", 40, 600, true, false, "Flavour" )
+//surface.CreateFont( "arial", 60, 600, true, false, "ConflictText" )
+//surface.CreateFont( "arial", 40, 600, true, false, "Flavour" )
 
 function ENT:Initialize()
 	local nettable = Environments.GetNetTable(self:EntIndex()) --yay synced table
@@ -149,3 +149,4 @@ local function RecieveNode(msg)
 	end
 end
 usermessage.Hook("Env_SetNodeOnEnt", RecieveNode)
+print("hey")

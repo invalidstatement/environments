@@ -55,7 +55,7 @@ local Files
 if file.FindInLua then
 	Files = file.FindInLua( "environments/lifesupport/*.lua" )
 else//gm13
-	Files = file.Find("environments/lifesupport/*.lua", LUA_PATH)
+	Files = file.Find("environments/lifesupport/*.lua", "LUA")
 end
 
 for k, File in ipairs(Files) do

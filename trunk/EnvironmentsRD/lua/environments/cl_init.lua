@@ -47,7 +47,11 @@ if CLIENT then
 	local resolution = 0.1
 	local startpos, endpos, endpos2, cyl
 	function Environments.DrawCable(ent, p1, p1f, p2, p2f)
-		ent.mesh = NewMesh()
+		if Mesh then
+			ent.mesh = Mesh()
+		else
+			ent.mesh = NewMesh()
+		end
 		local tab = {}
 		for mu = 0, 1 - resolution, resolution do
 			startpos =  Vector( ( p2.x - p1.x ) * mu + p1.x, hermiteInterpolate( p2.y - p1f.y * 100, p1.y, p2.y, p1.y - p2f.y * 100, 0.5, 0, mu ), hermiteInterpolate( p2.z - p1f.z * 100, p1.z, p2.z, p1.z - p2f.z * 100, 0.5, 0, mu ) )
