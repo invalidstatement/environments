@@ -295,6 +295,7 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 					end
 				end
 			end
+			self.BaseClass.OnRemove(self)
 		end
 		
 		function ENT:Think()
@@ -439,8 +440,8 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 			
 			-- Pos/Model/Angle
 			ent:SetModel( Model )
-			ent:SetAngles( trace.HitNormal:Angle() + self.Entity.Angle )
 			ent:SetPos( trace.HitPos - trace.HitNormal * ent:OBBMins().z )
+			ent:SetAngles( trace.HitNormal:Angle() + self.Entity.Angle )
 
 			ent:SetPlayer(ply)
 			ent:Spawn()
@@ -579,7 +580,11 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 			// Release the old ghost entity
 			self:ReleaseGhostEntity()
 			
-			self.GhostEntity = ents.Create( "prop_physics" )
+			if CLIENT and ents.CreateClientProp then
+				self.GhostEntity = ents.CreateClientProp( model )
+			else
+				self.GhostEntity = ents.Create( "prop_physics" )
+			end
 			
 			// If there's too many entities we might not spawn..
 			if !self.GhostEntity:IsValid() then
@@ -691,7 +696,6 @@ function Environments.RegisterDevice(toolname, genname, devname, class, model, s
 	dat[genname][devname].skin = skin
 	dat[genname][devname].extra = extra
 end
-
 
 hook.Add("AddTools", "environments tool hax", function()
 	Environments.RegisterTool("Generators", "Energy_Gens", "Life Support", "Used to spawn various LS devices", "generator", 30)
