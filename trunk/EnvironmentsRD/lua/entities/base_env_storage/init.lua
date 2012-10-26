@@ -93,12 +93,13 @@ function ENT:Link(ent, delay)
 		self.node = ent
 
 		if delay then
-			timer.Simple(0.1, function(self, ent)
+			local func = function() 
 				umsg.Start("Env_SetNodeOnEnt")
 					umsg.Short(self:EntIndex())
 					umsg.Short(ent:EntIndex())
 				umsg.End()
-			end, self, ent)
+			end
+			timer.Simple(0.1, func)
 		else
 			umsg.Start("Env_SetNodeOnEnt")
 				umsg.Short(self:EntIndex())
