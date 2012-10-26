@@ -392,9 +392,9 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 		end
 		if CLIENT then
 			//Yay, simplified titles
-			language.Add( "Tool_"..self.Mode.."_name", self.Name )
-			language.Add( "Tool_"..self.Mode.."_desc", self.Description )
-			language.Add( "Tool_"..self.Mode.."_0", "Primary: Spawn a Device. Reload: Repair a Device." )
+			language.Add( "tool."..self.Mode..".name", self.Name )
+			language.Add( "tool."..self.Mode..".desc", self.Description )
+			language.Add( "tool."..self.Mode..".0", "Primary: Spawn a Device. Reload: Repair a Device." )
 			
 			for k,v in pairs(self.Language) do
 				language.Add(k.."_"..self.CleanupGroup,v)
@@ -614,7 +614,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 		CPanel:ClearControls()
 		--CPanel:AddHeader()
 		--CPanel:AddDefaultControls()
-		CPanel:AddControl("Header", { Text = "#Tool_"..name.."_name", Description = "#Tool_"..name.."_desc" })
+		CPanel:AddControl("Header", { Text = "#tool."..name..".name", Description = "#tool."..name..".desc" })
 		
 		local list = vgui.Create( "DPanelList" )
 		list:SetTall( 400 )

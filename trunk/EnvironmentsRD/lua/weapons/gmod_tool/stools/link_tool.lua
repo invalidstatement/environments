@@ -7,10 +7,10 @@ TOOL.ConfigName     = nil
 TOOL.Tab = "Environments"
 
 if ( CLIENT ) then
-	language.Add( "Tool_link_tool_name", "Link Tool" )
-	language.Add( "Tool_link_tool_desc", "Links Resource-Carrying Devices together to a Resource Node." )
-	language.Add( "Tool_link_tool_0", "Left Click: Link Devices. Reload: Unlink Device from All." )
-	language.Add( "Tool_link_tool_1", "Click on another Resource-Carrying Device" )
+	language.Add( "tool.link_tool.name", "Link Tool" )
+	language.Add( "tool.link_tool.desc", "Links Resource-Carrying Devices together to a Resource Node." )
+	language.Add( "tool.link_tool.0", "Left Click: Link Devices. Reload: Unlink Device from All." )
+	language.Add( "tool.link_tool.1", "Click on another Resource-Carrying Device" )
 	language.Add( "rd3_dev_link_width", "Width:" )
 	language.Add( "link_tool_material", "Material:" )
 	language.Add( "rd3_dev_link_colour", "Color:")
@@ -118,7 +118,7 @@ function TOOL:Reload(trace)
 end
 
 function TOOL.BuildCPanel( panel )
-	panel:AddControl( "Header", { Text = "#Tool_link_tool_name", Description	= "#Tool_link_tool_desc" }  )
+	panel:AddControl( "Header", { Text = "#tool.link_tool.name", Description	= "#tool.link_tool.desc" }  )
 	
 	panel:AddControl("CheckBox", { Label = "Use Cables? DO NOT USE ON MOVING STRUCTURES", Command = "link_tool_cable" })
 

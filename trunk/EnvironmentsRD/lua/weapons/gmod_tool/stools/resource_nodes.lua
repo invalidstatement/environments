@@ -23,7 +23,7 @@ TOOL.Language["SBoxLimit"] = "Hit the Resource Node limit";
 function TOOL.BuildCPanel( CPanel )
 	-- Header stuff
 	CPanel:ClearControls()
-	CPanel:AddControl("Header", { Text = "#Tool_"..name.."_name", Description = "#Tool_"..name.."_desc" })
+	CPanel:AddControl("Header", { Text = "#tool."..name..".name", Description = "#tool."..name..".desc" })
 	
 	CPanel:AddControl( "PropSelect", {
 		Label = "#Models",

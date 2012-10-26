@@ -22,7 +22,7 @@ Environments.RegisterDevice("Generators", "Fusion Generator", "Small Pallet Reac
 Environments.RegisterDevice("Generators", "Fusion Generator", "Large Crate Reactor", "generator_fusion", "models/slyfo/crate_reactor.mdl")
 Environments.RegisterDevice("Generators", "Fusion Generator", "Classic Reactor", "generator_fusion", "models/props_c17/substation_circuitbreaker01a.mdl")
 
-Environments.RegisterDevice("Generators", "Fission Generator", "Basic Fission Reactor", "generator_fission", "models\SBEP_community\d12siesmiccharge.mdl")
+Environments.RegisterDevice("Generators", "Fission Generator", "Basic Fission Reactor", "generator_fission", "models/SBEP_community/d12siesmiccharge.mdl")
 
 Environments.RegisterDevice("Generators", "Steam Turbine", "Basic Steam Turbine", "env_steam_turbine", "models/ce_ls3additional/water_heater/water_heater.mdl")
 Environments.RegisterDevice("Generators", "Steam Turbine", "Steam Turbine", "env_steam_turbine", "models/chipstiks_ls3_models/hydrogenerator/hydrogenerator.mdl")
