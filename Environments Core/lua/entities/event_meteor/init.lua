@@ -62,7 +62,9 @@ end
 
 function ENT:Start(planet)
 	self.target = planet.position or Vector(0,0,0)
-	self:GetPhysicsObject():SetVelocity( (self.target - self:GetPos() ):Normalize() * 700 ) 
+	local dir = self.target - self:GetPos()
+	dir:Normalize()
+	self:GetPhysicsObject():SetVelocity( dir * 700 ) 
 end
 
 function ENT:OnTakeDamage(dmg)
