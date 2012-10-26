@@ -18,9 +18,9 @@ TOOL.ClientConVar[ "freeze" ] = 1
 
 // Add Default Language translation (saves adding it to the txt files)
 if ( CLIENT ) then
-	language.Add( "Tool_prop_shrinker_name", "Prop Shrinker" )
-	language.Add( "Tool_prop_shrinker_desc", "Alters the size of props and contraptions." )
-	language.Add( "Tool_prop_shrinker_0", "Left Click to Shrink All Constrained Props.  Right Click To Restore to Normal Size." )
+	language.Add( "Tool.prop_shrinker.name", "Prop Shrinker" )
+	language.Add( "Tool.prop_shrinker.desc", "Alters the size of props and contraptions." )
+	language.Add( "Tool.prop_shrinker.0", "Left Click to Shrink All Constrained Props.  Right Click To Restore to Normal Size." )
 end
 
 local function SaveShrink( Player, Entity, Data )
@@ -87,7 +87,7 @@ end
 
 function TOOL.BuildCPanel( CPanel)
 	local cp = CPanel
-	cp:AddControl("Header",{Text = "#Tool_prop_shrinker_name", Description = "#Tool_prop_shrinker_desc"})
+	cp:AddControl("Header",{Text = "#Tool.prop_shrinker.name", Description = "#Tool.prop_shrinker.desc"})
 	
 	cp:AddControl("Slider",{Label = "Scale", Description = "The scale to shrink the props to.", Type = "Float", Min = 0.01, Max = 2, Command = "prop_shrinker_scale"})
 	cp:AddControl("Checkbox",{Label = "Parent?", Description = "Attach the props together with parenting? Makes them far more stable, but only the parent will collide.", Command = "prop_shrinker_parent"})
