@@ -68,7 +68,7 @@ end
 function ENT:Check()
 	local size = 0
 	local constrainedents = constraint.GetAllConstrainedEntities( self )
-	local world = GetWorldEntity()
+	local world = game.GetWorld()
 	for k,ent in pairs(constrainedents) do
 		if ent == world then continue end --no more welding to world hax
 		if ent.IsLS

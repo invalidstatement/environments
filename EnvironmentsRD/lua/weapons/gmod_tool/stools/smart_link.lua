@@ -6,10 +6,10 @@ TOOL.ConfigName	= ''
 TOOL.Tab = "Environments"
 
 if ( CLIENT ) then
-	language.Add( "Tool_smart_link_name", "Smart Link Tool" )
-	language.Add( "Tool_smart_link_desc", "Links Resource-Carrying Devices to a Resource Node." )
-	language.Add( "Tool_smart_link_0", "Left Click: Select Devices.  Right Click: Link All devices to the selected Node.  Reload: Reset selected devices." )
-    language.Add( "Tool_smart_link_1", "Click on another Resource-Carrying Device" )
+	language.Add( "tool.smart_link.name", "Smart Link Tool" )
+	language.Add( "tool.smart_link.desc", "Links Resource-Carrying Devices to a Resource Node." )
+	language.Add( "tool.smart_link.0", "Left Click: Select Devices.  Right Click: Link All devices to the selected Node.  Reload: Reset selected devices." )
+    language.Add( "tool.smart_link.1", "Click on another Resource-Carrying Device" )
 end
 
 TOOL.ClientConVar[ "material" ] = "cable/cable2"
@@ -76,6 +76,6 @@ function TOOL:Reload(trace)
 end
 
 function TOOL.BuildCPanel( panel )
-	panel:AddControl( "Header", { Text = "#Tool_smart_link_name", Description	= "#Tool_smart_link_desc" }  )
+	panel:AddControl( "Header", { Text = "#tool.smart_link.name", Description	= "#tool.smart_link.desc" }  )
 end
 

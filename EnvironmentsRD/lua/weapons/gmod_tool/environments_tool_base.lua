@@ -30,9 +30,9 @@ function TOOL:Register()
 	end
 	if CLIENT then
 		//Yay, simplified titles
-		language.Add( "Tool_"..self.Mode.."_name", self.Name )
-		language.Add( "Tool_"..self.Mode.."_desc", self.Description )
-		language.Add( "Tool_"..self.Mode.."_0", "Primary: Spawn a "..self.Name.. " Secondary: Repair LS Device" )
+		language.Add( "tool."..self.Mode..".name", self.Name )
+		language.Add( "tool."..self.Mode..".desc", self.Description )
+		language.Add( "tool."..self.Mode..".0", "Primary: Spawn a "..self.Name.. " Secondary: Repair LS Device" )
 		
 		for k,v in pairs(self.Language) do
 			language.Add(k.."_"..self.CleanupGroup,v);

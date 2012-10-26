@@ -7,9 +7,9 @@ TOOL.ConfigName     = nil
 TOOL.Tab = "Environments"
 
 if ( CLIENT ) then
-	language.Add( "tool_auto_link_tool_name", "Auto Link Tool" )
-	language.Add( "Tool_auto_link_tool_desc", "Links Resource-Carrying Devices together to a Resource Node." )
-	language.Add( "Tool_auto_link_tool_0", "Left Click: Link All Devices in Range of Node. Reload: Unlink Device from All." )
+	language.Add( "tool.auto_link_tool.name", "Auto Link Tool" )
+	language.Add( "tool.auto_link_tool.desc", "Links Resource-Carrying Devices together to a Resource Node." )
+	language.Add( "tool.auto_link_tool.0", "Left Click: Link All Devices in Range of Node. Reload: Unlink Device from All." )
 end
 
 TOOL.ClientConVar[ "material" ] = "models/debug/debugwhite"
@@ -78,7 +78,7 @@ function TOOL:Reload(trace)
 end
 
 function TOOL.BuildCPanel( panel )
-	panel:AddControl( "Header", { Text = "#Tool_auto_link_tool_name", Description	= "#Tool_auto_link_tool_desc" }  )
+	panel:AddControl( "Header", { Text = "#tool.auto_link_tool_name", Description	= "#tool.auto_link_tool.desc" }  )
 	
 	panel:AddControl("CheckBox", { Label = "Use Cables? DO NOT USE ON MOVING STRUCTURES", Command = "auto_link_tool_cable" })
 

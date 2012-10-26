@@ -105,9 +105,9 @@ if (SERVER) then
 		end
 	end
 else
-	language.Add( "Tool_"..toolname.."_name", "Resource Pumps" )
-	language.Add( "Tool_"..toolname.."_desc", "Used to spawn resource pumps." )
-	language.Add( "Tool_"..toolname.."_0", "Primary: Spawn a Resource Pump" )
+	language.Add( "tool."..toolname..".name", "Resource Pumps" )
+	language.Add( "tool."..toolname..".desc", "Used to spawn resource pumps." )
+	language.Add( "tool."..toolname..".0", "Primary: Spawn a Resource Pump" )
 	language.Add( "undone_pump", "Undone Pump" )
 	language.Add( "Cleanup_pump", "Pumps" )
 	language.Add( "Cleaned_pump", "Cleaned up all Pumps" )
@@ -118,7 +118,7 @@ else
 		-- Header stuff
 		CPanel:ClearControls()
 
-		CPanel:AddControl("Header", { Text = "#Tool_resource_pumps_name", Description = "#Tool_resource_pumps_desc" })
+		CPanel:AddControl("Header", { Text = "#tool.resource_pumps.name", Description = "#tool.resource_pumps.desc" })
 		
 		CPanel:AddControl("ComboBox", {
 			Label = "#Presets",
