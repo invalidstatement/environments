@@ -275,10 +275,10 @@ if SERVER then
 		if Simple then
 			Explode2( ent )
 		else
-			timer.Simple(1, Explode1, ent)
-			timer.Simple(1.2, Explode1, ent)
-			timer.Simple(2, Explode1, ent)
-			timer.Simple(2, Explode2, ent)
+			timer.Simple(1, function() Explode1( ent) end)
+			timer.Simple(1.2, function() Explode1( ent) end)
+			timer.Simple(2, function() Explode1( ent) end)
+			timer.Simple(2,function()  Explode2( ent) end)
 		end
 	end
 	

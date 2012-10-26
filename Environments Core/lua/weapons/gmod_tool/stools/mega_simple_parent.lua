@@ -6,9 +6,9 @@ TOOL.ConfigName = ''
 
 // Add Default Language translation (saves adding it to the txt files)
 if ( CLIENT ) then
-	language.Add( "Tool_mega_simple_parent_name", "Mega Parent" )
-	language.Add( "Tool_mega_simple_parent_desc", "Parent Props Together to Reduce Lag." )
-	language.Add( "Tool_mega_simple_parent_0", "Left Click to Select all Constrained Props. Right Click to Parent all Selected Props." )
+	language.Add( "Tool.mega_simple_parent.name", "Mega Parent" )
+	language.Add( "Tool.mega_simple_parent.desc", "Parent Props Together to Reduce Lag." )
+	language.Add( "Tool.mega_simple_parent.0", "Left Click to Select all Constrained Props. Right Click to Parent all Selected Props." )
 end
 
 function TOOL:LeftClick( trace )
@@ -63,5 +63,5 @@ end
 
 function TOOL.BuildCPanel( CPanel )
 	// HEADER
-	CPanel:AddControl( "Header", { Text = "#Tool_mega_simple_parent_name", Description	= "#Tool_mega_simple_parent_desc" }  )
+	CPanel:AddControl( "Header", { Text = "#Tool.mega_simple_parent.name", Description	= "#Tool.mega_simple_parent.desc" }  )
 end

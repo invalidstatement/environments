@@ -144,14 +144,14 @@ scripted_ents.Register = function(t, name, reload, myarg)
 						self.node = ent
 						
 						if delay then
-							timer.Simple(0.1, function(self, ent)
+							timer.Simple(0.1, function()
 								umsg.Start("Env_SetNodeOnEnt")
 									--umsg.Entity(self)
 									--umsg.Entity(ent)
 									umsg.Short(self:EntIndex())
 									umsg.Short(ent:EntIndex())
 								umsg.End()
-							end, self, ent)
+							end)
 						else
 							umsg.Start("Env_SetNodeOnEnt")
 								--umsg.Entity(self)
@@ -302,12 +302,12 @@ function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at
 			self.node = ent
 
 			if delay then
-				timer.Simple(0.1, function(self, ent)
+				timer.Simple(0.1, function()
 					umsg.Start("Env_SetNodeOnEnt")
 						umsg.Short(self:EntIndex())
 						umsg.Short(ent:EntIndex())
 					umsg.End()
-				end, self, ent)
+				end)
 			else
 				umsg.Start("Env_SetNodeOnEnt")
 					umsg.Short(self:EntIndex())

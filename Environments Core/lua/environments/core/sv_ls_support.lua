@@ -66,7 +66,7 @@ function LS.ZapMe(pos, magnitude)
 end
 
 function LS.ColorDamage(ent, HP, Col)
-	if not ent or not HP or not Col or not ValidEntity(ent) then return end
+	if not ent or not HP or not Col or not IsValid(ent) then return end
 	if (ent:Health() <= (ent:GetMaxHealth( ) / HP)) then
 		ent:SetColor(Col, Col, Col, 255)
 	end
@@ -105,16 +105,16 @@ function LS.Destruct( ent, Simple )
 	if (Simple) then
 		Explode2( ent )
 	else
-		timer.Simple(1, Explode1, ent)
-		timer.Simple(1.2, Explode1, ent)
-		timer.Simple(2, Explode1, ent)
-		timer.Simple(2, Explode2, ent)
+		timer.Simple(1, function() Explode1( ent) end )
+		timer.Simple(1.2, function() Explode1( ent) end )
+		timer.Simple(2, function() Explode1( ent) end )
+		timer.Simple(2, function() Explode2( ent) end )
 	end
 end
 
 function LS.RemoveEnt( ent )
 	constraint.RemoveAll( ent )
-	timer.Simple( 1, RemoveEntity, ent )
+	timer.Simple( 1, function() RemoveEntity(ent) end)
 	ent:SetNotSolid( true )
 	ent:SetMoveType( MOVETYPE_NONE )
 	ent:SetNoDraw( true )

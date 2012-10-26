@@ -7,9 +7,9 @@ TOOL.Tab = "Environments"
 
 // Add Default Language translation (saves adding it to the txt files)
 if ( CLIENT ) then
-	language.Add( "Tool_grav_plate_name", "Gravity Plating" )
-	language.Add( "Tool_grav_plate_desc", "Enables walking on a prop even in low-to-zero gravity." )
-	language.Add( "Tool_grav_plate_0", "Left Click to attach Gravity Plating.  Right Click to take it off." )
+	language.Add( "Tool.grav_plate.name", "Gravity Plating" )
+	language.Add( "Tool.grav_plate.desc", "Enables walking on a prop even in low-to-zero gravity." )
+	language.Add( "Tool.grav_plate.0", "Left Click to attach Gravity Plating.  Right Click to take it off." )
 end
 
 local function SaveGravPlating( Player, Entity, Data )
@@ -58,7 +58,7 @@ end
 
 function TOOL.BuildCPanel( CPanel )
 	// HEADER
-	CPanel:AddControl( "Header", { Text = "#Tool_grav_plate_name", Description	= "#Tool_grav_plate_desc" }  )
+	CPanel:AddControl( "Header", { Text = "#Tool.grav_plate.name", Description	= "#Tool.grav_plate.desc" }  )
 end
 
 local function OverrideCanTool(pl, rt, toolmode)

@@ -205,7 +205,7 @@ local function LSUpdate(msg) --recieves life support update packet
 			Environments.Breath:FadeOut(1)
 		else
 			Environments.Breath:Play()
-			Environments.Breath:ChangePitch(128)
+			Environments.Breath:ChangePitch(128, 0)
 			Environments.Breath:FadeOut(1)
 		end
 	end
