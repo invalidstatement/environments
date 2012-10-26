@@ -45,7 +45,7 @@ function Environments.LSCheck() --this has to be the worst function ever
 		
 		local env = ply.environment
 		
-		if not env then print("player env nil") return end
+		if not env then return end
 		
 		local suit = ply.suit
 		local airused = true

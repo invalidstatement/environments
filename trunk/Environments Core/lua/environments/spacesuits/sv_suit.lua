@@ -41,7 +41,7 @@ end
    Desc: Called when a player dies.
 ---------------------------------------------------------*/
 function Environments.Hooks.SuitPlayerDeath( Victim, Inflictor, Attacker )
-	if ( ValidEntity( Victim.m_hSuit ) ) then
+	if ( IsValid( Victim.m_hSuit ) ) then
 		Victim.m_hHelmet:SetParent( Victim:GetRagdollEntity() )
 		Victim.m_hHelmet:Initialize()
 		Victim.m_hSuit:SetParent( Victim:GetRagdollEntity() )
