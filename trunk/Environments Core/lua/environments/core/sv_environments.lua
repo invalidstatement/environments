@@ -126,8 +126,10 @@ local function LoadEnvironments()
 			if filters then
 				table.insert(filters, "environment")
 				table.insert(filters, "star")
+				table.insert(filters, "player_suit")
+				table.insert(filters, "player_helmet")
 			else
-				filters = {"environment", "star"}
+				filters = {"environment", "star", "player_suit", "player_helmet"}
 			end
 			o(b, filters)
 		end
