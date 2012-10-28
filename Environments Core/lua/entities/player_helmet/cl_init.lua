@@ -1,6 +1,10 @@
 
 include('shared.lua')
 
+function ENT:Initialize()
+	self.BuildBonePositions = self.BuildBonePositions
+end
+
 /*---------------------------------------------------------
    Name: DrawPre
 ---------------------------------------------------------*/
@@ -21,6 +25,7 @@ local function BoneScale( self, realboneid )
 	if self:GetBoneName(realboneid) == "ValveBiped.Bip01_Head1" then return end
 	local matBone = self:GetBoneMatrix( realboneid )
 	if matBone then
+		print("found bone")
 		matBone:Scale( Vector( 0, 0, 0 ) )
 		self:SetBoneMatrix( realboneid, matBone )
 	end
@@ -31,6 +36,7 @@ end
    Desc:
 ---------------------------------------------------------*/
 function ENT:BuildBonePositions( NumBones, NumPhysBones )
+	print("hi")
 	for i=0, NumBones do
 		BoneScale( self, i )
 	end

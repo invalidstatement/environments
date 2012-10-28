@@ -1,6 +1,10 @@
 
 include('shared.lua')
 
+function ENT:Initialize()
+	self.BuildBonePositions = self.BuildBonePositions
+end
+
 /*---------------------------------------------------------
    Name: DrawPre
 ---------------------------------------------------------*/
