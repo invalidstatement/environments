@@ -283,7 +283,7 @@ usermessage.Hook("PlanetBloom", PlanetBloom)
 
 local function ZeroGravRagdoll( msg )
 	local ply = msg:ReadEntity();
-	timer.Create("ZGR", 0.1, 1, ZGR, ply)
+	timer.Create("ZGR", 0.1, 1, function() ZGR(ply) end)
 end
 usermessage.Hook( "ZGRagdoll", ZeroGravRagdoll );
 
