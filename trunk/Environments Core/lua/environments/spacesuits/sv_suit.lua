@@ -25,6 +25,8 @@ function meta:PutOnHelmet()
 		self.m_hHelmet:SetModel(self.SuitModel)
 		self:SetNWBool("helmet", true)
 		self.m_hHelmet:SetColor(Color(self.ClothingColor.r,self.ClothingColor.g,self.ClothingColor.b,255,255))
+
+		self.m_hSuit:ManipulateBoneScale( self.m_hSuit:LookupBone("ValveBiped.Bip01_Head1"), Vector(1,1,1) )
 	end
 end
 
@@ -33,6 +35,14 @@ function meta:TakeOffHelmet()
 		self:SetNWBool("helmet", false)
 		self.m_hHelmet:SetModel(player_manager.TranslatePlayerModel(self.m_hHelmet:GetParent():GetInfo( "cl_playermodel" )))
 		self.m_hHelmet:SetColor(Color(255,255,255,255))
+		
+		for i=0, self.m_hHelmet:GetBoneCount() do
+			if( self.m_hHelmet:GetBoneName( i ) == "ValveBiped.Bip01_Head1" ) then continue end
+			if( self.m_hHelmet:GetBoneName( i ) == "ValveBiped.Bip01_Neck1" ) then continue end
+			self.m_hHelmet:ManipulateBoneScale( i, Vector(0,0,0) )
+		end
+
+		self.m_hSuit:ManipulateBoneScale( self.m_hSuit:LookupBone("ValveBiped.Bip01_Head1"), Vector(0,0,0) )
 	end
 end
 
