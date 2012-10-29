@@ -108,6 +108,7 @@ a["prop_vehicle_airboat"] = true
 a["prop_ragdoll"] = true
 function s.DoShrink(ent, scale, parent, freeze, ply)
 	local es = constraint.GetAllConstrainedEntities(ent)
+	scale = scale or 0.25
 	
 	//clear constraints
 	for k,v in pairs(es) do
@@ -122,7 +123,7 @@ function s.DoShrink(ent, scale, parent, freeze, ply)
 	if !badstuff[ent:GetClass()] then
 		//actually shrink
 		for k,v in pairs(es) do
-			s.Shrink(v, ent, scale or 0.25)
+			s.Shrink(v, ent, scale)
 		end
 		
 		//redo constraints
@@ -227,8 +228,23 @@ if CLIENT then
 			local ent = Entity(k)
 			if ent and ent:IsValid() then
 				//print("scaled "..tostring(ent).." "..tostring(v))
-				ent:SetModelScale(Vector(v, v, v))
+				local s = Vector( v,v,v )
+
+				local mat = Matrix()
+				mat:Scale( s )
+				ent:EnableMatrix( "RenderMultiply", mat )
+				
 				ent.DrawEntityOutline = function() end
+				
+				local phys = ent:GetPhysicsObject()
+				local mesh = phys:GetMesh()
+					
+				for k,v in pairs(mesh) do
+					v.pos = v.pos*v
+				end
+					
+				ent:PhysicsFromMesh(mesh)
+				ent:EnableCustomCollisions()
 				
 				shrinked[k] = nil//dont loop through us again, we are finished
 			end
@@ -243,7 +259,24 @@ if CLIENT then
 		
 		local ent = Entity(entID)
 		if ent and ent:IsValid() then
-			ent:SetModelScale(Vector(scale,scale,scale))
+			//ent:SetModelScale(scale, 0)
+			local s = Vector( scale,scale,scale )
+
+			local mat = Matrix()
+			mat:Scale( s )
+			ent:EnableMatrix( "RenderMultiply", mat )
+			
+			local phys = ent:GetPhysicsObject()
+			if phys and phys:IsValid() then
+				local mesh = phys:GetMesh()
+				
+				for k,v in pairs(mesh) do
+					v.pos = v.pos*scale
+				end
+				
+				ent:PhysicsFromMesh(mesh)
+				ent:EnableCustomCollisions()
+			end
 			//print(ent:OBBMins(), ent:OBBMaxs())
 			//ent:SetCollisionBounds(ent:OBBMins()*scale, ent:OBBMaxs()*scale)
 			ent.DrawEntityOutline = function() end//fixes it breaking the clientside scale
@@ -267,15 +300,27 @@ function s.Shrink(ent, mainent, scale)
 	//print(ent:OBBMins(), ent:OBBMaxs())
 	local min = ent:OBBMins()*scale
 	local max = ent:OBBMaxs()*scale
-	ent:SetCollisionBounds(min, max)
+	//ent:SetCollisionBounds(min, max)
 	//e:SetSolid(SOLID_VPHYSICS)
 	//e:SetMoveType(MOVETYPE_VPHYSICS)
-	ent:PhysicsInit(SOLID_VPHYSICS)
-	ent:PhysicsInitSphere(10)
-	ent:PhysicsInitBox(min, max)
+	//ent:PhysicsInit(SOLID_VPHYSICS)
+	//ent:PhysicsInitSphere(10)
+	//ent:PhysicsInitBox(min, max)
 	//ent:SetMoveType(MOVETYPE_VPHYSICS)
 	//e:GetPhysicsObject():Wake()
 	//e:GetPhysicsObject():EnableMotion(false)
+	
+	local phys = ent:GetPhysicsObject()
+	local mesh = phys:GetMesh()
+	
+	for k,v in pairs(mesh) do
+		v.pos = v.pos*scale
+	end
+	
+	ent:PhysicsFromMesh(mesh)
+	//ent:PhysicsInitFromVerts( mesh, false )
+	ent:EnableCustomCollisions()
+	
 	if MCents[ent:GetClass()] then
 	    ent:StartMotionController()
 	else
@@ -285,6 +330,8 @@ function s.Shrink(ent, mainent, scale)
 		end
 	end
 	ent:SetAngles(angles)
+	
+	//ent:EnableCustomCollisons(true)
 	
 	//send to client
 	umsg.Start("addhullent")
@@ -325,4 +372,10 @@ function s.Restore(ent, mainent)//physics remain glitchy, reasons unknown
 		umsg.Short(mainent:EntIndex())//hull ent
 		umsg.Float(1)
 	umsg.End()
+end
+
+local function Duh(ent1, ent2)
+    if ent1.Shrunken and ent2.Shrunken then
+		return false
+    end
 end
