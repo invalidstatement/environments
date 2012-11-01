@@ -35,3 +35,95 @@ function BoneScale( self, realboneid )
 		self:SetBoneMatrix( realboneid, matBone )
 	end
 end*/
+
+// ---------------------------------------------------
+// Gravity Hull Designator Support
+// ---------------------------------------------------
+
+local aPlayersInGHD = {}
+local function EnvGHDRenderSuit()
+	for i, xPlayer in pairs( aPlayersInGHD ) do
+		local xData = GravHull.SHIPCONTENTS[ xPlayer ]
+		if !xData then continue end
+		local vLocalPosition, vLocalAngle = WorldToLocal( EyePos(), RenderAngles(), xData.S:GetPos(), xData.S:GetAngles() )
+		cam.Start3D( LocalToWorld( vLocalPosition, vLocalAngle, xData.G.RealPos or xData.G:GetRealPos(), xData.G.RealAng or xData.G:GetRealAngles() ) )
+			if( IsValid( xPlayer.m_hSuit ) ) then	
+				xPlayer.m_hSuit:SetupBones()
+				xPlayer.m_hSuit:DrawModel()
+			end
+			
+			if( IsValid( xPlayer.m_hHelmet ) ) then
+				xPlayer.m_hHelmet:SetupBones()
+				xPlayer.m_hHelmet:DrawModel()
+			end
+		cam.End3D()
+	end
+end
+
+local nPlayersInGHD = 0
+local bHookActive = false
+
+local function CleanupPlayersInGHDList()
+	for i, xPlayer in pairs( aPlayersInGHD ) do
+		local bValid = false
+		for i, xConnectedPlayer in pairs( player.GetAll() ) do
+			if( xPlayer == xConnectedPlayer ) then bValid = true end
+		end
+		
+		if( !bValid ) then
+			for i, xElement in pairs( aPlayersInGHD ) do
+				if( xElement == xPlayer ) then
+					table.remove( aPlayersInGHD, i )
+				end
+			end
+	
+			nPlayersInGHD = nPlayersInGHD - 1
+			if( nPlayersInGHD == 0 && bHookActive ) then
+				aPlayersInGHD = {}
+				
+				hook.Remove( "PostDrawOpaqueRenderables", "EnvGHDRenderSuit" )
+				bHookActive = false
+			end
+		end
+	end
+end
+
+local function EnvGHDPlayerEnteredShip( len )
+	local xPlayer = net.ReadEntity()
+	if( IsValid( xPlayer ) && xPlayer:IsPlayer() ) then
+		xPlayer.m_hSuit = net.ReadEntity()
+		xPlayer.m_hHelmet = net.ReadEntity()
+		table.insert( aPlayersInGHD, xPlayer )
+		
+		nPlayersInGHD = nPlayersInGHD + 1
+		if( nPlayersInGHD == 1 && !bHookActive ) then
+			hook.Add( "PostDrawOpaqueRenderables", "EnvGHDRenderSuit", EnvGHDRenderSuit )
+			bHookActive = true
+		end
+	end
+	
+	CleanupPlayersInGHDList()
+end
+net.Receive("EGHDPEnS", EnvGHDPlayerEnteredShip)
+
+local function EnvGHDPlayerExitedShip( len )
+	local xPlayer = net.ReadEntity()
+	if( IsValid( xPlayer ) && xPlayer:IsPlayer() ) then
+		for i, xElement in pairs( aPlayersInGHD ) do
+			if( xElement == xPlayer ) then
+				table.remove( aPlayersInGHD, i )
+			end
+		end
+		
+		nPlayersInGHD = nPlayersInGHD - 1
+		if( nPlayersInGHD == 0 && bHookActive ) then
+			aPlayersInGHD = {}
+			
+			hook.Remove( "PostDrawOpaqueRenderables", "EnvGHDRenderSuit" )
+			bHookActive = false
+		end
+		
+		CleanupPlayersInGHDList()
+	end
+end
+net.Receive("EGHDPExS", EnvGHDPlayerExitedShip)
