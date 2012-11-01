@@ -1,0 +1,10 @@
+"AddonInfo"
+{
+	"name"				"Environments RD"
+	"version"			"1.0"
+	"up_date"			"17th June 2010"
+	"author_name"			"CmdrMatthew"
+	"author_email"			""
+	"author_url"			""
+	"info"				"An improved alternative to LS and RD."
+}
