@@ -40,13 +40,13 @@ function ENT:Link(ent, delay)
 				self.maxresources[name] = max
 			end
 			if delay then
-				timer.Simple(0.1, function(self, ent, name)
+				timer.Simple(0.1, function()
 					umsg.Start("Env_UpdateMaxRes")
 						umsg.Short(self:EntIndex())
 						umsg.String(name)
 						umsg.Long(self.maxresources[name])
 					umsg.End()
-				end, self, ent, name)
+				end)
 			else
 				umsg.Start("Env_UpdateMaxRes")
 					umsg.Short(self:EntIndex())
