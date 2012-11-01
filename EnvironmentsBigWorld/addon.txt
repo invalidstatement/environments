@@ -1,0 +1,6 @@
+"AddonInfo"
+{
+	"name" "EnvironmentsBigWorld"
+	"author_name" "author"
+	"info" ""
+}

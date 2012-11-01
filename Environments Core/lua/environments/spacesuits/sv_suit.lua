@@ -25,7 +25,7 @@ function meta:PutOnHelmet()
 		self.m_hHelmet:SetModel(self.SuitModel)
 		self:SetNWBool("helmet", true)
 		self.m_hHelmet:SetColor(Color(self.ClothingColor.r,self.ClothingColor.g,self.ClothingColor.b,255,255))
-
+		
 		self.m_hSuit:ManipulateBoneScale( self.m_hSuit:LookupBone("ValveBiped.Bip01_Head1"), Vector(1,1,1) )
 	end
 end
@@ -39,9 +39,10 @@ function meta:TakeOffHelmet()
 		for i=0, self.m_hHelmet:GetBoneCount() do
 			if( self.m_hHelmet:GetBoneName( i ) == "ValveBiped.Bip01_Head1" ) then continue end
 			if( self.m_hHelmet:GetBoneName( i ) == "ValveBiped.Bip01_Neck1" ) then continue end
+			
 			self.m_hHelmet:ManipulateBoneScale( i, Vector(0,0,0) )
 		end
-
+		
 		self.m_hSuit:ManipulateBoneScale( self.m_hSuit:LookupBone("ValveBiped.Bip01_Head1"), Vector(0,0,0) )
 	end
 end
@@ -254,4 +255,29 @@ function meta:MMUThink()
 	--self:SetNWInt("Fuel",self.Fuel)
 end
 
+// ---------------------------------------------------
+// Gravity Hull Designator Support
+// ---------------------------------------------------
 
+util.AddNetworkString( "EGHDPEnS" )
+util.AddNetworkString( "EGHDPExS" )
+
+local function EnvGHDEnterShipSupport( xEntity, e, g, oldpos, oldang )
+	if( xEntity:IsPlayer() && IsValid( xEntity.m_hSuit ) && IsValid( xEntity.m_hHelmet ) ) then
+		net.Start( "EGHDPEnS" )
+			net.WriteEntity( xEntity )
+			net.WriteEntity( xEntity.m_hSuit )
+			net.WriteEntity( xEntity.m_hHelmet )
+		net.Broadcast()
+	end	
+end
+hook.Add( "EnterShip", "EnvGHDEnterShipSupport", EnvGHDEnterShipSupport )
+
+local function EnvGHDExitShipSupport( xEntity, e, g, oldpos, oldang )
+	if( xEntity:IsPlayer() ) then
+		net.Start( "EGHDPExS" )
+			net.WriteEntity( xEntity )
+		net.Broadcast()
+	end	
+end
+hook.Add( "ExitShip", "EnvGHDExitShipSupport", EnvGHDExitShipSupport )
