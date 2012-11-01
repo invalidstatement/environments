@@ -100,7 +100,7 @@ function ENT:Transfer_Energy()
 		end
 	end*/
 	
-	local amt = self:ConsumeResource("energy", self.trans)
+	local amt = self:ConsumeResource("energy", self.trans) or 0
 	
 	local spos = self:GetPos()
 	local targs = ents.FindByClass("reciever_microwave")
@@ -114,7 +114,7 @@ function ENT:Transfer_Energy()
 		//local tDist2 =(spos+self:GetUp()*dist):Distance(v:GetPos())
 		//local ang = math.Rad2Deg(math.atan2( tDist2, dist))
 		
-		local ang = math.Rad2Deg(math.acos(mynorm:Dot((v:GetPos()-self:GetPos()):Normalize())))
+		local ang = math.deg(math.acos(mynorm:Dot((v:GetPos()-self:GetPos()):GetNormal())))
 		//print(ang)
 		if (ang < self.broadcast_angle) then
 			v:SupplyResource("energy", supplyamt)
