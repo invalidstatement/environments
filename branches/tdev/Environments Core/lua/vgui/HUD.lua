@@ -2,7 +2,6 @@
 //  Environments   //
 //   CmdrMatthew   //
 ------------------------------------------
-print("hey")
 //localize stuff
 local surface = surface
 local cam = cam
@@ -199,19 +198,19 @@ function LoadHud()
 			//actual
 			surface.SetDrawColor(255,255,255,255)
 			surface.DrawRect(105*ratio, 140, math.Clamp(Air, 0, 100)*1.8,15)
-			draw.SimpleText("Air: "..Air .. "%", "ScoreboardText", 105*ratio, 125, Color(255,255,255,255), 0, 0)
+			draw.SimpleText("Air: "..Air .. "%", "Default", 105*ratio, 125, Color(255,255,255,255), 0, 0)
 			
 			surface.SetDrawColor(255,170,0,255)
 			surface.DrawRect(105*ratio, 175, math.Clamp(Energy, 0, 100)*1.8,15)
-			draw.SimpleText("Energy: "..Energy.."%","ScoreboardText",105*ratio, 160,Color(250,230,10,255),0,0)
+			draw.SimpleText("Energy: "..Energy.."%","Default",105*ratio, 160,Color(250,230,10,255),0,0)
 			
 			surface.SetDrawColor(0,120,255,255)
 			surface.DrawRect(105*ratio, 210, math.Clamp(Coolant, 0, 100)*1.8,15)
-			draw.SimpleText("Coolant: "..Coolant.."%","ScoreboardText",105*ratio, 195,Color(5,150,255,255),0,0)
+			draw.SimpleText("Coolant: "..Coolant.."%","Default",105*ratio, 195,Color(5,150,255,255),0,0)
 			--draw.RoundedBox(0, 105*ratio, 140, math.Clamp(Air,0,100)*1.8,15, Color(255,255,255,255))
 			--draw.RoundedBox(0, 105*ratio, 175, math.Clamp(Energy,0,100)*1.8,15, Color(255,170,0,255))
 			--draw.RoundedBox(0, 105*ratio, 210, math.Clamp(Coolant,0,100)*1.8,15, Color(0,120,255,255))
-			draw.SimpleText("Clock: "..tostring(os.date()),"ScoreboardText",ScrW()-(300*ratio),140,Color(240,240,240,255),0,0)
+			draw.SimpleText("Clock: "..tostring(os.date()),"Default",ScrW()-(300*ratio),140,Color(240,240,240,255),0,0)
 			surface.SetDrawColor(255,0,0,255)
 			surface.DrawOutlinedRect(105*ratio,140,180,15)
 			surface.DrawOutlinedRect(105*ratio,175,180,15)
@@ -243,7 +242,7 @@ function LoadHud()
 			local length     = ScrW()/2 - 455 --should make 5 w/ spacer
 			local spacer     = 40
 			
-			surface.SetFont( "env" )
+			surface.SetFont( "Default" )
 			surface.SetTextColor(255,255,255,255)
 			surface.SetDrawColor(255,255,255,255)
 			
