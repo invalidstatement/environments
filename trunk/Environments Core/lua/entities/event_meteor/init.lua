@@ -13,7 +13,7 @@ function ENT:Initialize()
 		phys:SetMass(50000)
 	end
 	self:SetHealth(math.Clamp((self:GetPhysicsObject():GetVolume()/900)-100,50,10000))
-	self:SetColor(150,150,150,255)
+	self:SetColor(Color(150,150,150,255))
 	self.firstthink = true
 end
 
