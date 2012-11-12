@@ -4,4 +4,4 @@ ENT.PrintName 	= "Planetary Drill"
 
 ENT.Category = "Environments"
 
-list.Set( "LSEntOverlayText" , "planetary_drill", {HasOOO = true,resnames = {"energy"}} )
+list.Set( "LSEntOverlayText" , "planetary_drill", {HasOOO = true,resnames = {"energy","water"},genresnames = {"Crude Oil","Natural Gas"}} )

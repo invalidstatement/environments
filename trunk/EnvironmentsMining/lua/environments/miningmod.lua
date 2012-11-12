@@ -5,7 +5,7 @@
 
 MiningMod = {}
 local MM = MiningMod
-MM.Oil = true
+MM.Oil = false
 MM.Asteroids = true
 
 MM.Spawned = {}
@@ -18,7 +18,10 @@ roidmodels[3] = "models/props_wasteland/rockgranite01c.mdl"
 
 local function RoidRespawn(ent)
 	MM.Spawned.Roids[ent] = nil
-	timer.Simple(20, function(pos, res, model)
+	local pos = ent:GetPos()
+	local res = ent.Resource
+	local model = ent:GetModel()
+	timer.Simple(20, function()
 		local ent = ents.Create("prop_physics")
 
 		ent:SetModel(model)
@@ -33,12 +36,32 @@ local function RoidRespawn(ent)
 			phys:EnableMotion(false)
 		end
 		MM.Spawned.Roids[ent] = 1
-	end, ent:GetPos(), ent.Resource, ent:GetModel())
+	end)
+end
+
+local function Init()
+	print("hey")
+	MM.SpawnStuff()
+end
+hook.Add("InitPostEntity", "MMSpawnRoids", Init)
+
+function MM.MakeRoid(pos)
+	ent:SetModel(table.Random(roidmodels))
+	ent:SetPos(pos)
+	ent:SetAngles(Angle(math.Rand(-180,180),math.Rand(-180,180),math.Rand(-180,180)))
+	ent:Spawn()
+	
+	local phys = ent:GetPhysicsObject() --freeze
+	if phys and phys:IsValid() then
+		phys:EnableMotion(false)
+	end	
+	
+	MM.Spawned.Roids[ent] = 1
 end
 
 function MM.SpawnStuff()
 	if MM.Asteroids then
-		/*for i = 1, 10 do --spawn roids in orbit of planets
+		for i = 1, 20 do --spawn roids in orbit of planets
 			local ent = ents.Create("prop_physics")
 			local env = table.Random(environments)
 			local pos = math.RandomCirclePoint(env:GetPos(), env.radius + math.Rand(300,1500), math.Rand(-180, 180))
@@ -47,15 +70,17 @@ function MM.SpawnStuff()
 			ent:SetAngles(Angle(math.Rand(-180,180),math.Rand(-180,180),math.Rand(-180,180)))
 			ent:Spawn()
 			
+			ent.OreAmount = 2000
+			
 			local phys = ent:GetPhysicsObject() --freeze
 			if phys and phys:IsValid() then
 				phys:EnableMotion(false)
 			end	
 			
 			MM.Spawned.Roids[ent] = 1
-		end*/
-		
-		for i = 1, 10 do --random ones
+		end
+		print("spawning rocks")
+		for i = 1, 20 do --random ones
 			local notfinished = true
 			local rep = 0
 			while notfinished do
@@ -69,6 +94,8 @@ function MM.SpawnStuff()
 						ent:SetPos(a)
 						ent:SetAngles(Angle(math.Rand(-180,180),math.Rand(-180,180),math.Rand(-180,180)))
 						ent:Spawn()
+						
+						ent.OreAmount = 2000
 						
 						ent:CallOnRemove("RespawnRoid", RoidRespawn)
 						
@@ -119,5 +146,38 @@ function math.RandomCirclePoint(vec, rad, p)
 end
 
 
+-- wrex.. Added functions to make it where clients couldn't touch the asteroids
 
+
+	-- physgun and gravity gun blocking code
+function ToolPickup(ply,ent) 
+	for k,v in pairs(roidmodels) do
+		if(!ent:IsValid()) then 
+		return end		
+		if (ent:GetModel() == v ) then
+		return false end 
+	end	
+end
+	
+hook.Add("PhysgunPickup", "PhysgunPickup", ToolPickup)
+hook.Add("GravGunPunt", "GravGunPunt", ToolPickup)
+hook.Add("GravGunPickupAllowed", "GravGunPickupAllowed", ToolPickup)
+ 
+
+-- tool gun blocking code
+function CanTool(ply, tr, toolgun)
+	for k,v in pairs(roidmodels) do
+	
+		if(tr.HitWorld) then return end
+		ent = tr.Entity
+		if(!ent:IsValid()) then return end
+		if(ent:GetModel() == v )then
+		return false
+		end
+		
+	 end
+	 
+ end
+ hook.Add("CanTool", "AsteriodCanTool", CanTool)
+ 
 
