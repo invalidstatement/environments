@@ -21,6 +21,8 @@ function Environments.LoadMining()
 end
 Environments.LoadMining()
 
+concommand.Add("env_reload_mining", Environments.LoadMining)
+
 print("==============================================")
 print("==     Environments Mining Mod Installed    ==")
 print("==============================================")
