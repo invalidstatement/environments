@@ -9,16 +9,15 @@ function ENT:Initialize()
 	self.damaged = 0
 	self.Active = 0
 	
-	self:SetModel("models/Slyfo/data_probe_launcher.mdl")
+	self:SetModel("models/SBEP_community/d12siesmiccharge.mdl")
 	
-	self.Entity:PhysicsInit( SOLID_VPHYSICS )
-	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
-	self.Entity:SetSolid( SOLID_VPHYSICS )
+	self:PhysicsInit( SOLID_VPHYSICS )
+	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetSolid( SOLID_VPHYSICS )
 	if not (WireAddon == nil) then
 		self.WireDebugName = self.PrintName
 	end 
 	
-
 end
 
 function ENT:Damage()
@@ -27,13 +26,13 @@ end
 
 function ENT:Repair()
 	self.BaseClass.Repair(self)
-	self.Entity:SetColor(255, 255, 255, 255)
+	self:SetColor(255, 255, 255, 255)
 	self.damaged = 0
 end
 
 function ENT:Destruct()
 	if CAF and CAF.GetAddon("Life Support") then
-		CAF.GetAddon("Life Support").Destruct( self.Entity, true )
+		CAF.GetAddon("Life Support").Destruct( self, true )
 	end
 end
 
@@ -84,37 +83,17 @@ function ENT:SetActive( value )
 	end
 end
 
-function ENT:FindOil(trace)
-	if trace.HitWorld then
-		return true
-	end
- 
-	return false --for now
-end
+
 
 function ENT:Extract()
-	local trace = {}
-	trace.start = self:GetPos()
-	trace.endpos = self:GetPos()+(self:GetForward()*512)
-	trace.filter = self
-	local tr = util.TraceLine( trace )
-
-
-	if self:GetResourceAmount("energy") > 100 then
-		self:ConsumeResource("energy", 100)
-		if self:FindOil(trace) then
-			self:SupplyResource("Crude Oil", math.random(50,60))
+	if self:GetResourceAmount("Crude Oil") > 0 then
+		local amt = self:ConsumeResource("Crude Oil", math.random(30,50))
+		if amt > 0 then
+			self:SupplyResource("Oil", amt*0.9)
 		end
 	else
 		self:TurnOff()
 	end
-	
-	//local effectdata = EffectData()
-	//effectdata:SetEntity( self )
-	//effectdata:SetOrigin( self:GetPos()+Vector(5,0,1))
-	//effectdata:SetStart( tr.HitPos )
-	//effectdata:SetNormal( self:GetPos()+(self:GetUp()*512) )
-	//util.Effect( "laser_beam", effectdata)
 end
 
 function ENT:Think()

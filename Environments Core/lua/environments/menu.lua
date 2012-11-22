@@ -246,13 +246,14 @@ function Environments.ConfigMenu(Panel)
 		Models = SuitModels
 	})
 	
-	Panel:NumSlider("env_hud_scale_x", "env_hud_scale_x", 0, 3, 2) 
-	Panel:NumSlider("env_hud_scale_y", "env_hud_scale_y", 0, 3, 2) 
-	Panel:NumSlider("env_hud_scale_z", "env_hud_scale_z", 0, 3, 2) 
+	Panel:Help("HUD Adjustment")
+	Panel:NumSlider("HUD Y Scale", "env_hud_scale_x", 0, 3, 2) 
+	Panel:NumSlider("HUD Vertical Scale", "env_hud_scale_y", 0, 3, 2) 
+	Panel:NumSlider("HUD X Scale", "env_hud_scale_z", 0, 3, 2) 
 	
-	Panel:NumSlider("env_hud_offset_x", "env_hud_offset_x", -10, 10, 2) 
-	Panel:NumSlider("env_hud_offset_y", "env_hud_offset_y", -70, 70, 2) 
-	Panel:NumSlider("env_hud_offset_z", "env_hud_offset_z", -70, 70, 2)
+	Panel:NumSlider("HUD Right Offset", "env_hud_offset_x", -10, 10, 2) 
+	Panel:NumSlider("HUD Forward Offset", "env_hud_offset_y", -70, 70, 2) 
+	Panel:NumSlider("HUD Up Offset", "env_hud_offset_z", -70, 70, 2)
 	
 	/*Panel:Button( "Open Help Page", "pp_superdof" )
 	-- The HELP Button

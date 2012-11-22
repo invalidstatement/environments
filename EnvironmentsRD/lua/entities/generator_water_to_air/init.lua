@@ -108,8 +108,12 @@ function ENT:TriggerInput(iname, value)
 	end
 	if (iname == "Mute") then
 		if (value > 0) then
+			self:StopSound( "Airboat_engine_idle" )
 			self.Mute = 1
 		else
+			if self.Active > 0 then
+				self:EmitSound( "Airboat_engine_idle" )
+			end
 			self.Mute = 0
 		end
 	end
