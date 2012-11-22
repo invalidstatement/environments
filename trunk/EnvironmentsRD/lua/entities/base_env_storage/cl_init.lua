@@ -191,6 +191,11 @@ function ENT:DoNormalDraw( bDontDrawModel )
 					end
 				end
 			end
+			if self.ExtraOverlayData then
+				for k,v in pairs(self.ExtraOverlayData) do
+					OverlayText = OverlayText..k..": "..v.."\n"
+				end
+			end
 			OverlayText = OverlayText .. "(" .. playername ..")"
 			AddWorldTip( self:EntIndex(), OverlayText, 0.5, self:GetPos(), self  )
 		else

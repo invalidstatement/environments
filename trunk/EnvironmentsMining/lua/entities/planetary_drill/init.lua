@@ -87,7 +87,7 @@ function ENT:TurnOff()
 		end
 		self.Active = 0
 		self.overdrive = 0
-		if WireAddon then Wire_TriggerOutput(self.Entity, "Active", self.Active) end
+		if WireAddon then Wire_TriggerOutput(self, "Active", self.Active) end
 		self:SetOOO(0)
 	end
 end

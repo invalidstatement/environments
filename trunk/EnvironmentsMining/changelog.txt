@@ -1,0 +1,15 @@
+changelog for environments mining
+
+added anti toolgun/physgun touching on the asteroids
+
+added an effect folder in the lua folder for the mining laser, still needs to be edited, borrowed from sb3 mining mod.
+
+changed the planetary drill to require water or gets damaged(code needs to be fixed, i dont think it does damage),
+ also made it where it would produce natural gas.
+Needs to be setup when the underground position part gets figured out, to be in pockets like the oil.
+
+added a mining laser currently it just finds oil on planets, needs editing
+
+added a natural gas reactor.       consumption and how much it provides needs to be fixed
+
+also added some natural gas storage

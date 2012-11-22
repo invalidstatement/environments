@@ -8,7 +8,7 @@ function ENT:Draw()
 		trace.filter = self
 		local tr = util.TraceLine( trace )
 		
-		render.DrawBeam( self:GetPos()+Vector(5,0,1), tr.HitPos or trace.endpos, 3, 0, 1, Color(255,155,155,255) )
+		render.DrawBeam( self:GetPos()+self:GetUp()*0.5+self:GetForward()*5, tr.HitPos or trace.endpos, 4, 0, 1, Color(255,155,155,255) )
 	end
 	self:DrawModel()
 end

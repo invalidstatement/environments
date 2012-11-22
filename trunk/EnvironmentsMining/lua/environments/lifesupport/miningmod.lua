@@ -33,10 +33,10 @@ Environments.RegisterDevice(toolname, genname, devname, class, model, skin, extr
 	-extra: any extra variable you need to pass on to the ent as ent.env_extra, can be any value
    */
 
-Environments.RegisterLSStorage("Hydrocarbon Storage", "env_crude_storage", {[1000] = "Crude Oil"}, 4028, 200, 100)
-Environments.RegisterLSStorage("Refined Storage", "env_oil_storage", {[1000] = "Oil"}, 4028, 100, 100)
+Environments.RegisterLSStorage("Hydrocarbon Storage", "env_crude_storage", {[500] = "Crude Oil"}, 4028, 200, 100)
+Environments.RegisterLSStorage("Refined Storage", "env_oil_storage", {[500] = "Oil"}, 4028, 100, 100)
 
-Environments.RegisterLSStorage("Natural Gas Storage", "env_naturalgas_storage", {[1000] = "Natural Gas"}, 4028, 100, 100)
+Environments.RegisterLSStorage("Natural Gas Storage", "env_naturalgas_storage", {[2000] = "Natural Gas"}, 4028, 100, 100)
 
 Environments.RegisterDevice("Mining", "Drill", "Basic Oil Drill", "planetary_drill", "models/slyfo/drillplatform.mdl")
 Environments.RegisterDevice("Mining", "Laser", "Basic Mining Laser", "env_mining_laser", "models/slyfo/data_probe_launcher.mdl")
