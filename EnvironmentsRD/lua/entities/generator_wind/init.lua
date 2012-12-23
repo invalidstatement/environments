@@ -108,9 +108,12 @@ function ENT:Think()
 			else
 				self:TurnOff()
 			end
+		elseif self.Active == 0 then
+			self:SetPlaybackRate(0.75)
+			self:TurnOn()
 		end
 		
-		if (self.Active == 1) then
+		if self.Active == 1 then
 			self:GenEnergy()
 		end
 		self.thinkcount = 0
