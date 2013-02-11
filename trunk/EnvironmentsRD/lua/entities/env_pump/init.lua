@@ -359,8 +359,12 @@ function ENT:Deploy()
 	self:DeleteOnRemove( self.Hose )
 	self:DeleteOnRemove( self.plug )
 	self.Hose:DeleteOnRemove( self.nocollide )
-	self.Hose:DeleteOnRemove( self.rope )
-	
+	self.Hose:DeleteOnRemove( self.rope )//try commenting this line out
+	/*	Lua Error: [ERROR] addons/environments_rd/lua/entities/env_pump/init.lua:362: bad argument #1 to 'DeleteOnRemove'(Entity expected, got nil) 
+	1. DeleteOnRemove - [C]:-1 
+	2. Deploy - addons/environments_rd/lua/entities/env_pump/init.lua:362 
+	3. unknown - addons/environments_rd/lua/entities/env_pump/init.lua:235*/
+
 	self.ropelength = 50
 	self.ropemax = (self.hose_length*100)
 	self.DeployedPlug = 1

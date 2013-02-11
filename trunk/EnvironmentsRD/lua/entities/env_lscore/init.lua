@@ -26,7 +26,7 @@ end
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	
-	self:SetModel( "models/SBEP_community/d12airscrubber.mdl" ) --setup stuff
+	//self:SetModel( "models/SBEP_community/d12airscrubber.mdl" ) --setup stuff
 	self:PhysicsInit( SOLID_VPHYSICS )      -- Make us work with physics,
 	self:SetMoveType( MOVETYPE_VPHYSICS )   -- after all, gmod is a physics
 	self:SetSolid( SOLID_VPHYSICS )         -- Toolbox
