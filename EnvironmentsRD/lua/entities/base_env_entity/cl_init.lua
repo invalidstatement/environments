@@ -227,7 +227,7 @@ function ENT:DoNormalDraw( bDontDrawModel )
 				--surface.DrawRect( x, y, 50,50)
 				
 				TempY = TempY + 10
-				surface.SetFont("ConflictText")
+				surface.SetFont("Default")
 				surface.SetTextColor(255,255,255,255)
 				surface.SetTextPos(textStartPos+15,TempY)
 				surface.DrawText(self.PrintName)
@@ -238,7 +238,7 @@ function ENT:DoNormalDraw( bDontDrawModel )
 					if self:GetOOO() >= 0 and self:GetOOO() <= 2 then
 						runmode = OOO[self:GetOOO()]
 					end
-					surface.SetFont("Flavour")
+					//surface.SetFont("Flavour")
 					surface.SetTextColor(155,155,255,255)
 					surface.SetTextPos(textStartPos+15,TempY)
 					surface.DrawText("Mode: "..runmode)
@@ -246,13 +246,13 @@ function ENT:DoNormalDraw( bDontDrawModel )
 				end
 				
 				if #genresnames == 0 and #resnames == 0 then
-					surface.SetFont("Flavour")
+					//surface.SetFont("Flavour")
 					surface.SetTextColor(200,200,255,255)
 					surface.SetTextPos(textStartPos+15,TempY)
 					surface.DrawText("No resources connected")
 					TempY = TempY + 70
 				else
-					surface.SetFont("Flavour")
+					//surface.SetFont("Flavour")
 					surface.SetTextColor(200,200,255,255)
 					surface.SetTextPos(textStartPos+15,TempY)
 					surface.DrawText("Resources: ")
@@ -273,7 +273,7 @@ function ENT:DoNormalDraw( bDontDrawModel )
 					end
 				end
 				if ( table.Count(genresnames) > 0 ) then
-					surface.SetFont("Flavour")
+					//surface.SetFont("Flavour")
 					surface.SetTextColor(200,200,255,255)
 					surface.SetTextPos(textStartPos+15,TempY)
 					surface.DrawText("Generates: ")
