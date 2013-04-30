@@ -9,7 +9,13 @@ Environments.RegisterLSStorage("Nitrogen Storage", "env_nitrogen_storage", {[460
 Environments.RegisterLSStorage("CO2 Storage", "env_co2_storage", {[4600] = "carbon dioxide"}, 4084, 100, 20)
 Environments.RegisterLSStorage("Resource Cache", "env_cache_storage", {[1601] = "carbon dioxide",[1600] = "oxygen",[1602] = "hydrogen",[1603] = "nitrogen",[1599] = "water",[1598] = "steam",[1604] = "energy"}, 4084, 100, 10)
 
-Environments.RegisterLSEntity("Water Heater","env_water_heater",{"water","energy"},{"steam"},function(self) local mult = self:GetMultiplier()*self.multiplier local amt = self:ConsumeResource("water", 200) or 0 amt = self:ConsumeResource("energy",amt*1.5)  self:SupplyResource("steam", amt) end, 70000, 300, 300)
+Environments.RegisterLSEntity("Water Heater","env_water_heater",{"water","energy"},{"steam"},
+function(self) 
+	local mult = self:GetMultiplier()*self.multiplier 
+	local amt = self:ConsumeResource("water", 200) or 0 
+	amt = self:ConsumeResource("energy",amt*1.5)  
+	self:SupplyResource("steam", amt) 
+end, 70000, 300, 300)
 
 //Generator Tool
 Environments.RegisterDevice("Generators", "Fusion Generator", "Huge Fusion Reactor", "generator_fusion", "models/ce_ls3additional/fusion_generator/fusion_generator_huge.mdl")

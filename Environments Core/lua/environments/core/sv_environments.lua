@@ -1029,7 +1029,10 @@ local function SuperNova(ply, cmd, args)//have sun model that expands and breaks
 		NovaData = {}
 		local nd = NovaData
 		nd.messages = 0
-		nd.death_time = CurTime() + 360 //360
+		nd.death_time = CurTime() + 20//360 //360
+		for k,v in pairs(player.GetAll()) do
+			v:ChatPrint("The sun appears as if its going to go supernova!!!! Get ready!")
+		end
 		local function Nova()
 			local timeleft = nd.death_time - CurTime()
 			if timeleft < 300 and nd.messages < 1 then
@@ -1074,12 +1077,48 @@ local function SuperNova(ply, cmd, args)//have sun model that expands and breaks
 					end
 				end
 				
+				engine.LightStyle(0, "aaaa");
+				local function p()
+					for k,v in pairs(player.GetAll()) do
+						umsg.Start("supernova", v)
+						umsg.End();
+					end
+				end
+				timer.Create("nova client update", 0.5, 1, p)
+				
 				timer.Destroy("Supernova timer")//kill the timer, we are done counting down
 			end
+
 		end
 		timer.Create("Supernova timer", 1, 0, Nova)
+				
+		local function clear()
+			engine.LightStyle(0, "mmmmmm");
+			local function p()
+				for k,v in pairs(player.GetAll()) do
+					umsg.Start("supernova", v)
+					umsg.End();
+				end
+			end
+			timer.Create("nova client update2", 0.5, 1, p)
+		end
+		timer.Create("supernova clear timer", 20*60, 1, clear)
 	end
 end
 concommand.Add("env_supernova", SuperNova)
+
+local function clearnova(ply, cmd, args)
+	if ply:IsAdmin() or ply == NULL then
+		engine.LightStyle(0, "mmmmmm");
+		local function p()
+			for k,v in pairs(player.GetAll()) do
+				umsg.Start("supernova", v)
+				umsg.End();
+			end
+		end
+		timer.Create("nova client update3", 0.5, 1, p)
+	end
+end
+concommand.Add("env_clearnova", clearnova)
 
 
