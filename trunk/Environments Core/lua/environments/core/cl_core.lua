@@ -324,6 +324,13 @@ local function StarUmsg( msg )
 end
 --usermessage.Hook( "AddStar", StarUmsg )
 
+local function Supernova(msg)
+	PrintTable(engine)
+	//engine.LightStyle(0, "aaaaa");
+	render.RedownloadAllLightmaps();
+end
+usermessage.Hook("supernova", Supernova);
+
 //Load it depending on the server setup
 if CAF and CAF.GetAddon("Spacebuild") then --sb installed
 	print("Spacebuild is active on the server")

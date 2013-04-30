@@ -71,10 +71,10 @@ function ENT:TriggerInput(iname, value)
 end
 
 function ENT:Generate()
-	local needed = self:GetMultiplier()*30
+	local needed = self:GetMultiplier()*50
 	local amt = self:ConsumeResource("steam", needed)
-	self:SupplyResource("energy", amt*50)
-	self:SupplyResource("water", amt*25)
+	self:SupplyResource("energy", amt*3)
+	self:SupplyResource("water", amt*0.4)
 end
 
 function ENT:Think()

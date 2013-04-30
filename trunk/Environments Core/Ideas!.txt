@@ -6,3 +6,14 @@ CmdrMatthew: idk how I would do that
 AI | Todd.Puffer: And when energy runs out the HUD sparkles and turns off?
 AI | Todd.Puffer: As without energy,it wont run
 CmdrMatthew: yeah, maybe
+
+11:02 PM - BlackMac: A factory
+11:02 PM - CmdrMatthew: that does what?
+11:04 PM - BlackMac: Make a goal first, maybe mining or something like that that equals to 
+collecting resoruces that you can't just spawn. 
+That saves to your character, then you spawn a factory (which is free), 
+with enough resoruces you can fabricate a machine or something that 
+normaly you can't spawn from the menu, it saves in a special invenotry. 
+Maybe good weapons, or good life support things etc. and you can't 
+duplicate that. So people have a goal while they play
+
