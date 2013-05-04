@@ -1029,7 +1029,7 @@ local function SuperNova(ply, cmd, args)//have sun model that expands and breaks
 		NovaData = {}
 		local nd = NovaData
 		nd.messages = 0
-		nd.death_time = CurTime() + 20//360 //360
+		nd.death_time = CurTime() + 360 //360
 		for k,v in pairs(player.GetAll()) do
 			v:ChatPrint("The sun appears as if its going to go supernova!!!! Get ready!")
 		end
@@ -1070,6 +1070,7 @@ local function SuperNova(ply, cmd, args)//have sun model that expands and breaks
 					local tr = util.TraceLine( trace )
 					if tr.Hit and tr.Entity:IsValid() then
 						//player is "protected"
+						v:ChatPrint("You Survived the Supernova Explosion!")
 					else
 						v:Ignite()
 						v:Kill()
