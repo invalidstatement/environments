@@ -268,7 +268,7 @@ function ENT:Extract_Energy()
 	else
 		local consumed = self:ConsumeResource("water", math.ceil(Coolant_Increment * self:GetMultiplier()))
 		self:SupplyResource("steam", math.ceil(consumed * 0.95))
-		self:SupplyResource("water", math.ceil(consumed * 0.02))
+		//self:SupplyResource("water", math.ceil(consumed * 0.02))
 		if self.heat > 0 then
 			self.heat = self.heat - 1
 		end

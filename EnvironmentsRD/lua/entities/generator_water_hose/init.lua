@@ -180,13 +180,27 @@ function ENT:TriggerInput(iname, value)
 			self.Multiplier = 1
 		end	
 	end
+	
+	if (iname == "Deploy") then
+		if (self.DeployedPlug == 0 and self.Connected == 0) then
+			self:Deploy()
+		end
+	elseif (iname == "ReelInPlug") then
+		if (self.DeployedPlug == 1) then
+			self:ReelInPlug()
+		end
+	elseif (iname == "EjectPlug") then
+		if (self.Connected == 1) then
+			self:EjectPlug()
+		end
+	end
 end
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	if not (WireAddon == nil) then
-		self.Inputs = Wire_CreateInputs(self, { "Deploy", "ReelInPlug", "EjectPlug" })
-		self.Outputs = Wire_CreateOutputs(self, { "InUse" })
+		self.Inputs = Wire_CreateInputs(self, { "On", "Overdrive", "Mute", "Multiplier" })//, "Deploy", "ReelInPlug", "EjectPlug" })
+		self.Outputs = Wire_CreateOutputs(self, { "On", "Overdrive", "InUse" })
 	end
 	self.overdrive = 0
 	self.Multiplier = 1
@@ -344,21 +358,6 @@ end
 	end
 end*/
 
-function ENT:TriggerInput(iname, value)
-	if (iname == "Deploy") then
-		if (self.DeployedPlug == 0 and self.Connected == 0) then
-			self:Deploy()
-		end
-	elseif (iname == "ReelInPlug") then
-		if (self.DeployedPlug == 1) then
-			self:ReelInPlug()
-		end
-	elseif (iname == "EjectPlug") then
-		if (self.Connected == 1) then
-			self:EjectPlug()
-		end
-	end
-end
 
 function ENT:OnRemove()
 	self.BaseClass.OnRemove(self)

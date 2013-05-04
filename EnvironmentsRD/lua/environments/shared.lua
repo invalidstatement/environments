@@ -288,6 +288,12 @@ function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at
 			return self.node:GenerateResource(resource, amount)
 		end
 	end
+	
+	ENT.SetPlayer = ENT.SetPlayer or function() end
+	
+	ENT.SetMultiplier = ENT.SetMultiplier or function() 
+	
+	end
 
 	ENT.AddResource = function(self,name,amt)--adds to storage
 		if not self.maxresources then self.maxresources = {} end

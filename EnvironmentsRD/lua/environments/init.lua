@@ -95,7 +95,7 @@ end
 
 //need to add dupe support
 local function RegisterVehicle(ply, ent)
-	RD_Register(ent, true)
+	RD_Register(ent, false)
 end
 hook.Add( "PlayerSpawnedVehicle", "ENV_vehicle_spawn", RegisterVehicle )
 
