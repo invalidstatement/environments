@@ -73,7 +73,7 @@ end
 function ENT:Generate()
 	local needed = self:GetMultiplier()*50
 	local amt = self:ConsumeResource("steam", needed)
-	self:SupplyResource("energy", amt*3)
+	self:SupplyResource("energy", amt)
 	self:SupplyResource("water", amt*0.4)
 end
 

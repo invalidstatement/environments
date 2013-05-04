@@ -13,7 +13,7 @@ util.PrecacheSound( "common/warning.wav" )
 
 include('shared.lua')
 -- Was 2200, increased
-local Coolant_Increment = 450 --WATER NOW -- 15 nitrogen produced per 150 energy, so 45 is about 450 energy , 2000 - 450 = 1550 energy left - the requirements to generate the N
+local Coolant_Increment = 250 --WATER NOW -- 15 nitrogen produced per 150 energy, so 45 is about 450 energy , 2000 - 450 = 1550 energy left - the requirements to generate the N
 local HW_Increment = 1
 
 function ENT:Initialize()

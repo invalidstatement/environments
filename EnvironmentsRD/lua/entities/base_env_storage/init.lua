@@ -71,6 +71,8 @@ end
 function ENT:ConsumeResource( resource, amount)
 	if self.node then
 		return self.node:ConsumeResource(resource, amount)
+	else
+		return 0
 	end
 end
 

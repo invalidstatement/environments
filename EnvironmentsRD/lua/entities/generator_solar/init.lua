@@ -52,7 +52,7 @@ function ENT:Extract_Energy(mul)
 		inc = math.ceil(inc * self:GetMultiplier() * mul)
 		self:SupplyResource("energy", inc)
 	end
-	if not (WireAddon == nil) then Wire_TriggerOutput(self.Entity, "Out", inc) end
+	if not (WireAddon == nil) then Wire_TriggerOutput(self, "Out", inc) end
 end
 
 
