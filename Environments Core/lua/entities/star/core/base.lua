@@ -187,7 +187,7 @@ function ENT:IsOnPlanet()
 end
 
 function ENT:GetAtmosphere()
-	return self.atmosphere
+	return self.atmosphere or 1
 end
 
 function ENT:IsSpace()
