@@ -653,9 +653,11 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 				icon.skin = v.skin
 				icon.devname = k
 				icon.devtype = cat
+				icon.description = v.description
 				icon:SetTooltip(k)
 				icon.DoClick = function(self)
 					self.tool.Model = self.model
+					self.tool.description_label:SetText(icon.description or icon.devname)
 					RunConsoleCommand( ccv_type, self.devtype )
 					RunConsoleCommand( ccv_sub_type, self.devname )
 					RunConsoleCommand( ccv_model, self.model )
@@ -668,6 +670,9 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 			list:AddItem(c)
 		end
 		CPanel:AddPanel(list)
+		
+		TOOL.description_label = CPanel:AddControl( "Label", { Text = "Hello World!" }  )//vgui.Create("DButton")
+		TOOL.description_label:SetText("description goes here")
 
 		CPanel:AddControl("CheckBox", { Label = "Weld", Command = name.."_Weld" })
 		CPanel:AddControl("CheckBox", { Label = "Nocollide", Command = name.."_NoCollide" })
@@ -681,7 +686,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 end
 
 Environments.Tooldata = {}
-function Environments.RegisterDevice(toolname, genname, devname, class, model, skin, extra)
+function Environments.RegisterDevice(toolname, genname, devname, class, model, skin, extra, description)
 	if !Environments.Tooldata[toolname] then
 		Environments.Tooldata[toolname] = {}
 	end
@@ -695,6 +700,7 @@ function Environments.RegisterDevice(toolname, genname, devname, class, model, s
 	dat[genname][devname].class = class
 	dat[genname][devname].skin = skin
 	dat[genname][devname].extra = extra
+	dat[genname][devname].description = description
 end
 
 hook.Add("AddTools", "environments tool hax", function()
