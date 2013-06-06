@@ -32,8 +32,8 @@ local pstatus = {}
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	if not (WireAddon == nil) then
-		self.Inputs = Wire_CreateInputs(self, { "Deploy", "ReelInPlug", "EjectPlug" })
-		self.Outputs = Wire_CreateOutputs(self, { "InUse" })
+		self.Inputs = Wire_CreateInputs(self, { "Deploy", "ReelInPlug", "EjectPlug", "FlowRate" })
+		self.Outputs = Wire_CreateOutputs(self, { "InUse", "Rate" })
 	end
 	self:SetModel("models/props_lab/tpplugholder_single.mdl")
 	self:PhysicsInit( SOLID_VPHYSICS )
@@ -108,6 +108,7 @@ end
 
 function ENT:Think()
 	self.BaseClass.Think(self)
+	if WireAddon then Wire_TriggerOutput(self, "Rate", self.pump_rate) end
 	
 	if (self.Weld and !self.Weld:IsValid()) or (self.MyPlug and !self.MyPlug:IsValid()) or (self.OtherSocket and !self.OtherSocket:IsValid()) or (self.plug and !self.plug:IsValid()) then
 		-- If we were unplugged, reset the plug and socket to accept new ones.
@@ -130,7 +131,7 @@ function ENT:Think()
 		
 	elseif (self.reel_status > REEL_STOP) then --plug deployed and we need to do something with the reel
 		if (self.reel_status == REEL_OUT) then
-			local dist = (self:GetPos() - self.plug.Entity:GetPos()):Length()
+			local dist = (self:GetPos() - self.plug:GetPos()):Length()
 			if (self.ropelength <= self.ropemax) and (dist > self.ropelength - 32 ) then
 				self.ropelength = self.ropelength + 50
 				if (self.Hose and self.Hose:IsValid()) then
@@ -254,6 +255,10 @@ function ENT:TriggerInput(iname, value)
 		if (self.Connected == 1) then
 			self:EjectPlug()
 		end
+	elseif(iname=="FlowRate")then
+		if(value>0)then
+			self.pump_rate = value
+		end
 	end
 end
 
@@ -289,6 +294,7 @@ function ENT:AttachPlug( plug )
 	
 	// Constrain together
 	self.Weld = constraint.Weld( self, plug, 0, 0, PLUG_IN_SOCKET_CONSTRAINT_POWER, true, false )
+	self.Weld.Type = "" --prevents the duplicator from making this weld
 	if (not self.Weld) then
 		self.MyPlug = nil
 		plug.MySocket = nil
@@ -352,6 +358,8 @@ function ENT:Deploy()
 		width		= width,
 		material	= material
 	}
+	self.rope.Type = "" --prevents the duplicator from making this weld
+	self.nocollide.Type = "" --prevents the duplicator from making this weld
 	self.Hose:SetTable( ctable )
 	
 	plug:DeleteOnRemove( self.Hose )
@@ -359,12 +367,8 @@ function ENT:Deploy()
 	self:DeleteOnRemove( self.Hose )
 	self:DeleteOnRemove( self.plug )
 	self.Hose:DeleteOnRemove( self.nocollide )
-	self.Hose:DeleteOnRemove( self.rope )//try commenting this line out
-	/*	Lua Error: [ERROR] addons/environments_rd/lua/entities/env_pump/init.lua:362: bad argument #1 to 'DeleteOnRemove'(Entity expected, got nil) 
-	1. DeleteOnRemove - [C]:-1 
-	2. Deploy - addons/environments_rd/lua/entities/env_pump/init.lua:362 
-	3. unknown - addons/environments_rd/lua/entities/env_pump/init.lua:235*/
-
+	self.Hose:DeleteOnRemove( self.rope )
+	
 	self.ropelength = 50
 	self.ropemax = (self.hose_length*100)
 	self.DeployedPlug = 1
