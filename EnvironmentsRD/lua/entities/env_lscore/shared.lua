@@ -35,9 +35,8 @@ if(SERVER)then
 	
 else 
 
-	function envDeviceTrigger(um)
-		entID = um:ReadString()
-		e = um:ReadEntity()
+	function ENT:PanelFunc(um,e,entID)
+
 		e.Functions={}
 		
 		e.DevicePanel = [[
@@ -62,13 +61,6 @@ else
 			RunConsoleCommand( "envsendpcommand",entID,"Gravity", Value)
 		end
 		
-		
-		e.Window = vgui.Create( "EnvDeviceGUI")
-		e.Window:SetMouseInputEnabled( true )
-		e.Window:SetVisible( true )
-		e.Window:CompilePanel()
-		
-		--if(not ValidEntity(e)) then return end;
 	end
-	usermessage.Hook("EnvODMenu", envDeviceTrigger)
+
 end

@@ -32,11 +32,9 @@ if(SERVER)then
 	ENT.Panel=T --Set our panel functions to the table.
 	
 else 
-
-
-	function envDeviceTrigger(um)
-		entID = um:ReadString()
-		e = um:ReadEntity()
+	
+	function ENT:PanelFunc(um,e,entID)
+	
 		e.Functions={}
 		
 		e.DevicePanel = [[
@@ -60,7 +58,13 @@ else
 		e.Functions.Mute = function(Value)
 			RunConsoleCommand( "envsendpcommand",entID,"Mute", Value)
 		end
-		
+	end
+	
+	function envDeviceTrigger(um)
+		entID = um:ReadString()
+		e = um:ReadEntity()
+
+		e:PanelFunc(um,e,entID)
 		
 		e.Window = vgui.Create( "EnvDeviceGUI")
 		e.Window:SetMouseInputEnabled( true )
