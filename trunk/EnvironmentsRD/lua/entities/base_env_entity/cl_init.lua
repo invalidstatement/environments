@@ -41,44 +41,6 @@ ResourceNames["nitrogen"] = "Nitrogen"
 ResourceNames["carbon dioxide"] = "CO2"
 ResourceNames["steam"] = "Steam"
 
-function envDeviceTrigger(um)
-	entID = um:ReadString()
-	e = um:ReadEntity()
-	e.Functions={}
-	
-	e.DevicePanel = [[
-	@<Button>Toggle Power</Button><N>PowerButton</N><Func>Power</Func>
-	@<Slider>Multiplier</Slider><N>Multiplier</N><Func>Mult</Func><Set>GetMult</Set>
-	@<Checkbox>Mute</Checkbox><N>Mute</N><Func>Mute</Func>
-	]]
-
-	e.Functions.Power = function()
-		RunConsoleCommand( "envtoggledevice",entID)
-	end
-	
-	e.Functions.Mult = function(Value)
-		RunConsoleCommand( "envsetmulti",entID,Value)
-	end
-	
-	e.Functions.GetMult = function(label,Data,Device)
-		print(Device:GetNetworkedInt("EnvMultiplier"))
-		label:SetValue( Device:GetNetworkedInt("EnvMultiplier") or 1 )
-	end
-	
-	e.Functions.Mute = function(Value)
-		RunConsoleCommand( "envsetmute",entID, Value)
-	end
-	
-	
-	e.Window = vgui.Create( "EnvDeviceGUI")
-	e.Window:SetMouseInputEnabled( true )
-	e.Window:SetVisible( true )
-	e.Window:CompilePanel()
-	
-	--if(not ValidEntity(e)) then return end;
-end
-usermessage.Hook("EnvODMenu", envDeviceTrigger)
- 
 function ENT:Initialize()
 	local info = nil
 	if Environments.GetScreenInfo then

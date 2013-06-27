@@ -62,6 +62,7 @@ function ENT:Initialize()
 		self.Inputs = {{Name="On"},{Name="Gravity"},{Name="Max O2 level"}}
 	end
 	
+	self:SetNetworkedInt( "EnvMaxO2",11 )
 	self:NextThink(CurTime() + 1)
 end
 
@@ -158,6 +159,7 @@ function ENT:TriggerInput(iname, value)
 		--local level = 100
 		local level = math.Clamp(value, 0, 100)
 		self.mino2 = level
+		self:SetNetworkedInt( "EnvMaxO2", self.mino2 )
 	end
 end
 

@@ -48,10 +48,14 @@ function ENT:AcceptInput(name,activator,caller)
 	--end
 	
 	if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then
-		umsg.Start("EnvODMenu",caller)
-			umsg.String(self:EntIndex( ))
-			umsg.Entity(self.Entity);
-		umsg.End()
+		if(not self.PanelUser)then
+			umsg.Start("EnvODMenu",caller)
+				umsg.String(self:EntIndex( ))
+				umsg.Entity(self.Entity);
+			umsg.End()
+			
+			self.PanelUser = caller 
+		end
 	end
 end
 
