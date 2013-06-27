@@ -28,6 +28,12 @@ function ENT:Damage()
 	if (self.damaged == 0) then self.damaged = 1 end
 end
 
+function ENT:AcceptInput(name,activator,caller)
+	if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then
+		self:SetActive( nil, caller )
+	end
+end
+	
 function ENT:Repair()
 	self.BaseClass.Repair(self)
 	self.damaged = 0

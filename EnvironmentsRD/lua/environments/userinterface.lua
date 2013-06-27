@@ -43,6 +43,7 @@ if(CLIENT)then
 			
 			Environments.UI.PopulatePanel(self.GForm,Data,e)
 			
+			self.GBase.Device = entID
 			self.GBase:SizeToContents()--Resize our Base to hold the new stuff :p
 		end
 		
@@ -75,6 +76,13 @@ if(CLIENT)then
 			Derma:ShowCloseButton( XButton )
 			Derma:SetDraggable( Draggable )
 			Derma:SetDeleteOnClose( CloseDelete )
+			Derma.OldClose = Derma.Close
+			Derma.Close = function(self)
+				if(self.Device)then
+					RunConsoleCommand( "envclosepanel",entID)
+				end
+				Derma:OldClose()
+			end
 		return Derma
 	end
 
@@ -268,27 +276,33 @@ if(CLIENT)then
 	--------------------------------
 else
 ----Server side-----
-	function devicepower(ply, cmd, args)
-		local Device = Entity( tonumber(args[1]) )
-		if(not Device or not Device:IsValid())then return end
-		Device:SetActive( nil, ply )
-	end
-	concommand.Add("envtoggledevice", devicepower)
 
-	
-	function devicemulti(ply, cmd, args)
-		local Device = Entity( tonumber(args[1]) )
-		if(not Device or not Device:IsValid())then return end
-		Device:SetMultiplier(tonumber(args[2]))
-	end
-	concommand.Add("envsetmulti", devicemulti)
-	
-	function devicemute(ply, cmd, args)
-		local Device = Entity( tonumber(args[1]) )
-		if(not Device or not Device:IsValid())then return end
-		if (Device.TriggerInput) then
-			Device:TriggerInput("Mute", tonumber(args[2]))//SetMultiplier(tonumber(args[2]))
+	function EnvPanCommand(ply,cmd,args)
+		---Put Clientside panel disable check here---
+		
+		local Device = Entity( tonumber(args[1]) ) --Get the device out of the command
+		if(not Device or not Device:IsValid())then return end --Is the device valid?
+		---Put can run check here---
+		
+		local Command = args[2] -- Grab the command were gonna send the device.
+		local Data = args[3] --Grab the variable for the command if possible
+		
+		if(Device.Panel[Command])then --Does the device have the needed function?
+			Device.Panel[Command](Device,ply,Data)--Send the command through to the device.
+		else
+			print("Error: "..Command.." is Invalid on Device "..args[1]) --Somethings wrong here.
 		end
 	end
-	concommand.Add("envsetmute", devicemute)
+	concommand.Add("envsendpcommand", EnvPanCommand)
+
+	function EnvClosePan(ply,cmd,args)
+		local Device = Entity( tonumber(args[1]) ) --Get the device out of the command
+		if(not Device or not Device:IsValid())then return end --Is the device valid?
+		---Put can run check here---
+		if(ply == Device.PanelUser)then --Make sure the command sender is the person using the panel.
+			Device.PanelUser = nil --Clear the Panel user since they closed their panel.
+		end
+	end
+	concommand.Add("envclosepanel", EnvClosePan)
+
 end

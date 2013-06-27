@@ -23,6 +23,12 @@ function ENT:Initialize()
 	--self:ShowOutput()
 end
 
+function ENT:AcceptInput(name,activator,caller)
+	if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then
+		self:SetActive( nil, caller )
+	end
+end
+
 function ENT:TurnOn()
 	self:EmitSound( "Buttons.snd17" )
 	self.Active = 1
