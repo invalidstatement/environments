@@ -15,7 +15,7 @@ function ENT:Initialize()
 	
 	self.maxresources = {}
 end
-
+   
 function ENT:SetActive( value, caller )
 	if ((not(value == nil) and value != 0) or (value == nil)) and self.Active == 0 then
 		if self.TurnOn then self:TurnOn( nil, caller ) end
@@ -42,8 +42,15 @@ function ENT:Repair()
 end
 
 function ENT:AcceptInput(name,activator,caller)
+	--if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then
+	--	self:SetActive( nil, caller )
+	--end
+	
 	if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then
-		self:SetActive( nil, caller )
+		umsg.Start("EnvODMenu",caller)
+			umsg.String(self:EntIndex( ))
+			umsg.Entity(self.Entity);
+		umsg.End()
 	end
 end
 
