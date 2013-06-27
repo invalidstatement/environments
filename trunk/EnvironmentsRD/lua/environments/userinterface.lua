@@ -176,6 +176,20 @@ if(CLIENT)then
 		end
 	end
 	
+	Table.Variable=function(String,Table)
+		for i in string.gmatch( String , "%<Var%>(.*)%</Var%>") do
+			print("Variable Located.")
+			Table.Variable=i
+		end
+	end
+	
+	Table.SetupF=function(String,Table)
+		for i in string.gmatch( String , "%<Set%>(.*)%</Set%>") do
+			print("Setup Function Located.")
+			Table.SetupF=i
+		end
+	end
+	
 	Table.Buttoner=function(String,Table)
 		for i in string.gmatch( String , "%<Button%>(.*)%</Button%>") do
 			print("Button Located.")
@@ -233,6 +247,7 @@ if(CLIENT)then
 		label.OnValueChanged = function(self,Value)
 			Device.Functions[D.Func](Value)
 		end
+		if(D.SetupF)then Device.Functions[D.SetupF](label,D,Device) end
 		return label
 	end
 	
@@ -245,6 +260,7 @@ if(CLIENT)then
 				Device.Functions[D.Func](0)
 			end
 		end
+		return label
 	end
 	
 	Environments.UI.Panel.Populate = Table

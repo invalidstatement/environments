@@ -48,7 +48,7 @@ function envDeviceTrigger(um)
 	
 	e.DevicePanel = [[
 	@<Button>Toggle Power</Button><N>PowerButton</N><Func>Power</Func>
-	@<Slider>Multiplier</Slider><N>Multiplier</N><Func>Mult</Func>	
+	@<Slider>Multiplier</Slider><N>Multiplier</N><Func>Mult</Func><Set>GetMult</Set>
 	@<Checkbox>Mute</Checkbox><N>Mute</N><Func>Mute</Func>
 	]]
 
@@ -58,6 +58,11 @@ function envDeviceTrigger(um)
 	
 	e.Functions.Mult = function(Value)
 		RunConsoleCommand( "envsetmulti",entID,Value)
+	end
+	
+	e.Functions.GetMult = function(label,Data,Device)
+		print(Device:GetNetworkedInt("EnvMultiplier"))
+		label:SetValue( Device:GetNetworkedInt("EnvMultiplier") or 1 )
 	end
 	
 	e.Functions.Mute = function(Value)

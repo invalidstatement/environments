@@ -33,7 +33,8 @@ function ENT:GetMultiplier()
 end
 
 function ENT:SetMultiplier(num)
-	self.MULTIPLIER = tonumber(num) or 1 
+	self.MULTIPLIER = tonumber(num) or 1
+	self:SetNetworkedInt( "EnvMultiplier", self.MULTIPLIER )
 end
 
 function ENT:Repair()
