@@ -41,8 +41,8 @@ end
 
 //Function that manages all the resources to a device.
 Environments.Devices.ManageResources = function(self,Override)
-	if(LDE.LifeSupport.HasNeeded(self,self.Data.In))then --Do we have the needed resources?
-		if(LDE.LifeSupport.MaxedResources(self,self.Data.Out) and not Override)then return end --Dont run the device if were maxed out.
+	if(Environments.Devices.HasNeeded(self,self.Data.In))then --Do we have the needed resources?
+		if(Environments.Devices.MaxedResources(self,self.Data.Out) and not Override)then return end --Dont run the device if were maxed out.
 		if(self.Data.In)then --Check if we have required resources.
 			for I,b in pairs(self.Data.In) do --For all the required resources...
 				self:ConsumeResource(b, self.Data.InUse[I]*self:GetMultiplier()) --Nom dem.
@@ -105,7 +105,7 @@ function Environments.Devices.RegisterDevice(Data)
 		end
 		
 		function ENT:OnTakeDamage(DmgInfo)
-			LDE_EntityTakeDamage( self, DmgInfo )
+			--LDE_EntityTakeDamage( self, DmgInfo )
 		end
 		
 		function ENT:TurnOn()
@@ -267,7 +267,7 @@ function Environments.Devices.RegisterStorage(Data)
 		end
 		
 		function ENT:OnTakeDamage(DmgInfo)
-			LDE_EntityTakeDamage( self, DmgInfo )
+			--LDE_EntityTakeDamage( self, DmgInfo )
 		end
 		
 		function ENT:OnRemove()
