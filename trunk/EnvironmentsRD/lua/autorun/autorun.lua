@@ -38,12 +38,17 @@ if SERVER then
 	
 	include("environments/userinterface.lua")
 	AddCSLuaFile("environments/userinterface.lua")
+	
+	include("environments/easecreation.lua")
+	AddCSLuaFile("environments/easecreation.lua")
 else
 	include("environments/userinterface.lua")
 	
 	include("environments/cl_init.lua")
 	
 	include("environments/shared.lua")
+	
+	include("environments/easecreation.lua")
 	
 	include("environments/EntRegister.lua")
 	
