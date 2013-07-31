@@ -26,6 +26,7 @@ if(CLIENT)then
 			local Data = {}
 			
 			if(not e.DevicePanel)then print("Error No Panel Data.") return end
+			if(e.NoEnvPanel)then print("Whoa... This ent doesnt want a panel :/") self.GBase:Remove() return end
 			local explode = string.Explode("@",e.DevicePanel)--Grab our Data out of the string.
 			
 			for t,s in pairs(explode) do
