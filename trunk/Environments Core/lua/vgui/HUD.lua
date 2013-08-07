@@ -86,7 +86,7 @@ AddResolution(1024, 768, Vector(1,1,1.8), Vector(-2,55,-53), Vector(-2,42,-54) )
 HUD = {}
 HUD.Convar = CreateConVar( "env_hud_enabled", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
 HUD.Unit = CreateConVar( "env_hud_unit", "F", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the custom hud" )
-HUD.Mode = CreateConVar( "env_hud_mode", "1", { FCVAR_ARCHIVE, }, "The display mode of the HUD /n 0 = Basic    1 = Advanced" )
+HUD.Mode = CreateConVar( "env_hud_mode", "0", { FCVAR_ARCHIVE, }, "The display mode of the HUD /n 0 = Basic    1 = Advanced" )
 	
 local scale_x = CreateConVar("env_hud_scale_x", 0.9, { FCVAR_ARCHIVE, },"")
 local scale_y = CreateConVar("env_hud_scale_y", 1.35, { FCVAR_ARCHIVE, },"")
