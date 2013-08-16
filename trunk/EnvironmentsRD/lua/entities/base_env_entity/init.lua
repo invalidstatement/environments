@@ -60,7 +60,7 @@ function ENT:AcceptInput(name,activator,caller)
 end
 
 function ENT:OnTakeDamage(DmgInfo)//should make the damage go to the shield if the shield is installed(CDS)
-	if self.Shield then
+	if self.Shield and self.Shield:IsValid() then --Fixed the dam error here.
 		self.Shield:ShieldDamage(DmgInfo:GetDamage())
 		CDS_ShieldImpact(self:GetPos())
 		return
