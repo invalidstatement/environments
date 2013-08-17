@@ -654,7 +654,11 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 				icon.devname = k
 				icon.devtype = cat
 				icon.description = v.description
-				icon:SetTooltip(k)
+				if v.tooltip then
+					icon:SetTooltip(v.tooltip)
+				else
+					icon:SetTooltip(k)
+				end
 				icon.DoClick = function(self)
 					self.tool.Model = self.model
 					self.tool.description_label:SetText(icon.description or icon.devname)
@@ -686,7 +690,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 end
 
 Environments.Tooldata = {}
-function Environments.RegisterDevice(toolname, genname, devname, class, model, skin, extra, description)
+function Environments.RegisterDevice(toolname, genname, devname, class, model, skin, extra, description, tooltip)
 	if !Environments.Tooldata[toolname] then
 		Environments.Tooldata[toolname] = {}
 	end
@@ -701,6 +705,7 @@ function Environments.RegisterDevice(toolname, genname, devname, class, model, s
 	dat[genname][devname].skin = skin
 	dat[genname][devname].extra = extra
 	dat[genname][devname].description = description
+	dat[genname][devname].tooltip = tooltip
 end
 
 hook.Add("AddTools", "environments tool hax", function()
