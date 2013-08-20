@@ -70,7 +70,7 @@ end
 function Environments.Devices.RegisterDevice(Data)
 	local ENT = {}
 	ENT.Type = "anim"
-	ENT.Base = "base_env_entity"
+	ENT.Base = Data.BaseClass or "base_env_entity"
 	ENT.PrintName = Data.name
 	ENT.Data = Data
 	ENT.CanRun=1
@@ -80,95 +80,111 @@ function Environments.Devices.RegisterDevice(Data)
 		util.PrecacheSound(Data.RunSound)
 	end
 	
-	list.Set( "LSEntOverlayText" , Data.class, {HasOOO = true, resnames = Data.In, genresnames = Data.Out} )
+	if(not Data.NoList)then
+		list.Set( "LSEntOverlayText" , Data.class, {HasOOO = true, resnames = Data.In, genresnames = Data.Out} )
+	end
 	
 	if SERVER then
-		function ENT:Initialize()
-			self.BaseClass.Initialize(self)
-			self:PhysicsInit( SOLID_VPHYSICS )
-			self:SetMoveType( MOVETYPE_VPHYSICS )
-			self:SetSolid( SOLID_VPHYSICS )
-			self.Active = 0
-			self.multiplier = 1
-			self.LastTime = 0
-			if WireAddon then
-				self.WireDebugName = self.PrintName
-				if(Data.WireIn)then
-					self.Inputs = WireLib.CreateInputs(self, Data.WireIn)
+		if(Data.ServerSide)then
+			Data.ServerSide(ENT)
+		else
+			function ENT:Initialize()
+				self.BaseClass.Initialize(self)
+				self:PhysicsInit( SOLID_VPHYSICS )
+				self:SetMoveType( MOVETYPE_VPHYSICS )
+				self:SetSolid( SOLID_VPHYSICS )
+				self.Active = 0
+				self.multiplier = 1
+				self.LastTime = 0
+				if WireAddon then
+					self.WireDebugName = self.PrintName
+					if(Data.WireIn)then
+						self.Inputs = WireLib.CreateInputs(self, Data.WireIn)
+					else
+						self.Inputs = WireLib.CreateInputs(self, { "On","Mult" })
+					end
+					if(Data.WireOut)then
+						self.Outputs = WireLib.CreateOutputs(self, Data.WireOut)
+					end
+				end
+				
+				if(Data.Initial)then
+					Data.Initial(self)
+				end
+			end
+			
+			function ENT:OnTakeDamage(DmgInfo)
+				--LDE_EntityTakeDamage( self, DmgInfo )
+				if(Data.OnDamage)then
+					Data.OnDamage(self)
+				end
+			end
+			
+			function ENT:TurnOn()
+				if self.Active == 0 then
+					self.Active = 1
+					self:SetOOO(1)
+				end
+			end
+			
+			function ENT:TriggerInput(iname, value)
+				if(Data.WireTrigger)then
+					Data.WireTrigger(self,iname,value)
 				else
-					self.Inputs = WireLib.CreateInputs(self, { "On","Mult" })
-				end
-				if(Data.WireOut)then
-					self.Outputs = WireLib.CreateOutputs(self, Data.WireOut)
+					if iname == "On" then
+						if value > 0 then
+							if self.Active <= 0 then
+								self:TurnOn()
+							end
+						else
+							if self.Active >= 1 then
+								self:TurnOff()
+							end
+						end
+					elseif iname == "Mult" then
+						if(value<=1)then
+							self:SetMultiplier(1)
+						else
+							self:SetMultiplier(value)
+						end
+					end
 				end
 			end
-		end
-		
-		function ENT:OnTakeDamage(DmgInfo)
-			--LDE_EntityTakeDamage( self, DmgInfo )
-		end
-		
-		function ENT:TurnOn()
-			if self.Active == 0 then
-				self.Active = 1
-				self:SetOOO(1)
+
+			function ENT:TurnOff()
+				if self.Active == 1 then
+					self.Active = 0
+					self:SetOOO(0)
+				end
 			end
-		end
-		
-		function ENT:TriggerInput(iname, value)
-			if iname == "On" then
-				if value > 0 then
-					if self.Active <= 0 then
+
+			function ENT:SetActive(value)
+				if not (value == nil) then
+					if (value != 0 and self.Active == 0 ) then
 						self:TurnOn()
+					elseif (value == 0 and self.Active == 1 ) then
+						self:TurnOff()
 					end
 				else
-					if self.Active >= 1 then
+					if ( self.Active == 0 ) then
+						self:TurnOn()
+					else
 						self:TurnOff()
 					end
 				end
-			elseif iname == "Mult" then
-				if(value<=1)then
-					self:SetMultiplier(1)
-				else
-					self:SetMultiplier(value)
-				end
 			end
-			//self.Inputs[iname]=value
-		end
+			
+			ENT.Generate = Data.thinkfunc
 
-		function ENT:TurnOff()
-			if self.Active == 1 then
-				self.Active = 0
-				self:SetOOO(0)
-			end
-		end
-
-		function ENT:SetActive(value)
-			if not (value == nil) then
-				if (value != 0 and self.Active == 0 ) then
-					self:TurnOn()
-				elseif (value == 0 and self.Active == 1 ) then
-					self:TurnOff()
+			function ENT:Think()
+				if(CurTime()>=self.LastTime+1)then
+					self.LastTime=CurTime()
+					self.Mult = self:GetMultiplier() or 1
+					self:Generate(self)
 				end
-			else
-				if ( self.Active == 0 ) then
-					self:TurnOn()
-				else
-					self:TurnOff()
-				end
+				self:NextThink(CurTime() + 1)
+				return true
 			end
-		end
-		
-		ENT.Generate = Data.shootfunc
-
-		function ENT:Think()
-			if(CurTime()>=self.LastTime+1)then
-				self.LastTime=CurTime()
-				self.Mult = self:GetMultiplier() or 1
-				self:Generate()
-			end
-			self:NextThink(CurTime() + 1)
-			return true
 		end
 	else
 		--client
