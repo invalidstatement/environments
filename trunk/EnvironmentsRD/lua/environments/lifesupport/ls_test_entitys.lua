@@ -2,7 +2,7 @@
 --Generator
 local Base = {Tool="Generators",Type="Test"}
 local Func = function(self) if(self.Active==1)then Environments.Devices.ManageResources(self) end end
-local Data={name="Test",class="test_device_small",In={"energy"},Out={"Testium"},shootfunc=Func,InUse={10},OutMake={1}}
+local Data={name="Test",class="test_device_small",In={"energy"},Out={"Testium"},thinkfunc=Func,InUse={10},OutMake={1}}
 local Makeup = {name={"Test Fab"},model={"models/SmallBridge/Life Support/sbclimatereg.mdl"},Tool=Base.Tool,Type=Base.Type,class=Data.class}
 Environments.Devices.CompileDevice(Data,Makeup)
 
