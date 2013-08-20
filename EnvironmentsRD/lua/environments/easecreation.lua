@@ -210,11 +210,9 @@ function Environments.Devices.RegisterStorage(Data)
 	ENT.Base = "base_env_storage"
 	ENT.PrintName = Data.name
 	ENT.Data = Data
-	if(!CLIENT)then
-		if(self)then
-			list.Set( "LSEntOverlayText" , Data.class, {HasOOO = false, resnames = self.Data.storage} )
-		end
-	end
+	
+	list.Set( "LSEntOverlayText" , Data.class, {HasOOO = false, resnames = Data.storage} )
+
 	if SERVER then
 		function ENT:Initialize()
 			self.BaseClass.Initialize(self)
