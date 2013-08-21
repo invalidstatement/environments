@@ -196,8 +196,10 @@ end
 
 //Storage compiling function.
 function Environments.Devices.CompileStorage(Data,Inner)
-	for k,v in pairs(Inner.model) do
-		Environments.RegisterDevice(Inner.Tool, Inner.Type, Inner.name[k], Inner.class, v)
+	if(Inner)then
+		for k,v in pairs(Inner.model) do
+			Environments.RegisterDevice(Inner.Tool, Inner.Type, Inner.name[k], Inner.class, v)
+		end
 	end
 	Environments.RegisterLSStorage(Data.name, Data.class, Data.Rates, 4084, 100, 10)
 	Environments.Devices.RegisterStorage(Data)
