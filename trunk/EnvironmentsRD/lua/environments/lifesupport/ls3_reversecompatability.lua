@@ -99,20 +99,14 @@ Environments.Devices.RegisterDevice(Data)
 local Func = function(self)
 	if(self.Active~=1)then return end
 	local energy = self:GetResourceAmount("energy")
-	local einc = Energy_Increment + (self.overdrive*Energy_Increment*3)
+	local einc = Energy_Increment + (Energy_Increment*3)
 	local waterlevel = 0
 	waterlevel = self:WaterLevel()
 
-	einc = (math.ceil(einc * self:GetMultiplier())) * self.Multiplier
+	einc = (math.ceil(einc * self:GetMultiplier()))
 	if WireAddon then Wire_TriggerOutput(self, "EnergyUsage", math.Round(einc)) end
 	if (waterlevel > 0 and energy >= einc) then
-		local winc = (math.ceil(Pressure_Increment * (waterlevel / 3))) * self.Multiplier
-		
-		if ( self.overdrive == 1 ) then
-			winc = winc * 3
-			einc = einc * 2
-			Environments.DamageLS(self, math.random(2, 3))
-		end
+		local winc = (math.ceil(80 * (waterlevel / 3)))
 		winc = math.ceil(winc * self:GetMultiplier())
 		self:ConsumeResource("energy", einc)
 		self:SupplyResource("water", winc)
@@ -122,7 +116,7 @@ local Func = function(self)
 	end
 end
 
-local Data={name="Outdated Water Pump",class="generator_liquid_water",In={"energy"},Out={"water"},thinkfunc=Func,InUse={0},OutMake={0}}
+local Data={name="Outdated Water Pump",class="generator_liquid_water",In={"energy"},Out={"water"},WireOut={"EnergyUsage","WaterProduction"},thinkfunc=Func,InUse={0},OutMake={0}}
 Environments.Devices.RegisterDevice(Data)
 
 ----------------------------------------------------------------------
@@ -149,7 +143,7 @@ local Func = function(self)
 
 	--the money shot!
 	if (inc > 0) then 
-		inc = math.ceil(inc * self:GetMultiplier())
+		inc = math.ceil(inc)
 		self:SupplyResource("energy", inc)
 	end
 	if WireLib then WireLib.TriggerOutput(self, "Output", inc) end
@@ -170,7 +164,7 @@ function Environments.Devices.HydroFanExtract(self)
     else
         waterlevel = 1 / 3
     end
-    local energy = math.Round(8 * self:GetMultiplier() * waterlevel)
+    local energy = math.Round(80 * waterlevel)
     self:SupplyResource("energy", energy)
     if not (WireAddon == nil) then Wire_TriggerOutput(self, "Out", energy) end
 end
@@ -254,42 +248,42 @@ Environments.Devices.RegisterDevice(Data)
 ----------------------------------------------------------------------
 
 local Data={name="OutDated Resource Cache",class="storage_cache",storage={"energy","water","oxygen","hydrogen","nitrogen","carbon dioxide","steam","Heavy Water"},Rates={[1601] = "carbon dioxide",[1600] = "oxygen",[1602] = "hydrogen",[1603] = "nitrogen",[1375] = "Heavy Water",[1599] = "water",[1598] = "steam",[1604] = "energy"}}
-Environments.Devices.RegisterStorage(Data)
+Environments.Devices.CompileStorage(Data,Inner)
 
 ----------------------------------------------------------------------
 -------------------------Energy Storage==-----------------------------
 ----------------------------------------------------------------------
 
 local Data={name="OutDated Energy Storage",class="storage_energy",storage={"energy"},Rates={[3600] = "energy"}}
-Environments.Devices.RegisterStorage(Data)
+Environments.Devices.CompileStorage(Data,Inner)
 
 ----------------------------------------------------------------------
 -------------------------Gas Storage==-------------------------------
 ----------------------------------------------------------------------
 
 local Data={name="OutDated Gas Storage",class="storage_gas",storage={"oxygen","carbon dioxide","hydrogen","nitrogen"},Rates={[1601] = "carbon dioxide",[1600] = "oxygen",[1602] = "hydrogen",[1603] = "nitrogen"}}
-Environments.Devices.RegisterStorage(Data)
+Environments.Devices.CompileStorage(Data,Inner)
 
 ----------------------------------------------------------------------
 -------------------------Steam Storage==------------------------------
 ----------------------------------------------------------------------
 
 local Data={name="OutDated Steam Storage",class="storage_gas_steam",storage={"steam"},Rates={[3600] = "steam"}}
-Environments.Devices.RegisterStorage(Data)
+Environments.Devices.CompileStorage(Data,Inner)
 
 ----------------------------------------------------------------------
 -------------------------Heavy Water Storage==------------------------
 ----------------------------------------------------------------------
 
 local Data={name="OutDated Heavy Water Storage",class="storage_liquid_hvywater",storage={"Heavy Water"},Rates={[2500] = "Heavy Water"}}
-Environments.Devices.RegisterStorage(Data)
+Environments.Devices.CompileStorage(Data,Inner)
 
 ----------------------------------------------------------------------
 -------------------------Water Storage==------------------------------
 ----------------------------------------------------------------------
 
 local Data={name="OutDated Water Storage",class="storage_liquid_water",storage={"water"},Rates={[3600] = "water"}}
-Environments.Devices.RegisterStorage(Data)
+Environments.Devices.CompileStorage(Data,Inner)
 
 
 
