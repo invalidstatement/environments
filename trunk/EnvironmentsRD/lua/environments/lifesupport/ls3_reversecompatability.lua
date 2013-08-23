@@ -99,9 +99,8 @@ Environments.Devices.RegisterDevice(Data)
 local Func = function(self)
 	if(self.Active~=1)then return end
 	local energy = self:GetResourceAmount("energy")
-	local einc = Energy_Increment + (Energy_Increment*3)
-	local waterlevel = 0
-	waterlevel = self:WaterLevel()
+	local einc = 500
+	local waterlevel = self:WaterLevel()
 
 	einc = (math.ceil(einc * self:GetMultiplier()))
 	if WireAddon then Wire_TriggerOutput(self, "EnergyUsage", math.Round(einc)) end
@@ -164,7 +163,7 @@ function Environments.Devices.HydroFanExtract(self)
     else
         waterlevel = 1 / 3
     end
-    local energy = math.Round(80 * waterlevel)
+    local energy = math.Round(200 * waterlevel)
     self:SupplyResource("energy", energy)
     if not (WireAddon == nil) then Wire_TriggerOutput(self, "Out", energy) end
 end
@@ -223,24 +222,6 @@ Environments.Devices.RegisterDevice(Data)
 
 local Func = function(self) if(self.Active==1)then Environments.Devices.ManageResources(self) end end
 local Data={name="Outdated Steam Turbine",class="generator_energy_steam_turbine",In={"steam"},Out={"energy","water"},thinkfunc=Func,InUse={50},OutMake={100,15}}
-Environments.Devices.RegisterDevice(Data)
-
-----------------------------------------------------------------------
--------------------------Suit Dispenser-------------------------------
-----------------------------------------------------------------------
-
-local Func = function(self) end 
-local Server = function(ENT) end
-local Data={name="Outdated Suit Dispenser",class="other_dispenser",BaseClass="suit_dispenser",In={"oxygen","energy","water","nitrogen"},thinkfunc=Func,ServerSide=Server,InUse={0}}
-Environments.Devices.RegisterDevice(Data)
-
-----------------------------------------------------------------------
--------------------------Atmosphere Probe-----------------------------
-----------------------------------------------------------------------
-
-local Func = function(self) end 
-local Server = function(ENT) end
-local Data={name="Outdated Atmosphere Probe",class="other_probe",BaseClass="env_probe",In={"oxygen"},NoList=true,thinkfunc=Func,ServerSide=Server,InUse={0}}
 Environments.Devices.RegisterDevice(Data)
 
 ----------------------------------------------------------------------
