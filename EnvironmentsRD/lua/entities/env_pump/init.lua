@@ -33,7 +33,9 @@ function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	if not (WireAddon == nil) then
 		self.Inputs = Wire_CreateInputs(self, { "Deploy", "ReelInPlug", "EjectPlug", "FlowRate" })
-		self.Outputs = Wire_CreateOutputs(self, { "InUse", "Rate" })
+		local V,N,A,E = "VECTOR","NORMAL","ANGLE","ENTITY"
+		self.Outputs = WireLib.CreateSpecialOutputs( self,{ "InUse","Deployed","Pumping", "Rate", "Pump" },{N,N,N,N,E})
+		--self.Outputs = Wire_CreateOutputs(self, { "InUse","Deployed","Pumping", "Rate", "Pump" })
 	end
 	self:SetModel("models/props_lab/tpplugholder_single.mdl")
 	self:PhysicsInit( SOLID_VPHYSICS )
@@ -103,7 +105,11 @@ function ENT:ResetPlug()
 	end
 	
 	self.PumpOn = 0
-	if WireAddon then Wire_TriggerOutput(self, "InUse", 0) end
+	if WireAddon then 
+		Wire_TriggerOutput(self, "InUse", 0)
+		Wire_TriggerOutput(self, "Deployed", 0)
+		Wire_TriggerOutput(self, "Pumping", 0) 
+	end
 end
 
 function ENT:Think()
@@ -169,7 +175,10 @@ function ENT:Think()
 				self.plug = nil
 				self.DeployedPlug = 0
 				self.reel_status = REEL_STOP
-				if WireAddon then Wire_TriggerOutput(self, "InUse", 0) end
+				if WireAddon then 
+					Wire_TriggerOutput(self, "InUse", 0) 
+					Wire_TriggerOutput(self, "Deployed", 0) 					
+				end
 			end
 		end
 	end
@@ -228,6 +237,9 @@ function ENT:EjectPlug()
 	if (self.OtherSocket == nil) then return end
 	self:EmitSound( "Buttons.snd17" )
 	constraint.RemoveConstraints( self.OtherSocket.plug, "Weld")
+	if WireAddon then 
+		Wire_TriggerOutput(self, "Pumping", 0)
+	end
 end
 
 function ENT:AcceptInput(name,activator,caller)
@@ -312,7 +324,10 @@ function ENT:AttachPlug( plug )
 	self.OtherSocket.PumpOn = 1 --use their pump instead
 	self.PumpOn = 0
 	
-	if WireAddon then Wire_TriggerOutput(self, "InUse", 1) end
+	if WireAddon then 
+		Wire_TriggerOutput(self, "InUse", 1) 
+		Wire_TriggerOutput(self, "Pumping", 1) 
+	end
 end
 
 function ENT:Deploy()
@@ -333,14 +348,18 @@ function ENT:Deploy()
 	plug:Spawn()
 		
 		local phys = plug:GetPhysicsObject()
-			phys:EnableGravity( true )
+			--phys:EnableGravity( true )
 			phys:EnableMotion( true )
-			phys:SetVelocity(self:GetForward() * 50)
+			phys:SetVelocity(self:GetForward() * 300)
 		phys:Wake()
 		plug.is_plug = true
 		plug.MySocket = nil
 		plug.socket = self
 		plug:SetVar('Owner',self:GetPlayer())
+		if(NADMOD and NADMOD.PlayerMakePropOwner)then --Check for a prop protection.
+			NADMOD.PlayerMakePropOwner(self:GetPlayer(),plug)
+		end
+		
 		
 	self.plug = plug
 	
@@ -374,5 +393,8 @@ function ENT:Deploy()
 	self.DeployedPlug = 1
 	self.reel_status = REEL_OUT
 	
-	if WireAddon then Wire_TriggerOutput(self, "InUse", 1) end
+	if WireAddon then 
+		Wire_TriggerOutput(self, "InUse", 1) 
+		Wire_TriggerOutput(self, "Deployed", 1)
+	end
 end
