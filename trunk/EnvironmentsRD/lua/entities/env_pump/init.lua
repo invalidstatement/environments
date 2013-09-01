@@ -362,6 +362,7 @@ function ENT:Deploy()
 		
 		
 	self.plug = plug
+	Wire_TriggerOutput(self, "Pump", plug) 
 	
 	self.nocollide = constraint.NoCollide( self, plug, 0, 0 )
 	self.Hose, self.rope = constraint.Elastic( self, plug, 0, 0, LPos1, LPos2, 500, 0, 0, material, width, true )
