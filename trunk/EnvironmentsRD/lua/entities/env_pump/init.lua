@@ -33,9 +33,7 @@ function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	if not (WireAddon == nil) then
 		self.Inputs = Wire_CreateInputs(self, { "Deploy", "ReelInPlug", "EjectPlug", "FlowRate" })
-		local V,N,A,E = "VECTOR","NORMAL","ANGLE","ENTITY"
-		self.Outputs = WireLib.CreateSpecialOutputs( self,{ "InUse","Deployed","Pumping", "Rate", "Pump" },{N,N,N,N,E})
-		--self.Outputs = Wire_CreateOutputs(self, { "InUse","Deployed","Pumping", "Rate", "Pump" })
+		self.Outputs = Wire_CreateOutputs(self, { "InUse", "Rate" })
 	end
 	self:SetModel("models/props_lab/tpplugholder_single.mdl")
 	self:PhysicsInit( SOLID_VPHYSICS )
@@ -48,6 +46,8 @@ function ENT:Initialize()
 	self.OtherSocket = nil
 	self.MyPlug = nil
 	self.Weld = nil
+	self.HoseStep = CurTime()
+	self.IsConnecting = false
 	
 	self.DeployedPlug = 0
 	self.PumpOn = 0
@@ -105,11 +105,7 @@ function ENT:ResetPlug()
 	end
 	
 	self.PumpOn = 0
-	if WireAddon then 
-		Wire_TriggerOutput(self, "InUse", 0)
-		Wire_TriggerOutput(self, "Deployed", 0)
-		Wire_TriggerOutput(self, "Pumping", 0) 
-	end
+	if WireAddon then Wire_TriggerOutput(self, "InUse", 0) end
 end
 
 function ENT:Think()
@@ -127,7 +123,8 @@ function ENT:Think()
 			local local_ents = ents.FindInSphere( sockCenter, PLUG_IN_ATTACH_RANGE )
 			for key, plug in pairs(local_ents) do
 				// If we find a plug, try to attach it to us
-				if ( plug:IsValid() and plug.is_plug) and (plug.MySocket == nil) then --found a plug and not it's not in another socket
+				if ( plug:IsValid() and plug.is_plug) and (plug.MySocket == nil) and (plug:IsPlayerHolding() == false) then --found a plug and not it's not in another socket --player isn't holding the plug spamming connections
+						--print("Attempting Attach - "..tostring(plug:IsPlayerHolding()))
 					--if plug:GetPos():Distance(self) < 2048 then
 						self:AttachPlug(plug)
 					--end
@@ -136,6 +133,50 @@ function ENT:Think()
 		end
 		
 	elseif (self.reel_status > REEL_STOP) then --plug deployed and we need to do something with the reel
+		if IsValid(self.plug) then
+			local ephys = self.plug:GetPhysicsObject()
+			if ephys:IsValid() then
+				if ephys:IsMoveable() == false then
+					ephys:EnableMotion(true)
+					ephys:Wake()
+				end
+			end
+		end
+		if ((type(self.Hose) ~= "Entity" or type(self.rope) ~= "Entity") and IsValid(self.plug) and self.HoseStep <= CurTime()) then	--recreate the hose if something removes it
+			--print("No Rope - "..type(self.Hose))
+			self:EmitSound( "Buttons.snd17" )
+	
+			local LPos1 = Vector(5,13,10)
+			local LPos2 = Vector(10,0,0)
+			local width = 3
+			local material = "cable/cable2"
+			local plug = self.plug
+
+			local dist = (self:GetPos() - self.plug:GetPos()):Length()
+			self.Hose, self.rope = constraint.Elastic( self, plug, 0, 0, LPos1, LPos2, 500, 0, 0, material, width, true )
+			local ctable = {
+				Type 		= "LSWinch",
+				pl				= self:GetPlayer(),
+				Ent1			= self,
+				Ent2			= plug,
+				Bone1		= Bone1,
+				Bone2		= Bone2,
+				LPos1		= LPos1,
+				LPos2		= LPos2,
+				width		= width,
+				material	= material
+			}
+			self.rope.Type = "" --prevents the duplicator from making this weld
+			self.Hose:SetTable( ctable )
+	
+			plug:DeleteOnRemove( self.Hose )
+			self:DeleteOnRemove( self.Hose )
+			self:DeleteOnRemove( self.plug )
+			self.Hose:DeleteOnRemove( self.rope )
+	
+			self.ropemax = (self.hose_length*100)
+			self.ropelength = math.min(dist+100,self.ropemax)
+		end
 		if (self.reel_status == REEL_OUT) then
 			local dist = (self:GetPos() - self.plug:GetPos()):Length()
 			if (self.ropelength <= self.ropemax) and (dist > self.ropelength - 32 ) then
@@ -175,10 +216,7 @@ function ENT:Think()
 				self.plug = nil
 				self.DeployedPlug = 0
 				self.reel_status = REEL_STOP
-				if WireAddon then 
-					Wire_TriggerOutput(self, "InUse", 0) 
-					Wire_TriggerOutput(self, "Deployed", 0) 					
-				end
+				if WireAddon then Wire_TriggerOutput(self, "InUse", 0) end
 			end
 		end
 	end
@@ -237,9 +275,6 @@ function ENT:EjectPlug()
 	if (self.OtherSocket == nil) then return end
 	self:EmitSound( "Buttons.snd17" )
 	constraint.RemoveConstraints( self.OtherSocket.plug, "Weld")
-	if WireAddon then 
-		Wire_TriggerOutput(self, "Pumping", 0)
-	end
 end
 
 function ENT:AcceptInput(name,activator,caller)
@@ -291,6 +326,41 @@ function ENT:ShowOutput()
 end
 
 function ENT:AttachPlug( plug )
+	if not plug or not plug.socket then return end
+	
+	--if IsValid(plug.socket:GetParent()) then		--parent checking, not really needed so we'll leave it commented so people can't hax the elastic
+		if (type(plug.socket.Hose) == "Entity") then		--Remove the Elastic so parented pumps don't go batshit insane, Elastic will remake itself.
+			plug.socket.Hose:Remove()
+			plug.socket.HoseStep = CurTime() + 0.5
+			plug.socket:NextThink( CurTime() + 0.5 )
+			--print("Removing Hose")
+		else 
+			--print(type(plug.Hose))
+		end
+	
+		if (type(plug.socket.rope) == "Entity") then
+			plug.socket.rope:Remove()
+			plug.socket.HoseStep = CurTime() + 0.5
+			plug.socket:NextThink( CurTime() + 0.5 )
+			--print("Removing Rope")
+		else 
+			--print(type(plug.rope))
+		end
+		
+	
+		if self.IsConnecting == false then
+			self.IsConnecting = true
+			plug.socket.Hose = nil
+			plug.socket.rope = nil
+			self.HoseStep = CurTime() + 0.5
+			self:NextThink( CurTime() + 0.5 )
+			timer.Simple(0.25,function() self:AttachPlug(plug) end)
+			return
+		elseif self.IsConnecting == true then
+			self.IsConnecting = false
+		end
+	--end
+	
 	// Set references between them
 	plug.MySocket = self
 	self.MyPlug = plug
@@ -324,10 +394,7 @@ function ENT:AttachPlug( plug )
 	self.OtherSocket.PumpOn = 1 --use their pump instead
 	self.PumpOn = 0
 	
-	if WireAddon then 
-		Wire_TriggerOutput(self, "InUse", 1) 
-		Wire_TriggerOutput(self, "Pumping", 1) 
-	end
+	if WireAddon then Wire_TriggerOutput(self, "InUse", 1) end
 end
 
 function ENT:Deploy()
@@ -348,21 +415,16 @@ function ENT:Deploy()
 	plug:Spawn()
 		
 		local phys = plug:GetPhysicsObject()
-			--phys:EnableGravity( true )
+			phys:EnableGravity( true )
 			phys:EnableMotion( true )
-			phys:SetVelocity(self:GetForward() * 300)
+			phys:SetVelocity(self:GetForward() * 50)
 		phys:Wake()
 		plug.is_plug = true
 		plug.MySocket = nil
 		plug.socket = self
 		plug:SetVar('Owner',self:GetPlayer())
-		if(NADMOD and NADMOD.PlayerMakePropOwner)then --Check for a prop protection.
-			NADMOD.PlayerMakePropOwner(self:GetPlayer(),plug)
-		end
-		
 		
 	self.plug = plug
-	Wire_TriggerOutput(self, "Pump", plug) 
 	
 	self.nocollide = constraint.NoCollide( self, plug, 0, 0 )
 	self.Hose, self.rope = constraint.Elastic( self, plug, 0, 0, LPos1, LPos2, 500, 0, 0, material, width, true )
@@ -393,9 +455,6 @@ function ENT:Deploy()
 	self.ropemax = (self.hose_length*100)
 	self.DeployedPlug = 1
 	self.reel_status = REEL_OUT
-	
-	if WireAddon then 
-		Wire_TriggerOutput(self, "InUse", 1) 
-		Wire_TriggerOutput(self, "Deployed", 1)
-	end
+	--print(type(self.Hose).." "..type(self.rope))
+	if WireAddon then Wire_TriggerOutput(self, "InUse", 1) end
 end
