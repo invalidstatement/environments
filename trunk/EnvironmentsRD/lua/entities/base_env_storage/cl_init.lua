@@ -313,6 +313,7 @@ end
 local function UpdateStorage(msg)
 	local ent = msg:ReadEntity()
 	local res = msg:ReadString()
+	if(not ent or not ent:IsValid())then return end
 	if not ent.resources then
 		ent.resources = {}
 	end
