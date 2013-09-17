@@ -4,8 +4,14 @@ TOOL.Category = "Tools"
 TOOL.Name = "Resource Nodes"
 TOOL.Description = "Used to spawn resource nodes"
 
-TOOL.Models = { 	["models/props_wasteland/panel_leverBase001a.mdl"] = {},
-					["models/Environments_Node.mdl"] = {} }
+TOOL.Models = { 	
+["models/props_wasteland/panel_leverBase001a.mdl"] = {},
+["models/SnakeSVx/small_res_node.mdl"] = {},
+["models/SnakeSVx/medium_res_node.mdl"] = {},
+["models/SnakeSVx/node_s.mdl"] = {},
+["models/SBEP_community/d12shieldemitter.mdl"] = {},
+["models/SnakeSVx/large_res_node.mdl"] = {}				
+}
 local Models = TOOL.Models --fixes stuph		
 
 TOOL.Entity.Class = "resource_node_env";
