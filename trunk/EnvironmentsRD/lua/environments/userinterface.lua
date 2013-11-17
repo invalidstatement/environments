@@ -163,6 +163,20 @@ if(CLIENT)then
 	---------Page Compilation Functions----------
 	local Table = {}
 
+	Table.Custom=function(String,Table)
+		for i in string.gmatch( String , "%<Custom%>(.*)%</Custom%>") do
+			print("Custom Located.")
+			Table.Type=i
+		end
+	end
+	
+	Table.SetText=function(String,Table)
+		for i in string.gmatch( String , "%<SetText%>(.*)%</SetText%>") do
+			print("Text Located.")
+			Table.Text=i
+		end
+	end
+	
 	Table.Label=function(String,Table)
 		for i in string.gmatch( String , "%<L%>(.*)%</L%>") do
 			print("Label Located.")
@@ -236,7 +250,7 @@ if(CLIENT)then
 	Table.Display=function(label,D,Parent,Device)
 		label = Environments.UI.CreateLabel(D.Text,Parent)
 		label.Think = function(self)
-			self:SetText(Device[D.Func])
+			self:SetText(Device.Functions[D.Func]())
 		end
 		return label
 	end
